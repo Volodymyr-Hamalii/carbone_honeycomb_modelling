@@ -25,6 +25,11 @@ class CoordinatesFilter:
             min_distance: float = 0,
             direction: int = 1
     ):
+        """
+        A, B, C, D are the parameters from the
+        Ax + By + Cz + D = 0 plane equation.
+        """
+
         signed_distances: float = cls._signed_distance_from_plane(points, A, B, C, D)
         if direction == 1:
             # Keep points above the plane at the minimum distance

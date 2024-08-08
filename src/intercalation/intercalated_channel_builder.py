@@ -54,6 +54,10 @@ class IntercalatedChannelBuilder:
             points_to_set_channel_planes: list[dict],
             distance_from_plane: float = 0,
     ) -> ndarray:
+        """
+        Filter points from coordinates array by planes
+        (remove atoms that are outside channel and atoms inside that are closer than distance_from_plane param).
+        """
 
         filtered_coordinates: ndarray = coordinates
 
