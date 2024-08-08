@@ -1,4 +1,6 @@
+import numpy as np
 from numpy import ndarray
+from scipy.spatial.distance import cdist
 
 from ..utils import PathBuilder, FileReader, Logger
 from ..structure_visualizer import AtomsUniverseBuilder
@@ -39,11 +41,19 @@ class IntercalatedChannelBuilder:
             coordinates=coordinates_al, translation_limits=channel_coordinate_limits
         )
 
-        distance_from_plane: float = structure_settings["distance_from_plane"]  # type: ignore
+        # distance_from_plane: float = structure_settings["distance_from_plane"]
         coordinates_al_filtered: ndarray = cls._filter_atoms_related_clannel_planes(
             coordinates=coordinates_al_translated,
             points_to_set_channel_planes=structure_settings["points_to_set_channel_planes"],
-            distance_from_plane=distance_from_plane,
+            # distance_from_plane=distance_from_plane,
+        )
+
+        max_distance_to_carbone_atoms: float = structure_settings["max_distance_to_carbone_atoms"]
+
+        coordinates_al_filtered: ndarray = cls._filter_atoms_relates_carbone_atoms(
+            coordinates_al=coordinates_al_filtered,
+            coordinates_carbone=coordinates_carbone,
+            max_distance_to_carbone_atoms=max_distance_to_carbone_atoms,
         )
 
         return coordinates_carbone, coordinates_al_filtered
@@ -79,5 +89,27 @@ class IntercalatedChannelBuilder:
                 min_distance=distance_from_plane,
                 direction=direction,
             )
+
+        return filtered_coordinates
+
+    @staticmethod
+    def _filter_atoms_relates_carbone_atoms(
+        coordinates_al: ndarray,
+        coordinates_carbone: ndarray,
+        max_distance_to_carbone_atoms: float,
+    ) -> ndarray:
+        """
+        Filter points from the coordinates_al array
+        by the max distance (max_distance_to_carbone_atoms param)
+        to the points in the coordinates_carbone array.
+        """
+        # Calculate the distance matrix
+        distances_matrix: ndarray = cdist(coordinates_al, coordinates_carbone)
+
+        # Find the minimum distance for each atom in coordinates_al to any atom in coordinates_carbone
+        min_distances: ndarray = np.min(distances_matrix, axis=1)
+
+        # Filter the atoms in coordinates_al based on the max distance to carbone atoms
+        filtered_coordinates: ndarray = coordinates_al[min_distances >= max_distance_to_carbone_atoms]
 
         return filtered_coordinates
