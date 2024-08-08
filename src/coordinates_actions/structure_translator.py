@@ -2,6 +2,7 @@ import numpy as np
 from numpy import ndarray
 
 from .coordinate_limits import CoordinateLimits
+from .coordinates_filter import CoordinatesFilter
 
 
 class StructureTranslator:
@@ -25,9 +26,9 @@ class StructureTranslator:
         translated_coordinates_list: list[ndarray] = []
 
         # Translate the structure in x, y, and z directions
-        for x_translation in np.arange(x_min, x_max + translation_step_x, translation_step_x):
-            for y_translation in np.arange(y_min, y_max + translation_step_y, translation_step_y):
-                for z_translation in np.arange(z_min, z_max + translation_step_z, translation_step_z):
+        for x_translation in np.arange(x_min, x_max, translation_step_x):
+            for y_translation in np.arange(y_min, y_max, translation_step_y):
+                for z_translation in np.arange(z_min, z_max, translation_step_z):
                     translation_vector: ndarray = np.array([x_translation, y_translation, z_translation])
                     translated_structure: ndarray = coordinates + translation_vector
                     translated_coordinates_list.append(translated_structure)
@@ -38,4 +39,4 @@ class StructureTranslator:
         # Remove duplicate coordinates
         translated_coordinates: ndarray = np.unique(translated_coordinates, axis=0)
 
-        return translated_coordinates
+        return CoordinatesFilter.filter_by_max_min_z(translated_coordinates, z_min, z_max)

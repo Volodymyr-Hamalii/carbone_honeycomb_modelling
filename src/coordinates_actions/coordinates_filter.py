@@ -1,6 +1,8 @@
 import numpy as np
 from numpy import ndarray
 
+from .planes_builder import PlanesBuilder
+
 
 class CoordinatesFilter:
     @staticmethod
@@ -40,3 +42,23 @@ class CoordinatesFilter:
         else:
             raise ValueError("Direction should be 1 (above the plane) or -1 (below the plane)")
         return filtered_points
+
+    @classmethod
+    def filter_by_max_min_z(cls, coordinates: ndarray, z_min: float, z_max: float) -> ndarray:
+        """ Remove coordinates below z_min and above z_max limits """
+
+        # Below
+        min_plane_params: tuple[float, float, float, float] = PlanesBuilder.build_plane_parameters(
+            p1=[0, 0, z_min], p2=[1, 1, z_min], p3=[1, 0, z_min])
+        coordinates = cls.filter_coordinates_related_to_plane(
+            coordinates, *min_plane_params, direction=-1
+        )
+
+        # Above
+        min_plane_params: tuple[float, float, float, float] = PlanesBuilder.build_plane_parameters(
+            p1=[0, 0, z_max], p2=[1, 1, z_max], p3=[1, 0, z_max])
+        coordinates = cls.filter_coordinates_related_to_plane(
+            coordinates, *min_plane_params, direction=1
+        )
+
+        return coordinates
