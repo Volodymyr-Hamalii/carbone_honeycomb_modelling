@@ -11,15 +11,6 @@ warnings.filterwarnings('ignore')
 
 
 class AtomsUniverseBuilder:
-    # @staticmethod
-    # def build_atoms_universe(path_to_pdb_file: str):
-    #    # Load a structure from a file
-    #    u = mda.Universe(path_to_pdb_file)
-
-    #    # Access atoms and coordinates
-    #    atoms = u.atoms
-    #    coordinates = atoms.positions
-
     @staticmethod
     def builds_atoms_coordinates(
         path_to_pdb_file: str,

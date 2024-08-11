@@ -59,11 +59,13 @@ class StructureVisualizer:
         # color_second_transparency: float = 0.75,
 
     ) -> None:
+        """ Show 3D plot with 2 structures (by default there are carbone and aluminium) """
+
         # Prepare to visualize
         fig: Figure = plt.figure()
         ax: Axes = fig.add_subplot(111, projection='3d')
 
-        # Plot first structure atoms
+        # Plot first structure atoms (carbone by default)
         x_first: ndarray = coordinates_first[:, 0]
         y_first: ndarray = coordinates_first[:, 1]
         z_first: ndarray = coordinates_first[:, 2]
@@ -73,7 +75,7 @@ class StructureVisualizer:
             label='Carbon', s=VisualizationParameters.carbone.size,  # type: ignore
             alpha=VisualizationParameters.carbone.transparency)
 
-        # Plot second structure atoms
+        # Plot second structure atoms (al by default)
         x_second: ndarray = coordinates_second[:, 0]
         y_second: ndarray = coordinates_second[:, 1]
         z_second: ndarray = coordinates_second[:, 2]
@@ -84,10 +86,12 @@ class StructureVisualizer:
             alpha=VisualizationParameters.al.transparency)
 
         if to_build_bonds:
+            # Carbone
             LinesBuilder.add_lines(
                 coordinates=coordinates_first, ax=ax,
                 color_bonds=VisualizationParameters.carbone.color_bonds)
 
+            # Aluminium
             LinesBuilder.add_lines(
                 coordinates=coordinates_second, ax=ax,
                 color_bonds=VisualizationParameters.al.color_bonds,

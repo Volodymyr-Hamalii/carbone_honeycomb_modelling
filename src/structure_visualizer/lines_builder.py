@@ -36,6 +36,7 @@ class LinesBuilder:
             lc = Line3DCollection(lines, colors='black', linewidths=1)
             ax.add_collection3d(lc)  # ax: Axes
         """
+        
         lines: list[list[ndarray]] = []
 
         # Calculate the distance matrix for all atoms
