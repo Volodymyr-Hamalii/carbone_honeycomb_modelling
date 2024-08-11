@@ -26,3 +26,7 @@ class PlanesBuilder:
         D = -np.dot(normal, p1_np)
 
         return A, B, C, D
+
+    @staticmethod
+    def _filter_one_plane_coordinates(coordinates: ndarray, x: float = 0, y: float = 0) -> ndarray:
+        return coordinates[(coordinates[:, 0] == x) | (coordinates[:, 1] == y)]
