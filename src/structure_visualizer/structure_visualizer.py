@@ -97,15 +97,15 @@ class StructureVisualizer:
         y_first: ndarray = coordinates[:, 1]
         z_first: ndarray = coordinates[:, 2]
 
-        if to_set_scaling:
-            cls._set_equal_scaling(ax, x_first, y_first, z_first)
-
         ax.scatter(
             x_first, y_first, z_first,
             c=visual_parameters.color_atoms,
             label=visual_parameters.label,
             s=visual_parameters.size,  # type: ignore
             alpha=visual_parameters.transparency)
+
+        if to_set_scaling:
+            cls._set_equal_scaling(ax, x_first, y_first, z_first)
 
         if to_build_bonds:
             # Carbone
