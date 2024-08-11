@@ -7,6 +7,19 @@ from scipy.spatial.distance import pdist, squareform
 
 
 class LinesBuilder:
+    @classmethod
+    def add_lines(
+        cls,
+        coordinates: ndarray,
+        ax: Axes,
+        color_bonds: str = "black",
+        num_of_min_distances: int = 3,
+    ):
+        lines: list[list[ndarray]] = LinesBuilder.build_lines(
+            coordinates, num_of_min_distances=num_of_min_distances)
+
+        lc = Line3DCollection(lines, colors=color_bonds, linewidths=1)
+        ax.add_collection3d(lc)  # type: ignore
 
     @classmethod
     def build_lines(
