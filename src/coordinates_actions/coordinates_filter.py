@@ -55,10 +55,10 @@ class CoordinatesFilter:
         )
 
         # Above
-        min_plane_params: tuple[float, float, float, float] = PlanesBuilder.build_plane_parameters(
+        max_plane_params: tuple[float, float, float, float] = PlanesBuilder.build_plane_parameters(
             p1=[0, 0, z_max], p2=[1, 1, z_max], p3=[1, 0, z_max])
         coordinates = cls.filter_coordinates_related_to_plane(
-            coordinates, *min_plane_params, direction=1
+            coordinates, *max_plane_params, direction=1
         )
 
         return coordinates
