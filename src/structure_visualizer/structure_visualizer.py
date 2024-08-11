@@ -1,11 +1,10 @@
-import numpy as np
 from numpy import ndarray
 
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import Figure, Axes  # type: ignore
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
-from scipy.spatial.distance import pdist, squareform
 
+from .lines_builder import LinesBuilder
 from ..utils import Logger
 
 
@@ -33,7 +32,7 @@ class StructureVisualizer:
         ax.scatter(x, y, z, s=100, c=coordinates_color)  # type: ignore
 
         if to_build_bonds:
-            lines = cls._build_lines(coordinates)
+            lines = LinesBuilder.build_lines(coordinates)
             lc = Line3DCollection(lines, colors='black', linewidths=1)
             ax.add_collection3d(lc)  # type: ignore
 
@@ -77,8 +76,8 @@ class StructureVisualizer:
             label='Aluminum', s=25, alpha=coordinates_second_transparency)  # type: ignore
 
         if to_build_bonds:
-            lines_first = cls._build_lines(coordinates_first)
-            lines_second = cls._build_lines(coordinates_second)
+            lines_first = LinesBuilder.build_lines(coordinates_first)
+            lines_second = LinesBuilder.build_lines(coordinates_second)
             lc = Line3DCollection(lines_first + lines_second, colors='black', linewidths=1)
             ax.add_collection3d(lc)  # type: ignore
 
@@ -92,31 +91,3 @@ class StructureVisualizer:
     @staticmethod
     def _filter_one_plane_coordinates(coordinates: ndarray, x: float = 0, y: float = 0) -> ndarray:
         return coordinates[(coordinates[:, 0] == x) | (coordinates[:, 1] == y)]
-
-    @staticmethod
-    def _find_nearest_neighbors(distances_matrix: np.ndarray, num_neighbors: int) -> np.ndarray:
-        # Add a large value to the diagonal to ignore self-distances
-        np.fill_diagonal(distances_matrix, np.inf)
-
-        # Find the indices of the nearest neighbors
-        nearest_neighbors = np.argsort(distances_matrix, axis=1)[:, :num_neighbors]
-
-        return nearest_neighbors
-
-    @classmethod
-    def _build_lines(cls, coordinates: np.ndarray, num_neighbors=2) -> list:
-        lines = []
-
-        # Calculate the distance matrix for all atoms
-        distances_matrix: np.ndarray = squareform(pdist(coordinates))
-
-        # Find the nearest neighbors for all atoms
-        nearest_neighbors = cls._find_nearest_neighbors(distances_matrix, num_neighbors)
-
-        # Prepare the lines for the nearest neighbors
-        for i, neighbors in enumerate(nearest_neighbors):
-            for neighbor in neighbors:
-                # Append the lines between atoms
-                lines.append([coordinates[i], coordinates[neighbor]])
-
-        return lines
