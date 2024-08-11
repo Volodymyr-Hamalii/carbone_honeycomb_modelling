@@ -1,7 +1,7 @@
 from numpy import ndarray
 
 from .utils import PathBuilder, FilesConverter, Logger
-from .structure_visualizer import StructureVisualizer, AtomsUniverseBuilder
+from .structure_visualizer import StructureVisualizer, AtomsUniverseBuilder, VisualizationParameters
 from .coordinates_actions import CoordinateLimits
 from .intercalation import IntercalatedChannelBuilder
 
@@ -54,7 +54,7 @@ class Actions:
     @staticmethod
     def show_al_in_one_channel_structure(structure_folder: str) -> None:
         coordinates: tuple[ndarray, ndarray] = IntercalatedChannelBuilder.build_al_in_carbone(
-            structure_folder=structure_folder
+            structure_folder=structure_folder, filter_al_atoms=True
         )
         coordinates_carbone: ndarray = coordinates[0]
         coordinates_al: ndarray = coordinates[1]
@@ -65,8 +65,7 @@ class Actions:
         StructureVisualizer.show_two_structures(
             coordinates_first=coordinates_carbone,
             coordinates_second=coordinates_al,
-            coordinates_second_transparency=0.15,
-            to_build_bonds=False)
+            to_build_bonds=True)
 
     @classmethod
     def full_flow(cls, structure_folder: str) -> None:

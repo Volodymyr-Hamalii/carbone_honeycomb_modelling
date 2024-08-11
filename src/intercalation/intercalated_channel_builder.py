@@ -12,7 +12,7 @@ logger = Logger(__name__)
 
 class IntercalatedChannelBuilder:
     @classmethod
-    def build_al_in_carbone(cls, structure_folder: str) -> tuple[ndarray, ndarray]:
+    def build_al_in_carbone(cls, structure_folder: str, filter_al_atoms: bool = True) -> tuple[ndarray, ndarray]:
         """ Return coordinates_carbone, coordinates_al """
         path_to_init_pdb_file: str = PathBuilder.build_path_to_result_data_file(structure_folder)
         structure_settings: dict | None = FileReader.read_json_file(structure_folder)  # type: ignore
@@ -41,22 +41,25 @@ class IntercalatedChannelBuilder:
             coordinates=coordinates_al, translation_limits=channel_coordinate_limits
         )
 
-        # distance_from_plane: float = structure_settings["distance_from_plane"]
-        coordinates_al_filtered: ndarray = cls._filter_atoms_related_clannel_planes(
-            coordinates=coordinates_al_translated,
-            points_to_set_channel_planes=structure_settings["points_to_set_channel_planes"],
-            # distance_from_plane=distance_from_plane,
-        )
+        if filter_al_atoms:
 
-        max_distance_to_carbone_atoms: float = structure_settings["max_distance_to_carbone_atoms"]
+            # distance_from_plane: float = structure_settings["distance_from_plane"]
+            coordinates_al_filtered: ndarray = cls._filter_atoms_related_clannel_planes(
+                coordinates=coordinates_al_translated,
+                points_to_set_channel_planes=structure_settings["points_to_set_channel_planes"],
+                # distance_from_plane=distance_from_plane,
+            )
 
-        coordinates_al_filtered: ndarray = cls._filter_atoms_relates_carbone_atoms(
-            coordinates_al=coordinates_al_filtered,
-            coordinates_carbone=coordinates_carbone,
-            max_distance_to_carbone_atoms=max_distance_to_carbone_atoms,
-        )
+            max_distance_to_carbone_atoms: float = structure_settings["max_distance_to_carbone_atoms"]
 
-        return coordinates_carbone, coordinates_al_filtered
+            coordinates_al_filtered: ndarray = cls._filter_atoms_relates_carbone_atoms(
+                coordinates_al=coordinates_al_filtered,
+                coordinates_carbone=coordinates_carbone,
+                max_distance_to_carbone_atoms=max_distance_to_carbone_atoms,
+            )
+
+            return coordinates_carbone, coordinates_al_filtered
+        return coordinates_carbone, coordinates_al
 
     @staticmethod
     def _filter_atoms_related_clannel_planes(
