@@ -14,15 +14,15 @@ class StructureVisualParameters:
 
 class VisualizationParameters:
     carbone = StructureVisualParameters(
-        color_atoms="#3d83fe",
-        color_bonds="#a5c6ff",
+        color_atoms="#0500a4",
+        color_bonds="#00065f",
         size=50,
         transparency=0.75,
     )
 
     al = StructureVisualParameters(
-        color_atoms="#C70039",
-        color_bonds="#ffa5a5",
+        color_atoms="#e00000",
+        color_bonds="#500000",
         size=100,
-        transparency=0.25,
+        transparency=0.5,
     )
