@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.pyplot import Figure, Axes  # type: ignore
 
 from .lines_builder import LinesBuilder
-from .visualization_parameters import VisualizationParameters
+from .visualization_parameters import VisualizationParameters, StructureVisualParameters
 from ..utils import Logger
 
 
@@ -18,9 +18,7 @@ class StructureVisualizer:
             cls,
             coordinates: ndarray,
             to_build_bonds: bool = True,
-            color_atoms: str = VisualizationParameters.carbone.color_atoms,
-            color_bonds: str = VisualizationParameters.carbone.color_bonds,
-            size: int = VisualizationParameters.carbone.size,
+            visual_parameters: StructureVisualParameters = VisualizationParameters.carbone,
             num_of_min_distances: int = 3,
             skip_first_distances: int = 0
     ) -> None:
@@ -34,13 +32,13 @@ class StructureVisualizer:
         z: ndarray = coordinates[:, 2]
 
         # Plot the atoms
-        ax.scatter(x, y, z, s=size, c=color_atoms)  # type: ignore
+        ax.scatter(x, y, z, s=visual_parameters.size, c=visual_parameters.color_atoms)  # type: ignore
         cls._set_equal_scaling(ax, x, y, z)
 
         if to_build_bonds:
             LinesBuilder.add_lines(
                 coordinates=coordinates, ax=ax,
-                color_bonds=color_bonds,
+                color_bonds=visual_parameters.color_bonds,
                 num_of_min_distances=num_of_min_distances,
                 skip_first_distances=skip_first_distances)
 
@@ -56,15 +54,8 @@ class StructureVisualizer:
         coordinates_first: ndarray,
         coordinates_second: ndarray,
         to_build_bonds: bool = False,
-
-        # color_atoms_first: str = VisualizationParameters.C_ATOMS,
-        # color_bonds_first: str = VisualizationParameters.C_BONDS,
-        # color_first_transparency: float = 0.75,
-
-        # color_atoms_second: str = VisualizationParameters.AL_ATOMS,
-        # color_bonds_second: str = VisualizationParameters.AL_BONDS,
-        # color_second_transparency: float = 0.75,
-
+        visual_parameters_first: StructureVisualParameters = VisualizationParameters.carbone,
+        visual_parameters_second: StructureVisualParameters = VisualizationParameters.al,
     ) -> None:
         """ Show 3D plot with 2 structures (by default there are carbone and aluminium) """
 
@@ -79,9 +70,9 @@ class StructureVisualizer:
         cls._set_equal_scaling(ax, x_first, y_first, z_first)
 
         ax.scatter(
-            x_first, y_first, z_first, c=VisualizationParameters.carbone.color_atoms,
-            label='Carbon', s=VisualizationParameters.carbone.size,  # type: ignore
-            alpha=VisualizationParameters.carbone.transparency)
+            x_first, y_first, z_first, c=visual_parameters_first.color_atoms,
+            label='Carbon', s=visual_parameters_first.size,  # type: ignore
+            alpha=visual_parameters_first.transparency)
 
         # Plot second structure atoms (al by default)
         x_second: ndarray = coordinates_second[:, 0]
@@ -89,21 +80,21 @@ class StructureVisualizer:
         z_second: ndarray = coordinates_second[:, 2]
 
         ax.scatter(
-            x_second, y_second, z_second, c=VisualizationParameters.al.color_atoms,
-            label='Aluminum', s=VisualizationParameters.al.size,  # type: ignore
-            alpha=VisualizationParameters.al.transparency)
+            x_second, y_second, z_second, c=visual_parameters_second.color_atoms,
+            label='Aluminum', s=visual_parameters_second.size,  # type: ignore
+            alpha=visual_parameters_second.transparency)
 
         if to_build_bonds:
             # Carbone
             LinesBuilder.add_lines(
                 coordinates=coordinates_first, ax=ax,
-                color_bonds=VisualizationParameters.carbone.color_bonds,
+                color_bonds=visual_parameters_first.color_bonds,
                 num_of_min_distances=3)
 
             # Aluminium
             LinesBuilder.add_lines(
                 coordinates=coordinates_second, ax=ax,
-                color_bonds=VisualizationParameters.al.color_bonds,
+                color_bonds=visual_parameters_second.color_bonds,
                 num_of_min_distances=1,
                 skip_first_distances=2)
 

@@ -29,9 +29,7 @@ class Actions:
         StructureVisualizer.show_structure(
             coordinates=coordinates,
             to_build_bonds=True,
-            color_atoms=VisualizationParameters.al.color_atoms,
-            color_bonds=VisualizationParameters.al.color_bonds,
-            size=VisualizationParameters.al.size,
+            visual_parameters=VisualizationParameters.al,
             num_of_min_distances=1,
             skip_first_distances=2,
         )
@@ -71,6 +69,6 @@ class Actions:
     def full_flow(cls, structure_folder: str) -> None:
         # cls.convert_init_dat_to_pdb(structure_folder)
         # cls.show_init_structure(structure_folder)
-        cls.show_init_al_structure()
+        # cls.show_init_al_structure()
         # cls.show_one_channel_structure(structure_folder)
         cls.show_al_in_one_channel_structure(structure_folder)
