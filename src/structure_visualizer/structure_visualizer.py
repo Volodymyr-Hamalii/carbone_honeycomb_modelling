@@ -30,7 +30,8 @@ class StructureVisualizer:
         z: ndarray = coordinates[:, 2]
 
         # Plot the atoms
-        ax.scatter(x, y, z, s=VisualizationParameters.carbone.size, c=color_atoms)  # type: ignore
+        ax.scatter(x, y, z, s=size, c=color_atoms)  # type: ignore
+        cls._set_equal_scaling(ax, x, y, z)
 
         if to_build_bonds:
             LinesBuilder.add_lines(
@@ -69,6 +70,7 @@ class StructureVisualizer:
         x_first: ndarray = coordinates_first[:, 0]
         y_first: ndarray = coordinates_first[:, 1]
         z_first: ndarray = coordinates_first[:, 2]
+        cls._set_equal_scaling(ax, x_first, y_first, z_first)
 
         ax.scatter(
             x_first, y_first, z_first, c=VisualizationParameters.carbone.color_atoms,
@@ -103,3 +105,20 @@ class StructureVisualizer:
         ax.legend()
 
         plt.show()
+
+    @staticmethod
+    def _set_equal_scaling(ax: Axes, x_coor: ndarray, y_coor: ndarray, z_coor: ndarray) -> None:
+
+        max_range = np.array([
+            x_coor.max() - x_coor.min(),
+            y_coor.max() - y_coor.min(),
+            z_coor.max() - z_coor.min(),
+        ]).max()
+
+        mid_x = (x_coor.max() + x_coor.min()) * 0.5
+        mid_y = (y_coor.max() + y_coor.min()) * 0.5
+        mid_z = (z_coor.max() + z_coor.min()) * 0.5
+
+        ax.set_xlim(mid_x - max_range/2, mid_x + max_range/2)
+        ax.set_ylim(mid_y - max_range/2, mid_y + max_range/2)
+        ax.set_zlim(mid_z - max_range/2, mid_z + max_range/2)  # type: ignore
