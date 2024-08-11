@@ -12,11 +12,22 @@ class LinesBuilder:
         cls,
         coordinates: ndarray,
         ax: Axes,
+        num_of_min_distances: int,
+        skip_first_distances: int = 0,
         color_bonds: str = "black",
-        num_of_min_distances: int = 3,
-    ):
+    ) -> None:
+        """
+        Add lines to the axis.
+
+        To get the atoms between which we have to build bonds you can set the following parameters:
+        num_of_min_distances: int - number of the distances we use as a target to build the line,
+        skip_first_distances: int - set it if have to build the bonds not for all minimal distances.
+        """
+
         lines: list[list[ndarray]] = LinesBuilder.build_lines(
-            coordinates, num_of_min_distances=num_of_min_distances)
+            coordinates=coordinates,
+            num_of_min_distances=num_of_min_distances,
+            skip_first_distances=skip_first_distances)
 
         lc = Line3DCollection(lines, colors=color_bonds, linewidths=1)
         ax.add_collection3d(lc)  # type: ignore
@@ -25,7 +36,8 @@ class LinesBuilder:
     def build_lines(
             cls,
             coordinates: ndarray,
-            num_of_min_distances: int = 3,
+            num_of_min_distances: int,
+            skip_first_distances: int,
     ) -> list[list[ndarray]]:
         """
         Build lines between points (like, bonds between atoms).
@@ -36,7 +48,7 @@ class LinesBuilder:
             lc = Line3DCollection(lines, colors='black', linewidths=1)
             ax.add_collection3d(lc)  # ax: Axes
         """
-        
+
         lines: list[list[ndarray]] = []
 
         # Calculate the distance matrix for all atoms
@@ -48,7 +60,10 @@ class LinesBuilder:
         # Add a large value to the diagonal to ignore self-distances
         np.fill_diagonal(distances_matrix, np.inf)
 
-        min_distances: ndarray = cls._find_min_unique_values(arr=distances_matrix, num_of_values=num_of_min_distances)
+        min_distances: ndarray = cls._find_min_unique_values(
+            arr=distances_matrix,
+            num_of_values=num_of_min_distances,
+            skip_first_values=skip_first_distances)
 
         # Find the nearest neighbors for all atoms
         # nearest_neighbors = cls._find_nearest_neighbors(distances_matrix, num_neighbors)
@@ -74,12 +89,14 @@ class LinesBuilder:
         return np.argsort(distances_matrix, axis=1)[:, :num_neighbors]
 
     @staticmethod
-    def _find_min_unique_values(arr: ndarray, num_of_values: int) -> ndarray:
+    def _find_min_unique_values(arr: ndarray, num_of_values: int, skip_first_values: int = 0) -> ndarray:
         # Flatten the array to 1D and extract unique values
         unique_values: ndarray = np.unique(arr)
 
         # Sort the unique values
         sorted_unique_values: ndarray = np.sort(unique_values)
 
-        # Return the first num_of_values values
-        return sorted_unique_values[:num_of_values]
+        # Return the values from specified range
+        start: int = skip_first_values
+        end: int = skip_first_values + num_of_values
+        return sorted_unique_values[start:end]

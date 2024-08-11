@@ -1,3 +1,4 @@
+import numpy as np
 from numpy import ndarray
 
 import matplotlib.pyplot as plt
@@ -19,6 +20,9 @@ class StructureVisualizer:
             to_build_bonds: bool = True,
             color_atoms: str = VisualizationParameters.carbone.color_atoms,
             color_bonds: str = VisualizationParameters.carbone.color_bonds,
+            size: int = VisualizationParameters.carbone.size,
+            num_of_min_distances: int = 3,
+            skip_first_distances: int = 0
     ) -> None:
 
         # Prepare to visualize
@@ -36,7 +40,9 @@ class StructureVisualizer:
         if to_build_bonds:
             LinesBuilder.add_lines(
                 coordinates=coordinates, ax=ax,
-                color_bonds=color_bonds)
+                color_bonds=color_bonds,
+                num_of_min_distances=num_of_min_distances,
+                skip_first_distances=skip_first_distances)
 
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
@@ -91,13 +97,15 @@ class StructureVisualizer:
             # Carbone
             LinesBuilder.add_lines(
                 coordinates=coordinates_first, ax=ax,
-                color_bonds=VisualizationParameters.carbone.color_bonds)
+                color_bonds=VisualizationParameters.carbone.color_bonds,
+                num_of_min_distances=3)
 
             # Aluminium
             LinesBuilder.add_lines(
                 coordinates=coordinates_second, ax=ax,
                 color_bonds=VisualizationParameters.al.color_bonds,
-                num_of_min_distances=1)
+                num_of_min_distances=1,
+                skip_first_distances=2)
 
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
