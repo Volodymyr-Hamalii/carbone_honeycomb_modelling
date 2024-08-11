@@ -14,6 +14,7 @@ class IntercalatedChannelBuilder:
     @classmethod
     def build_al_in_carbone(cls, structure_folder: str, filter_al_atoms: bool = True) -> tuple[ndarray, ndarray]:
         """ Return coordinates_carbone, coordinates_al """
+
         path_to_init_pdb_file: str = PathBuilder.build_path_to_result_data_file(structure_folder)
         structure_settings: dict | None = FileReader.read_json_file(structure_folder)  # type: ignore
 
@@ -106,6 +107,7 @@ class IntercalatedChannelBuilder:
         by the max distance (max_distance_to_carbone_atoms param)
         to the points in the coordinates_carbone array.
         """
+        
         # Calculate the distance matrix
         distances_matrix: ndarray = cdist(coordinates_al, coordinates_carbone)
 
