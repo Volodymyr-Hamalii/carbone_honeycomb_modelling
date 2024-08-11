@@ -19,7 +19,7 @@ class VisualizationParameters:
         color_atoms="#0500a4",
         color_bonds="#00065f",
         size=200,
-        transparency=0.25,
+        transparency=0.35,
         label="Carbon",
     )
 
