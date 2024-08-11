@@ -1,2 +1,3 @@
 from .structure_visualizer import StructureVisualizer
 from .atoms_universe_builder import AtomsUniverseBuilder
+from .visualization_parameters import VisualizationParameters
