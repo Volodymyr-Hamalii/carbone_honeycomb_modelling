@@ -70,8 +70,10 @@ class StructureVisualizer:
         cls._set_equal_scaling(ax, x_first, y_first, z_first)
 
         ax.scatter(
-            x_first, y_first, z_first, c=visual_parameters_first.color_atoms,
-            label='Carbon', s=visual_parameters_first.size,  # type: ignore
+            x_first, y_first, z_first,
+            c=visual_parameters_first.color_atoms,
+            label=visual_parameters_first.label,
+            s=visual_parameters_first.size,  # type: ignore
             alpha=visual_parameters_first.transparency)
 
         # Plot second structure atoms (al by default)
@@ -80,8 +82,10 @@ class StructureVisualizer:
         z_second: ndarray = coordinates_second[:, 2]
 
         ax.scatter(
-            x_second, y_second, z_second, c=visual_parameters_second.color_atoms,
-            label='Aluminum', s=visual_parameters_second.size,  # type: ignore
+            x_second, y_second, z_second,
+            c=visual_parameters_second.color_atoms,
+            label=visual_parameters_second.label,
+            s=visual_parameters_second.size,  # type: ignore
             alpha=visual_parameters_second.transparency)
 
         if to_build_bonds:
