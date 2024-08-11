@@ -20,7 +20,21 @@ class Actions:
     def show_init_structure(structure_folder: str) -> None:
         path_to_init_pdb_file: str = PathBuilder.build_path_to_result_data_file(structure_folder)
         coordinates: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
-        StructureVisualizer.show_structure(coordinates)
+        StructureVisualizer.show_structure(coordinates, to_build_bonds=True)
+
+    @staticmethod
+    def show_init_al_structure() -> None:
+        path_to_al_pdb_file: str = PathBuilder.build_path_to_init_data_file(file="al.pdb")
+        coordinates: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_al_pdb_file)
+        StructureVisualizer.show_structure(
+            coordinates=coordinates,
+            to_build_bonds=True,
+            color_atoms=VisualizationParameters.al.color_atoms,
+            color_bonds=VisualizationParameters.al.color_bonds,
+            size=150,
+            num_of_min_distances=1,
+            skip_first_distances=2,
+        )
 
     @staticmethod
     def show_one_channel_structure(structure_folder: str) -> None:
@@ -57,6 +71,7 @@ class Actions:
     @classmethod
     def full_flow(cls, structure_folder: str) -> None:
         # cls.convert_init_dat_to_pdb(structure_folder)
-        cls.show_init_structure(structure_folder)
-        cls.show_one_channel_structure(structure_folder)
+        # cls.show_init_structure(structure_folder)
+        # cls.show_init_al_structure()
+        # cls.show_one_channel_structure(structure_folder)
         cls.show_al_in_one_channel_structure(structure_folder)
