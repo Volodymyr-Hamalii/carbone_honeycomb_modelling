@@ -2,7 +2,7 @@ import MDAnalysis as mda
 import numpy as np
 from numpy import ndarray
 
-from ..coordinates_actions import CoordinateLimits
+from ..data_preparation import ChannelLimits
 from .structure_utils import StructureUtils
 
 import warnings
@@ -14,7 +14,7 @@ class AtomsUniverseBuilder:
     @staticmethod
     def builds_atoms_coordinates(
         path_to_pdb_file: str,
-        channel_coordinate_limits: CoordinateLimits | None = None,
+        channel_coordinate_limits: ChannelLimits | None = None,
     ) -> ndarray:
 
         # Load a structure from a file

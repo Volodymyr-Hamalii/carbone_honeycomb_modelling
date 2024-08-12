@@ -1,16 +1,24 @@
 import numpy as np
 from numpy import ndarray
 
-from .coordinate_limits import CoordinateLimits
+from ..utils import Logger
+from ..data_preparation import ChannelLimits
 from .coordinates_filter import CoordinatesFilter
+
+
+logger = Logger(__name__)
 
 
 class StructureTranslator:
     @staticmethod
     def translate(
             coordinates: ndarray,
-            translation_limits: CoordinateLimits,
+            translation_limits: ChannelLimits | None,
     ) -> ndarray:
+        if translation_limits is None:
+            logger.error("Translation cannot be done without translation_limits.")
+            return coordinates
+
         x_min: float = translation_limits.x_min
         x_max: float = translation_limits.x_max
         y_min: float = translation_limits.y_min
