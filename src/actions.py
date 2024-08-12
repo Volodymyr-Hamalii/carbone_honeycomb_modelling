@@ -9,6 +9,25 @@ logger = Logger(__name__)
 
 
 class Actions:
+    @classmethod
+    def help(cls, structure_folder: str) -> None:
+        """ Print all available methods. """
+
+        # Get all attributes of the class
+        attributes: list[str] = dir(cls)
+
+        # Filter out only methods
+        methods: list[str] = [attr for attr in attributes if callable(getattr(cls, attr)) and not attr.startswith("__")]
+
+        print()
+        logger.info("Available actions:")
+        for method in methods:
+            print(method)
+
+        print()
+        logger.info("To run specific action provide also structure_folder as a parameter. For example:")
+        print(f"python3 main.py show_init_structure {structure_folder}\n")
+
     @staticmethod
     def convert_init_dat_to_pdb(structure_folder: str) -> None:
 
