@@ -1,4 +1,5 @@
 import json
+import os
 from ..utils import PathBuilder, FileReader, Logger
 from .structure_settings_map import StructureSettings
 
@@ -46,6 +47,10 @@ class StructureSettingsManager:
 
         path_to_file: str = PathBuilder.build_path_to_result_data_file(
             structure_folder=structure_folder, file=cls.file_name)
+
+        if os.path.exists(path_to_file):
+            logger.info(f"File {path_to_file} already exists.")
+            return
 
         with open(path_to_file, "w") as f:
             f.write(json.dumps(structure_settings_template))
