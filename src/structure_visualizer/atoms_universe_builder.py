@@ -1,7 +1,9 @@
+import os
 import MDAnalysis as mda
 import numpy as np
 from numpy import ndarray
 
+from ..utils import Logger
 from ..data_preparation import ChannelLimits
 from .structure_utils import StructureUtils
 
@@ -9,6 +11,8 @@ import warnings
 # suppress some MDAnalysis warnings about PSF files
 warnings.filterwarnings('ignore')
 
+
+logger = Logger(__name__)
 
 class AtomsUniverseBuilder:
     @staticmethod
@@ -41,7 +45,11 @@ class AtomsUniverseBuilder:
 
             # Write a result
             one_channel_pdb_file_name: str = path_to_pdb_file.replace(".pdb", "-one-channel.pdb")
-            StructureUtils.write_pdb_from_mda(one_channel_pdb_file_name, single_channel_atoms)
+            
+            # Create result-data/{structure_folder}/ljout-result-one-channel.pdb file if it didn't exist
+            if not os.path.exists(one_channel_pdb_file_name):
+                logger.info("Created", one_channel_pdb_file_name)
+                StructureUtils.write_pdb_from_mda(one_channel_pdb_file_name, single_channel_atoms)
 
             return single_channel_atoms.positions
 
