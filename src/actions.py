@@ -30,6 +30,11 @@ class Actions:
 
     @staticmethod
     def convert_init_dat_to_pdb(structure_folder: str) -> None:
+        """
+        Convert init_data/{structure_folder}/ljout.dat into result_data/{structure_folder}/ljout-result.pdb
+        Also create result_data/{structure_folder}/structure_settings.json if it didn't exist.
+        """
+
         FilesConverter.dat_to_pdb(structure_folder=structure_folder)
 
         # Create template for coordinates if it doesn't exists
@@ -37,12 +42,16 @@ class Actions:
 
     @staticmethod
     def show_init_structure(structure_folder: str) -> None:
+        """ Show 3D model of result_data/{structure_folder}/ljout-result.pdb """
+
         path_to_init_pdb_file: str = PathBuilder.build_path_to_result_data_file(structure_folder)
         coordinates: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
         StructureVisualizer.show_structure(coordinates, to_build_bonds=True)
 
     @staticmethod
     def show_init_al_structure() -> None:
+        """ Show 3D model of init_data/al.pdb """
+
         path_to_al_pdb_file: str = PathBuilder.build_path_to_init_data_file(file="al.pdb")
         coordinates: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_al_pdb_file)
 
@@ -55,6 +64,13 @@ class Actions:
 
     @staticmethod
     def show_one_channel_structure(structure_folder: str) -> None:
+        """
+        Build one channel model from result_data/{structure_folder}/ljout-result.pdb atoms
+        based on result_data/{structure_folder}/structure_settings.json channel limits.
+
+        Write result to result_data/{structure_folder}/ljout-result-one-channel.pdb if it didn't exist.
+        """
+
         path_to_init_pdb_file: str = PathBuilder.build_path_to_result_data_file(structure_folder)
 
         structure_settings: None | StructureSettings = StructureSettingsManager.read_file(
@@ -68,6 +84,12 @@ class Actions:
 
     @staticmethod
     def show_al_in_one_channel_structure(structure_folder: str) -> None:
+        """
+        Build one channel model from result_data/{structure_folder}/ljout-result.pdb atoms
+        based on result_data/{structure_folder}/structure_settings.json channel limits,
+        filled with translated Al structure from init_data/al.pdb
+        """
+
         coordinates: tuple[ndarray, ndarray] = IntercalatedChannelBuilder.build_al_in_carbone(
             structure_folder=structure_folder, filter_al_atoms=True)
 
@@ -84,6 +106,8 @@ class Actions:
 
     @classmethod
     def full_flow(cls, structure_folder: str) -> None:
+        """ Run all actions """
+        
         cls.convert_init_dat_to_pdb(structure_folder)
         cls.show_init_structure(structure_folder)
         cls.show_init_al_structure()
