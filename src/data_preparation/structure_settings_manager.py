@@ -54,3 +54,4 @@ class StructureSettingsManager:
 
         with open(path_to_file, "w") as f:
             f.write(json.dumps(structure_settings_template))
+            logger.info(f"Created structure_settings template in {path_to_file}. Please, fill it out.")
