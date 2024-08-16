@@ -10,10 +10,14 @@ logger = Logger(__name__)
 
 
 class StructureTranslator:
-    @staticmethod
+    @classmethod
     def translate(
+            cls,
             coordinates: ndarray,
             translation_limits: ChannelLimits | None,
+            translation_step_x: float = 0,
+            translation_step_y: float = 0,
+            translation_step_z: float = 0,
     ) -> ndarray:
         if translation_limits is None:
             logger.error("Translation cannot be done without translation_limits.")
@@ -27,9 +31,9 @@ class StructureTranslator:
         z_max: float = translation_limits.z_max
 
         # Determine the translation steps based on the provided coordinates
-        translation_step_x: float = coordinates[:, 0].ptp() if coordinates[:, 0].ptp() != 0 else 1.0
-        translation_step_y: float = coordinates[:, 1].ptp() if coordinates[:, 1].ptp() != 0 else 1.0
-        translation_step_z: float = coordinates[:, 2].ptp() if coordinates[:, 2].ptp() != 0 else 1.0
+        translation_step_x = cls._find_translation_step("x", translation_step_x, coordinates[:, 0])
+        translation_step_y = cls._find_translation_step("y", translation_step_y, coordinates[:, 1])
+        translation_step_z = cls._find_translation_step("z", translation_step_z, coordinates[:, 2])
 
         translated_coordinates_list: list[ndarray] = []
 
@@ -48,3 +52,12 @@ class StructureTranslator:
         translated_coordinates: ndarray = np.unique(translated_coordinates, axis=0)
 
         return CoordinatesFilter.filter_by_max_min_z(translated_coordinates, z_min, z_max)
+
+    @staticmethod
+    def _find_translation_step(axis: str, default_step: float, axis_coordinates: ndarray) -> float:
+        translation_step: float = default_step or axis_coordinates.ptp()
+
+        if translation_step == 0:
+            raise ValueError(f"Translation step for {axis} axis = 0.")
+        
+        return translation_step
