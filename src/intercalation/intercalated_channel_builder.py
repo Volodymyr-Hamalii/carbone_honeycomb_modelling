@@ -33,8 +33,8 @@ class IntercalatedChannelBuilder:
         path_to_al_pdb_file: str = PathBuilder.build_path_to_init_data_file(file="al.pdb")
         coordinates_al: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_al_pdb_file)
 
-        coordinates_al_translated: ndarray = StructureTranslator.translate(
-            coordinates=coordinates_al, translation_limits=channel_coordinate_limits)
+        coordinates_al_translated: ndarray = StructureTranslator.translate_cell(
+            cell_coordinates=coordinates_al, translation_limits=channel_coordinate_limits)
 
         if filter_al_atoms:
             if structure_settings is None:
