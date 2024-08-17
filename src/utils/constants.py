@@ -1,5 +1,8 @@
 import logging
 import os
+import dotenv
+
+dotenv.load_dotenv()
 
 
 class Path:
@@ -25,7 +28,6 @@ class Logger:
         "error": logging.ERROR,  # 40
     }
     DEFAULT_LEVEL: str = "info"  # set 'warning' as default
-
     LEVEL: int = int(os.environ.get("LEVEL", 0)) or LEVELS[DEFAULT_LEVEL]
 
 
@@ -34,3 +36,4 @@ class Constants:
     logger = Logger
 
     MAX_NUMBER_OF_THREADS = 1
+    DEV_MODE: bool = os.environ.get("DEV_MODE", "false") == "true"

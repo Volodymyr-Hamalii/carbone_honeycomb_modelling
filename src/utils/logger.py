@@ -52,7 +52,7 @@ class Logger:
     def error(self, *args) -> None:
         self.logger.error(
             self.get_message(*args),
-            exc_info=Constants.logger.LEVEL < 25,  # to print tracebacks
+            exc_info=Constants.DEV_MODE,  # to print tracebacks
         )
 
     @staticmethod

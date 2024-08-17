@@ -2,6 +2,7 @@ init_data/*
 result_data/*
 RasMol
 
+.env
 venv_carbone_honeycomb_modelling
 __pycache__
 test.py
