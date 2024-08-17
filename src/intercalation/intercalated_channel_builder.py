@@ -13,7 +13,12 @@ logger = Logger(__name__)
 
 class IntercalatedChannelBuilder:
     @classmethod
-    def build_al_in_carbone(cls, structure_folder: str, filter_al_atoms: bool = True) -> tuple[ndarray, ndarray]:
+    def build_al_in_carbone(
+            cls,
+            structure_folder: str,
+            to_filter_al_atoms: bool = True,
+            to_translate_al: bool = True
+    ) -> tuple[ndarray, ndarray]:
         """ Return coordinates_carbone, coordinates_al """
 
         path_to_init_pdb_file: str = PathBuilder.build_path_to_result_data_file(structure_folder)
@@ -33,16 +38,17 @@ class IntercalatedChannelBuilder:
         path_to_al_pdb_file: str = PathBuilder.build_path_to_init_data_file(file="al.pdb")
         coordinates_al: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_al_pdb_file)
 
-        coordinates_al_translated: ndarray = StructureTranslator.translate_cell(
-            cell_coordinates=coordinates_al, translation_limits=channel_coordinate_limits)
+        if to_translate_al:
+            coordinates_al: ndarray = StructureTranslator.translate_cell(
+                cell_coordinates=coordinates_al, translation_limits=channel_coordinate_limits)
 
-        if filter_al_atoms:
+        if to_filter_al_atoms:
             if structure_settings is None:
                 logger.error("Not able to filter AL atoms without structure_settings.json")
             else:
                 # distance_from_plane: float = structure_settings["distance_from_plane"]
                 coordinates_al_filtered: ndarray = cls._filter_atoms_related_clannel_planes(
-                    coordinates=coordinates_al_translated,
+                    coordinates=coordinates_al,
                     points_to_set_channel_planes=structure_settings.points_to_set_channel_planes)
 
                 coordinates_al_filtered: ndarray = cls._filter_atoms_relates_carbone_atoms(

@@ -9,9 +9,14 @@ DEFAULT_STRUCTURE_FOLDER = "A1-7_h3"
 
 
 def main() -> None:
-    action: str = sys.argv[1] if len(sys.argv) > 1 else DEFAULT_ACTION
-    structure_folder: str = sys.argv[2] if len(sys.argv) > 2 else DEFAULT_STRUCTURE_FOLDER
-    args: list[str] = sys.argv[3:] if len(sys.argv) > 3 else []
+    action: str = sys.argv[1] if len(sys.argv) > 1 and sys.argv[1] != "_" else DEFAULT_ACTION
+    structure_folder: str = sys.argv[2] if len(sys.argv) > 2 and sys.argv[2] != "_" else DEFAULT_STRUCTURE_FOLDER
+    to_set: bool = sys.argv[3] == "set" if len(sys.argv) > 3 and sys.argv[3] != "_" else False
+    args: list[str] = sys.argv[4:]
+
+    if action == "help":
+        Actions.help(structure_folder)
+        return
 
     try:
         logger.info(f"Run '{action}' for '{structure_folder}' structure.")
@@ -21,13 +26,17 @@ def main() -> None:
 
         if args:
             # Call the method with the structure_folder and other parameters
-            method(structure_folder, *args)
+            method(structure_folder, to_set, *args)
         else:
-            # Call the method with the structure_folder parameter
-            method(structure_folder)
+            # Call the method with the structure_folder sparameter
+            method(structure_folder, to_set)
 
     except AttributeError:
         logger.error(f"Action '{action}' is not available.")
+        Actions.help(structure_folder)
+
+    except TypeError as e:
+        logger.error(f"Parameters error:", e)
         Actions.help(structure_folder)
 
 

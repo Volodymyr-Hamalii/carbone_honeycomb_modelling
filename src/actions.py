@@ -1,6 +1,6 @@
 from numpy import ndarray
 
-from .utils import PathBuilder, FilesConverter, Logger
+from .utils import PathBuilder, FilesConverter, Logger, Inputs
 from .structure_visualizer import StructureVisualizer, AtomsUniverseBuilder, VisualizationParameters
 from .data_preparation import StructureSettings, StructureSettingsManager, ChannelLimits
 from .intercalation import IntercalatedChannelBuilder
@@ -34,7 +34,7 @@ class Actions:
         logger.info(message)
 
     @staticmethod
-    def convert_init_dat_to_pdb(structure_folder: str) -> None:
+    def convert_init_dat_to_pdb(structure_folder: str, to_set: bool) -> None:
         """
         Convert init_data/{structure_folder}/ljout.dat into result_data/{structure_folder}/ljout-result.pdb
         Also create result_data/{structure_folder}/structure_settings.json template if it didn't exist.
@@ -46,29 +46,33 @@ class Actions:
         StructureSettingsManager.create_structure_settings_template(structure_folder=structure_folder)
 
     @staticmethod
-    def show_init_structure(structure_folder: str) -> None:
+    def show_init_structure(structure_folder: str, to_set: bool) -> None:
         """ Show 3D model of result_data/{structure_folder}/ljout-result.pdb """
 
         path_to_init_pdb_file: str = PathBuilder.build_path_to_result_data_file(structure_folder)
         coordinates: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
-        StructureVisualizer.show_structure(coordinates, to_build_bonds=True)
+
+        to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
+        StructureVisualizer.show_structure(coordinates, to_build_bonds=to_build_bonds)
 
     @staticmethod
-    def show_init_al_structure() -> None:
+    def show_init_al_structure(_, to_set: bool) -> None:
         """ Show 3D model of init_data/al.pdb """
 
-        path_to_al_pdb_file: str = PathBuilder.build_path_to_init_data_file(file="al.pdb")
+        al_file: str = Inputs.text_input(to_set, default_value="al.pdb", text="Init AL file")
+        path_to_al_pdb_file: str = PathBuilder.build_path_to_init_data_file(file=al_file)
         coordinates: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_al_pdb_file)
 
+        to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
         StructureVisualizer.show_structure(
             coordinates=coordinates,
-            to_build_bonds=True,
+            to_build_bonds=to_build_bonds,
             visual_parameters=VisualizationParameters.al,
             num_of_min_distances=1,
             skip_first_distances=2)
 
     @staticmethod
-    def show_one_channel_structure(structure_folder: str) -> None:
+    def show_one_channel_structure(structure_folder: str, to_set: bool) -> None:
         """
         Build one channel model from result_data/{structure_folder}/ljout-result.pdb atoms
         based on result_data/{structure_folder}/structure_settings.json channel limits.
@@ -85,18 +89,25 @@ class Actions:
 
         coordinates: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(
             path_to_init_pdb_file, channel_limits)
-        StructureVisualizer.show_structure(coordinates, to_build_bonds=True)
+
+        to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
+        StructureVisualizer.show_structure(coordinates, to_build_bonds=to_build_bonds)
 
     @staticmethod
-    def show_al_in_one_channel_structure(structure_folder: str) -> None:
+    def show_al_in_one_channel_structure(structure_folder: str, to_set: bool) -> None:
         """
         Build one channel model from result_data/{structure_folder}/ljout-result.pdb atoms
         based on result_data/{structure_folder}/structure_settings.json channel limits,
         filled with translated Al structure from init_data/al.pdb
         """
 
+        to_filter_al_atoms: bool = Inputs.bool_input(
+            to_set, default_value=True, text="To filter AL atomes relative honeycomd bondaries")
+        to_translate_al: bool = Inputs.bool_input(
+            to_set, default_value=True, text="To translate AL atomes to fill full volume")
+
         coordinates: tuple[ndarray, ndarray] = IntercalatedChannelBuilder.build_al_in_carbone(
-            structure_folder=structure_folder, filter_al_atoms=True)
+            structure_folder=structure_folder, to_filter_al_atoms=to_filter_al_atoms, to_translate_al=to_translate_al)
 
         coordinates_carbone: ndarray = coordinates[0]
         coordinates_al: ndarray = coordinates[1]
@@ -104,17 +115,19 @@ class Actions:
         logger.info("Number of carbone atoms:", len(coordinates_carbone))
         logger.info("Number of al atoms:", len(coordinates_al))
 
+        to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
+
         StructureVisualizer.show_two_structures(
             coordinates_first=coordinates_carbone,
             coordinates_second=coordinates_al,
-            to_build_bonds=False)
+            to_build_bonds=to_build_bonds)
 
     @classmethod
-    def full_flow(cls, structure_folder: str) -> None:
+    def full_flow(cls, structure_folder: str, to_set: bool) -> None:
         """ Run all actions """
 
-        cls.convert_init_dat_to_pdb(structure_folder)
-        cls.show_init_structure(structure_folder)
-        cls.show_init_al_structure()
-        cls.show_one_channel_structure(structure_folder)
-        cls.show_al_in_one_channel_structure(structure_folder)
+        cls.convert_init_dat_to_pdb(structure_folder, to_set)
+        cls.show_init_structure(structure_folder, to_set)
+        cls.show_init_al_structure(None, to_set)
+        cls.show_one_channel_structure(structure_folder, to_set)
+        cls.show_al_in_one_channel_structure(structure_folder, to_set)
