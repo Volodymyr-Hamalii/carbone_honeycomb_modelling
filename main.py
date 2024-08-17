@@ -1,17 +1,15 @@
 import sys
-from src import Actions, Logger
+from src import Actions, CommandLineArgsHandler, Constants, Logger
 
 
 logger = Logger(__name__)
 
-DEFAULT_ACTION = "full_flow"
-DEFAULT_STRUCTURE_FOLDER = "A1-7_h3"
 
 
 def main() -> None:
-    action: str = sys.argv[1] if len(sys.argv) > 1 and sys.argv[1] != "_" else DEFAULT_ACTION
-    structure_folder: str = sys.argv[2] if len(sys.argv) > 2 and sys.argv[2] != "_" else DEFAULT_STRUCTURE_FOLDER
-    to_set: bool = sys.argv[3] == "set" if len(sys.argv) > 3 and sys.argv[3] != "_" else False
+    action: str = CommandLineArgsHandler.get_str_arg(1, default=Constants.DEFAULT_ACTION)
+    structure_folder: str = CommandLineArgsHandler.get_str_arg(2, default=Constants.DEFAULT_STRUCTURE_FOLDER)
+    to_set: bool = CommandLineArgsHandler.get_bool_arg(3, to_compare="set", default=False)
     args: list[str] = sys.argv[4:]
 
     if action == "help":
