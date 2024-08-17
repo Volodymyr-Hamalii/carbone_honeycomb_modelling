@@ -50,3 +50,4 @@ class StructureSettings:
 
         self.distance_from_plane: float = structure_setting.get("distance_from_plane", 0)
         self.max_distance_to_carbone_atoms: float = structure_setting.get("max_distance_to_carbone_atoms", 0)
+        self.al_lattice_parameter: float = structure_setting.get("al_lattice_parameter", 0)

@@ -7,40 +7,66 @@ from ..structure_visualizer import AtomsUniverseBuilder
 from ..coordinates_actions import StructureTranslator, PlanesBuilder, CoordinatesFilter
 from ..data_preparation import StructureSettingsManager, ChannelLimits, StructureSettings, ChannelPoints
 
+from .al_lattice_type import AlLatticeType
+
 
 logger = Logger(__name__)
 
 
 class IntercalatedChannelBuilder:
-    @classmethod
-    def build_al_in_carbone(
-            cls,
-            structure_folder: str,
-            to_filter_al_atoms: bool = True,
-            to_translate_al: bool = True
-    ) -> tuple[ndarray, ndarray]:
-        """ Return coordinates_carbone, coordinates_al """
+    @staticmethod
+    def build_carbone_coordinates(structure_folder: str, structure_settings: None | StructureSettings) -> ndarray:
+        path_to_pdb_file: str = PathBuilder.build_path_to_result_data_file(structure_folder)
 
-        path_to_init_pdb_file: str = PathBuilder.build_path_to_result_data_file(structure_folder)
+        return AtomsUniverseBuilder.builds_atoms_coordinates(
+            path_to_pdb_file,
+            channel_coordinate_limits=structure_settings.channel_limits if structure_settings else None)
 
-        structure_settings: None | StructureSettings = StructureSettingsManager.read_file(
-            structure_folder=structure_folder)
-
-        # Build one carbone channel
-
-        channel_coordinate_limits: ChannelLimits | None = structure_settings.channel_limits if structure_settings else None
-
-        coordinates_carbone: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(
-            path_to_init_pdb_file, channel_coordinate_limits)
-
-        # Build AL structure
-
-        path_to_al_pdb_file: str = PathBuilder.build_path_to_init_data_file(file="al.pdb")
+    @staticmethod
+    def build_al_coordinates_for_cell(
+            to_translate_al: bool = True,
+            al_file: str = "al.pdb",
+            structure_settings: None | StructureSettings = None,
+    ) -> ndarray:
+        path_to_al_pdb_file: str = PathBuilder.build_path_to_init_data_file(file=al_file)
         coordinates_al: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_al_pdb_file)
 
         if to_translate_al:
-            coordinates_al: ndarray = StructureTranslator.translate_cell(
-                cell_coordinates=coordinates_al, translation_limits=channel_coordinate_limits)
+            if structure_settings is None:
+                raise ValueError(
+                    "To translate Al please provide structure_settings.json file with channel_limits.")
+
+            return StructureTranslator.translate_cell(
+                cell_coordinates=coordinates_al, translation_limits=structure_settings.channel_limits)
+
+        return coordinates_al
+
+    @staticmethod
+    def build_al_coordinates_for_close_packed(
+            al_lattice_type: AlLatticeType,
+            structure_settings: None | StructureSettings = None,
+            to_translate_al: bool = True,
+    ) -> ndarray:
+
+        if structure_settings is None or structure_settings.al_lattice_parameter == 0:
+            raise ValueError(
+                "To translate Al please provide structure_settings.json file with channel_limits and al_lattice_parameter.")
+
+        return AtomsUniverseBuilder.build_close_packed_structure(
+            lattice_parameter=structure_settings.al_lattice_parameter,
+            lattice_type=al_lattice_type,
+            channel_coordinate_limits=structure_settings.channel_limits,
+            to_translate_al=to_translate_al)
+
+    @classmethod
+    def build_al_in_carbone(
+            cls,
+            coordinates_carbone: ndarray,
+            coordinates_al: ndarray,
+            structure_settings: None | StructureSettings,
+            to_filter_al_atoms: bool = True,
+    ) -> tuple[ndarray, ndarray]:
+        """ Return coordinates_carbone, coordinates_al """
 
         if to_filter_al_atoms:
             if structure_settings is None:

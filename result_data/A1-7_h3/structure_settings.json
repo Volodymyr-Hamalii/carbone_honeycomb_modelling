@@ -58,5 +58,6 @@
     }
   ],
   "distance_from_plane": 0,
-  "max_distance_to_carbone_atoms": 0.863
+  "max_distance_to_carbone_atoms": 0.863,
+  "al_lattice_parameter": 4.0414
 }

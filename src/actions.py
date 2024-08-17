@@ -3,7 +3,7 @@ from numpy import ndarray
 from .utils import PathBuilder, FilesConverter, Logger, Inputs
 from .structure_visualizer import StructureVisualizer, AtomsUniverseBuilder, VisualizationParameters
 from .data_preparation import StructureSettings, StructureSettingsManager, ChannelLimits
-from .intercalation import IntercalatedChannelBuilder
+from .intercalation import IntercalatedChannelBuilder, AlLatticeType
 
 logger = Logger(__name__)
 
@@ -101,25 +101,59 @@ class Actions:
         filled with translated Al structure from init_data/al.pdb
         """
 
+        structure_settings: None | StructureSettings = StructureSettingsManager.read_file(
+            structure_folder=structure_folder)
+        
+        ### Collect data to process
+
+        # Carbone
+        coordinates_carbone: ndarray = IntercalatedChannelBuilder.build_carbone_coordinates(
+            structure_folder=structure_folder, structure_settings=structure_settings)
+
+        # Aluminium
+
         to_filter_al_atoms: bool = Inputs.bool_input(
             to_set, default_value=True, text="To filter AL atomes relative honeycomd bondaries")
         to_translate_al: bool = Inputs.bool_input(
             to_set, default_value=True, text="To translate AL atomes to fill full volume")
 
+        al_lattice_type_str: str = Inputs.text_input(
+            to_set, default_value="cell", text=AlLatticeType.get_info())
+        al_lattice_type = AlLatticeType(al_lattice_type_str)
+
+        if al_lattice_type.is_cell:
+            al_file: str = Inputs.text_input(to_set, default_value="al.pdb", text="Init AL file")
+            coordinates_al: ndarray = IntercalatedChannelBuilder.build_al_coordinates_for_cell(
+                to_translate_al=to_translate_al,
+                al_file=al_file,
+                structure_settings=structure_settings)
+
+        else:
+            # Fill the volume with aluminium for close-packed lattice
+            coordinates_al: ndarray = IntercalatedChannelBuilder.build_al_coordinates_for_close_packed(
+                al_lattice_type=al_lattice_type,
+                structure_settings=structure_settings,
+                to_translate_al=to_translate_al)
+
+        ### Process data
+
         coordinates: tuple[ndarray, ndarray] = IntercalatedChannelBuilder.build_al_in_carbone(
-            structure_folder=structure_folder, to_filter_al_atoms=to_filter_al_atoms, to_translate_al=to_translate_al)
+            coordinates_carbone=coordinates_carbone,
+            coordinates_al=coordinates_al,
+            structure_settings=structure_settings,
+            to_filter_al_atoms=to_filter_al_atoms)
 
-        coordinates_carbone: ndarray = coordinates[0]
-        coordinates_al: ndarray = coordinates[1]
+        processed_coordinates_carbone: ndarray = coordinates[0]
+        processed_coordinates_al: ndarray = coordinates[1]
 
-        logger.info("Number of carbone atoms:", len(coordinates_carbone))
-        logger.info("Number of al atoms:", len(coordinates_al))
+        logger.info("Number of carbone atoms:", len(processed_coordinates_carbone))
+        logger.info("Number of al atoms:", len(processed_coordinates_al))
 
         to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
 
         StructureVisualizer.show_two_structures(
-            coordinates_first=coordinates_carbone,
-            coordinates_second=coordinates_al,
+            coordinates_first=processed_coordinates_carbone,
+            coordinates_second=processed_coordinates_al,
             to_build_bonds=to_build_bonds)
 
     @classmethod

@@ -5,6 +5,8 @@ from numpy import ndarray
 
 from ..utils import Logger
 from ..data_preparation import ChannelLimits
+from ..intercalation import AlLatticeType
+
 from .structure_utils import StructureUtils
 
 import warnings
@@ -62,17 +64,15 @@ class AtomsUniverseBuilder:
 
     @staticmethod
     def build_close_packed_structure(
-            structure_paramerer: float,
-            lattice_type: str,
+            lattice_parameter: float,
+            lattice_type: AlLatticeType,
             channel_coordinate_limits: ChannelLimits,
+            to_translate_al: bool = True,
     ) -> ndarray:
         """
         Build coordinates for HCP (hexagonal close-packed) or FCC (face-centered cubic) close-packed lattices
-        with structure_paramerer distance between atoms
+        with lattice_parameter distance between atoms
         """
-
-        if lattice_type != "HCP" and lattice_type != "FCC":
-            raise ValueError("Set correct packing: 'HCP' or 'FCC'")
 
         x_min: float = channel_coordinate_limits.x_min
         x_max: float = channel_coordinate_limits.x_max
@@ -82,9 +82,9 @@ class AtomsUniverseBuilder:
         z_max: float = channel_coordinate_limits.z_max
 
         # For HCP:
-        if lattice_type == "HCP":
+        if lattice_type.is_hcp:
             c_to_a_ratio: float = np.sqrt(8 / 3)  # Ideal c/a ratio for HCP
-            a: float = structure_paramerer
+            a: float = lattice_parameter
             c: float = c_to_a_ratio * a
 
             # Base HCP coordinates within a unit cell
@@ -103,8 +103,8 @@ class AtomsUniverseBuilder:
             z_range: ndarray = np.arange(z_min, z_max, c)
 
         # For FCC:
-        elif lattice_type == "FCC":
-            a: float = structure_paramerer
+        elif lattice_type.is_fcc:
+            a: float = lattice_parameter
             # Base FCC coordinates within a unit cell
             base_points = np.array([
                 [0, 0, 0],
@@ -117,6 +117,8 @@ class AtomsUniverseBuilder:
             x_range: ndarray = np.arange(x_min, x_max, a)
             y_range: ndarray = np.arange(y_min, y_max, a)
             z_range: ndarray = np.arange(z_min, z_max, a)
+        else:
+            raise ValueError("Set correct packing: 'HCP' or 'FCC'")
 
         # Generate the full structure by replicating the base points in the x, y, and z ranges
         all_points = []
