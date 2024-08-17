@@ -36,4 +36,7 @@ class Constants:
     logger = Logger
 
     MAX_NUMBER_OF_THREADS = 1
+    DEFAULT_ACTION: str = os.environ.get("DEFAULT_ACTION") or "full_flow"
+    DEFAULT_STRUCTURE_FOLDER: str = os.environ.get("DEFAULT_STRUCTURE_FOLDER") or "A1-7_h3"
+
     DEV_MODE: bool = os.environ.get("DEV_MODE", "false") == "true"
