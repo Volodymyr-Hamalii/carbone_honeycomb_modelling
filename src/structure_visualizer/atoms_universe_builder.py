@@ -67,7 +67,7 @@ class AtomsUniverseBuilder:
             lattice_parameter: float,
             lattice_type: AlLatticeType,
             channel_coordinate_limits: ChannelLimits,
-            to_translate_al: bool = True,
+            to_translate_al: bool = True,  # TODO
     ) -> ndarray:
         """
         Build coordinates for HCP (hexagonal close-packed) or FCC (face-centered cubic) close-packed lattices

@@ -2,10 +2,10 @@ import numpy as np
 from numpy import ndarray
 from scipy.spatial.distance import cdist
 
-from ..utils import PathBuilder, FileReader, Logger
+from ..utils import PathBuilder, Logger
 from ..structure_visualizer import AtomsUniverseBuilder
 from ..coordinates_actions import StructureTranslator, PlanesBuilder, CoordinatesFilter
-from ..data_preparation import StructureSettingsManager, ChannelLimits, StructureSettings, ChannelPoints
+from ..data_preparation import StructureSettings, ChannelPoints
 
 from .al_lattice_type import AlLatticeType
 
@@ -24,8 +24,8 @@ class IntercalatedChannelBuilder:
 
     @staticmethod
     def build_al_coordinates_for_cell(
-            to_translate_al: bool = True,
-            al_file: str = "al.pdb",
+            to_translate_al: bool,
+            al_file: str,
             structure_settings: None | StructureSettings = None,
     ) -> ndarray:
         path_to_al_pdb_file: str = PathBuilder.build_path_to_init_data_file(file=al_file)
@@ -44,8 +44,8 @@ class IntercalatedChannelBuilder:
     @staticmethod
     def build_al_coordinates_for_close_packed(
             al_lattice_type: AlLatticeType,
-            structure_settings: None | StructureSettings = None,
-            to_translate_al: bool = True,
+            structure_settings: None | StructureSettings,
+            to_translate_al: bool,
     ) -> ndarray:
 
         if structure_settings is None or structure_settings.al_lattice_parameter == 0:
