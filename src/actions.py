@@ -32,7 +32,7 @@ class Actions:
     def convert_init_dat_to_pdb(structure_folder: str) -> None:
         """
         Convert init_data/{structure_folder}/ljout.dat into result_data/{structure_folder}/ljout-result.pdb
-        Also create result_data/{structure_folder}/structure_settings.json if it didn't exist.
+        Also create result_data/{structure_folder}/structure_settings.json template if it didn't exist.
         """
 
         FilesConverter.dat_to_pdb(structure_folder=structure_folder)
@@ -107,7 +107,7 @@ class Actions:
     @classmethod
     def full_flow(cls, structure_folder: str) -> None:
         """ Run all actions """
-        
+
         cls.convert_init_dat_to_pdb(structure_folder)
         cls.show_init_structure(structure_folder)
         cls.show_init_al_structure()
