@@ -1,1 +1,2 @@
 from .intercalated_channel_builder import IntercalatedChannelBuilder
+from .al_lattice_type import AlLatticeType
