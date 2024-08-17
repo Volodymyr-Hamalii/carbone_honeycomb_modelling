@@ -11,7 +11,7 @@ logger = Logger(__name__)
 class Actions:
     @classmethod
     def help(cls, structure_folder: str) -> None:
-        """ Print all available methods. """
+        """ Print all available methods and general info. """
 
         # Get all attributes of the class
         attributes: list[str] = dir(cls)
@@ -19,14 +19,19 @@ class Actions:
         # Filter out only methods
         methods: list[str] = [attr for attr in attributes if callable(getattr(cls, attr)) and not attr.startswith("__")]
 
-        print()
-        logger.info("Available actions:")
+        message: str = "Available actions:\n"
         for method in methods:
-            print(method)
+            message = f"{message}* {method}\n"
 
-        print()
-        logger.info("To run specific action provide also structure_folder as a parameter. For example:")
-        print(f"python3 main.py show_init_structure {structure_folder}\n")
+        message = message + "\nmain.py takes the following parameters: action, structure_folder, set.\n" + \
+            "   1) action -- any action from the list above,\n" + \
+            "   2) structure_folder -- structure to process from 'init_data' or 'result_data' folders,\n" + \
+            "   3) set -- parameters custumization (to build bonds, to filter atoms etc.); just put 'set' to customize building,\n" + \
+            "   4) optional arguments -- specific parameters if some method needs them.\n" + \
+            f"For example:\npython3 main.py show_init_structure {structure_folder} set\n" + \
+            "If you don't want to specify some argument -- just provide '_' on this place."
+
+        logger.info(message)
 
     @staticmethod
     def convert_init_dat_to_pdb(structure_folder: str) -> None:
