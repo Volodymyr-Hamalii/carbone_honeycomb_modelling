@@ -1,7 +1,11 @@
-init_data
-result_data
+init_data/*
+result_data/*
 RasMol
 
 venv_carbone_honeycomb_modelling
 __pycache__
 test.py
+
+# Test data
+!init_data/A1-7_h3
+!result_data/A1-7_h3
