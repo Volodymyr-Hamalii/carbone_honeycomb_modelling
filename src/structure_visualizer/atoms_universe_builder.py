@@ -5,7 +5,7 @@ from numpy import ndarray
 
 from ..utils import Logger
 from ..data_preparation import ChannelLimits
-from ..intercalation import AlLatticeType
+from ..base_structure_classes import LatticeType
 
 from .structure_utils import StructureUtils
 
@@ -65,7 +65,7 @@ class AtomsUniverseBuilder:
     @staticmethod
     def build_close_packed_structure(
             lattice_parameter: float,
-            lattice_type: AlLatticeType,
+            lattice_type: LatticeType,
             channel_coordinate_limits: ChannelLimits,
             to_translate_al: bool = True,  # TODO
     ) -> ndarray:
