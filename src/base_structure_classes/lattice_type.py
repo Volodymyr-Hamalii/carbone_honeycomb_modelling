@@ -12,10 +12,8 @@ class LatticeType(ABC):
             raise ValueError(f"Invalid structure type: {structure_type}. Available options are: {self._get_available_types()}")
 
 
-    @staticmethod
-    def _is_valid_structure(structure_type: str) -> bool:
-        """ Abstract method to check if the structure type is valid """
-        return structure_type in ["cell", "FCC", "HCP"]
+    def _is_valid_structure(self, structure_type: str) -> bool:
+        return structure_type in self._get_available_types()
 
 
     @staticmethod
