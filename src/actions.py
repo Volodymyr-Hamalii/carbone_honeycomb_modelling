@@ -137,11 +137,15 @@ class Actions:
 
         ### Process data
 
+        equidistant_al_points: bool = Inputs.bool_input(
+            to_set=to_set, default_value=True, text="Set Al atoms maximally equidistant from the channel atoms")
+
         coordinates: tuple[ndarray, ndarray] = IntercalatedChannelBuilder.build_al_in_carbone(
             coordinates_carbone=coordinates_carbone,
             coordinates_al=coordinates_al,
             structure_settings=structure_settings,
-            to_filter_al_atoms=to_filter_al_atoms)
+            to_filter_al_atoms=to_filter_al_atoms,
+            equidistant_al_points=equidistant_al_points)
 
         processed_coordinates_carbone: ndarray = coordinates[0]
         processed_coordinates_al: ndarray = coordinates[1]

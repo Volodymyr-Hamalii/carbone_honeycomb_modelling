@@ -4,7 +4,7 @@ from scipy.spatial.distance import cdist
 
 from ..utils import PathBuilder, Logger
 from ..structure_visualizer import AtomsUniverseBuilder
-from ..coordinates_actions import StructureTranslator, PlanesBuilder, CoordinatesFilter
+from ..coordinates_actions import StructureTranslator, PlanesBuilder, CoordinatesFilter, PointsOrganizer
 from ..data_preparation import StructureSettings, ChannelPoints
 
 from .al_lattice_type import AlLatticeType
@@ -65,6 +65,7 @@ class IntercalatedChannelBuilder:
             coordinates_al: ndarray,
             structure_settings: None | StructureSettings,
             to_filter_al_atoms: bool = True,
+            equidistant_al_points: bool = True
     ) -> tuple[ndarray, ndarray]:
         """ Return coordinates_carbone, coordinates_al """
 
@@ -81,6 +82,11 @@ class IntercalatedChannelBuilder:
                     coordinates_al=coordinates_al_filtered,
                     coordinates_carbone=coordinates_carbone,
                     max_distance_to_carbone_atoms=structure_settings.max_distance_to_carbone_atoms)
+
+                if equidistant_al_points:
+                    # Set Al atoms maximally equidistant from the channel atoms
+                    coordinates_al_filtered: ndarray = PointsOrganizer.equidistant_points_sets_in_channel(
+                        coordinates_carbone, coordinates_al_filtered)
 
                 return coordinates_carbone, coordinates_al_filtered
 
