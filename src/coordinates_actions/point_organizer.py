@@ -1,48 +1,51 @@
 import numpy as np
-from numpy import ndarray
-from scipy.spatial.distance import cdist
+from numpy import ndarray, floating
 from scipy.optimize import minimize
+from scipy.spatial.distance import cdist
 
 
 class PointsOrganizer:
     @staticmethod
-    def _objective_function(point: ndarray, channel_points: ndarray) -> float:
-        """ Objective function to maximize the minimum distance from the point to the channel points """
-        distances = cdist([point], channel_points, 'euclidean')[0]
-        return -np.min(distances)  # Minimize the negative of the minimum distance
+    def _calculate_distance_variance(
+            translation_vector: ndarray, channel_points: ndarray, inner_points: ndarray) -> floating:
+        # Apply translation to inner points
+        translated_inner_points = inner_points + translation_vector
+
+        # Calculate distances between each translated inner point and all channel points
+        distances: ndarray = cdist(translated_inner_points, channel_points)
+
+        # Get minimum distance from each inner point to any channel point
+        min_distances: floating = np.min(distances, axis=1)
+
+        # Calculate the variance of these minimum distances
+        variance: floating = np.var(min_distances)
+
+        return variance
 
     @staticmethod
-    def equidistant_points_sets_in_channel(channel_points: ndarray, inner_points: ndarray) -> tuple[ndarray, ndarray]:
+    def equidistant_points_sets_in_channel(channel_points: ndarray, inner_points: ndarray) -> ndarray:
         """
         Move the points inside the channel (from inner_points set) to occupy equilibrium positions,
         i.e., maximally equidistant from the channel atoms.
 
-        Returns updated channel_points and inner_points.
+        Returns updated inner_points.
         """
-        # Define the number of iterations and tolerance
-        max_iterations = 100
-        tolerance = 1e-6
+        # Initial translation vector (starting with no translation)
+        initial_translation: ndarray = np.array([0.0, 0.0, 0.0])
 
-        # Initialize the result with the initial inner points
-        optimized_inner_points = inner_points.copy()
+        # Use optimization to find the best translation that minimizes the variance
+        result = minimize(
+            PointsOrganizer._calculate_distance_variance,
+            initial_translation,
+            args=(channel_points, inner_points),
+            method="BFGS",
+            options={"disp": True}
+        )
 
-        for i in range(len(optimized_inner_points)):
-            point = optimized_inner_points[i]
-            result = minimize(
-                fun=PointsOrganizer._objective_function,
-                x0=point,
-                args=(channel_points,),
-                method='L-BFGS-B',
-                bounds=[(-np.inf, np.inf)] * point.shape[0],
-                options={
-                    'maxiter': max_iterations,
-                    'ftol': tolerance
-                }
-            )
+        # Optimal translation vector found
+        optimal_translation = result.x
 
-            optimized_inner_points[i] = result.x
+        # Apply the optimal translation to the inner points
+        optimized_inner_points = inner_points + optimal_translation
 
-        # Calculate the final distances from the optimized inner points to channel points
-        distances_to_channel = cdist(optimized_inner_points, channel_points, 'euclidean').min(axis=1)
-
-        return optimized_inner_points, distances_to_channel
+        return optimized_inner_points
