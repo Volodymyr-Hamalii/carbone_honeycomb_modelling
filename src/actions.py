@@ -56,20 +56,47 @@ class Actions:
         StructureVisualizer.show_structure(coordinates, to_build_bonds=to_build_bonds)
 
     @staticmethod
-    def show_init_al_structure(_, to_set: bool) -> None:
+    def show_init_al_structure(structure_folder: str, to_set: bool) -> None:
         """ Show 3D model of init_data/al.pdb """
 
-        al_file: str = Inputs.text_input(to_set, default_value="al.pdb", text="Init AL file")
-        path_to_al_pdb_file: str = PathBuilder.build_path_to_init_data_file(file=al_file)
-        coordinates: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_al_pdb_file)
+        to_translate_al: bool = Inputs.bool_input(
+            to_set, default_value=True, text="To translate AL atomes to fill full volume")
+
+        al_lattice_type_str: str = Inputs.text_input(
+            to_set, default_value="cell",
+            text=AlLatticeType.get_info(),
+            available_values=AlLatticeType.get_available_types())
+        al_lattice_type = AlLatticeType(al_lattice_type_str)
+
+        structure_settings: None | StructureSettings = StructureSettingsManager.read_file(
+            structure_folder=structure_folder)
+
+        if al_lattice_type.is_cell:
+            al_file: str = Inputs.text_input(to_set, default_value="al.pdb", text="Init AL file")
+            coordinates_al: ndarray = IntercalatedChannelBuilder.build_al_coordinates_for_cell(
+                to_translate_al=to_translate_al,
+                al_file=al_file,
+                structure_settings=structure_settings)
+
+            num_of_min_distances = 1
+            skip_first_distances = 1
+        else:
+            # Fill the volume with aluminium for close-packed lattice
+            coordinates_al: ndarray = IntercalatedChannelBuilder.build_al_coordinates_for_close_packed(
+                al_lattice_type=al_lattice_type,
+                structure_settings=structure_settings,
+                to_translate_al=to_translate_al)
+
+            num_of_min_distances = 1
+            skip_first_distances = 1
 
         to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
         StructureVisualizer.show_structure(
-            coordinates=coordinates,
+            coordinates=coordinates_al,
             to_build_bonds=to_build_bonds,
             visual_parameters=VisualizationParameters.al,
-            num_of_min_distances=1,
-            skip_first_distances=2)
+            num_of_min_distances=num_of_min_distances,
+            skip_first_distances=skip_first_distances)
 
     @staticmethod
     def show_one_channel_structure(structure_folder: str, to_set: bool) -> None:
@@ -118,7 +145,10 @@ class Actions:
             to_set, default_value=True, text="To translate AL atomes to fill full volume")
 
         al_lattice_type_str: str = Inputs.text_input(
-            to_set, default_value="cell", text=AlLatticeType.get_info())
+            to_set,
+            default_value="cell",
+            text=AlLatticeType.get_info(),
+            available_values=AlLatticeType.get_available_types())
         al_lattice_type = AlLatticeType(al_lattice_type_str)
 
         if al_lattice_type.is_cell:
@@ -166,6 +196,6 @@ class Actions:
 
         cls.convert_init_dat_to_pdb(structure_folder, to_set)
         cls.show_init_structure(structure_folder, to_set)
-        cls.show_init_al_structure(None, to_set)
+        cls.show_init_al_structure(structure_folder, to_set)
         cls.show_one_channel_structure(structure_folder, to_set)
         cls.show_al_in_one_channel_structure(structure_folder, to_set)
