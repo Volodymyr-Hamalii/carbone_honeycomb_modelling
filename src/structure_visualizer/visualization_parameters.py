@@ -1,17 +1,13 @@
+from dataclasses import dataclass
+
+
+@dataclass
 class StructureVisualParameters:
-    def __init__(
-            self,
-            color_atoms: str,
-            color_bonds: str,
-            size: int,
-            transparency: float,
-            label: str,
-    ) -> None:
-        self.color_atoms: str = color_atoms
-        self.color_bonds: str = color_bonds
-        self.size: int = size
-        self.transparency: float = transparency
-        self.label: str = label
+    color_atoms: str
+    color_bonds: str
+    size: int
+    transparency: float
+    label: str
 
 
 class VisualizationParameters:
