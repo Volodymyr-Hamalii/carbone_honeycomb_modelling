@@ -63,7 +63,7 @@ class Actions:
             to_set, default_value=True, text="To translate AL atomes to fill full volume")
 
         al_lattice_type_str: str = Inputs.text_input(
-            to_set, default_value="cell",
+            to_set, default_value="HCP",
             text=AlLatticeType.get_info(),
             available_values=AlLatticeType.get_available_types())
         al_lattice_type = AlLatticeType(al_lattice_type_str)
@@ -146,7 +146,7 @@ class Actions:
 
         al_lattice_type_str: str = Inputs.text_input(
             to_set,
-            default_value="cell",
+            default_value="HCP",
             text=AlLatticeType.get_info(),
             available_values=AlLatticeType.get_available_types())
         al_lattice_type = AlLatticeType(al_lattice_type_str)
