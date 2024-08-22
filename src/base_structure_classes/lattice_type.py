@@ -9,11 +9,11 @@ class LatticeType(ABC):
 
         # Check the valid structure types in derived classes
         if not self._is_valid_structure(structure_type):
-            raise ValueError(f"Invalid structure type: {structure_type}. Available options are: {self._get_available_types()}")
+            raise ValueError(f"Invalid structure type: {structure_type}. Available options are: {self.get_available_types()}")
 
 
     def _is_valid_structure(self, structure_type: str) -> bool:
-        return structure_type in self._get_available_types()
+        return structure_type in self.get_available_types()
 
 
     @staticmethod
@@ -25,6 +25,6 @@ class LatticeType(ABC):
 
     @staticmethod
     @abstractmethod
-    def _get_available_types() -> list[str]:
+    def get_available_types() -> list[str]:
         """ Abstract method to provide a list of available structure types """
         ...

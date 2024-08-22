@@ -16,5 +16,5 @@ class AlLatticeType(LatticeType):
 
 
     @staticmethod
-    def _get_available_types() -> list[str]:
+    def get_available_types() -> list[str]:
         return ["cell", "FCC", "HCP"]
