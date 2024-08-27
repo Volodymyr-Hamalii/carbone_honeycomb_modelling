@@ -1,7 +1,7 @@
 import json
 import os
 from ..utils import PathBuilder, FileReader, Logger
-from .structure_settings_map import StructureSettings
+from .structure_settings_map import StructureSettings, ChannelLimits, ChannelPoints
 
 
 logger = Logger(__name__)
@@ -19,7 +19,29 @@ class StructureSettingsManager:
             logger.warning(f"Settings file for {structure_folder} not found")
             return
 
-        return StructureSettings(structure_settings)
+        # TODO: to automate searching for limits instead of providing them in the file
+        channel_limits: dict = structure_settings["channel_limits"]
+        return StructureSettings(
+            channel_limits=ChannelLimits(
+                x_min=channel_limits["x_min"],
+                x_max=channel_limits["x_max"],
+                y_min=channel_limits["y_min"],
+                y_max=channel_limits["y_max"],
+                z_min=channel_limits.get("z_min"),
+                z_max=channel_limits.get("z_max"),
+            ),
+
+            points_to_set_channel_planes=[
+                ChannelPoints(
+                    points=points_data["points"],
+                    direction=points_data["direction"],
+                ) for points_data in structure_settings.get("points_to_set_channel_planes", [])
+            ],
+
+            distance_from_plane=structure_settings.get("distance_from_plane", 0),
+            max_distance_to_carbone_atoms=structure_settings.get("max_distance_to_carbone_atoms", 0),
+            al_lattice_parameter=structure_settings.get("al_lattice_parameter", 0),
+        )
 
     @classmethod
     def create_structure_settings_template(cls, structure_folder: str) -> None:
