@@ -45,18 +45,26 @@ class IntercalatedChannelBuilder:
     def build_al_coordinates_for_close_packed(
             al_lattice_type: AlLatticeType,
             structure_settings: None | StructureSettings,
-            to_translate_al: bool,
+            to_translate_al: bool,  # TODO
     ) -> ndarray:
 
         if structure_settings is None or structure_settings.al_lattice_parameter == 0:
             raise ValueError(
                 "To translate Al please provide structure_settings.json file with channel_limits and al_lattice_parameter.")
 
-        return AtomsUniverseBuilder.build_close_packed_structure(
-            lattice_parameter=structure_settings.al_lattice_parameter,
-            lattice_type=al_lattice_type,
-            channel_coordinate_limits=structure_settings.channel_limits,
-            to_translate_al=to_translate_al)
+        if al_lattice_type.is_fcc:
+            return AtomsUniverseBuilder.build_fcc_lattice_type(
+                lattice_parameter=structure_settings.al_lattice_parameter,
+                channel_coordinate_limits=structure_settings.channel_limits,
+            )
+        
+        if al_lattice_type.is_hcp:
+            return AtomsUniverseBuilder.build_hcp_lattice_type(
+                lattice_parameter=structure_settings.al_lattice_parameter,
+                channel_coordinate_limits=structure_settings.channel_limits,
+            )
+
+        return ndarray([])
 
     @classmethod
     def build_al_in_carbone(

@@ -63,72 +63,61 @@ class AtomsUniverseBuilder:
         return coordinates
 
     @staticmethod
-    def build_close_packed_structure(
-            lattice_parameter: float,
-            lattice_type: LatticeType,
-            channel_coordinate_limits: ChannelLimits,
-            to_translate_al: bool = True,  # TODO
+    def build_hcp_lattice_type(
+        lattice_parameter: float,
+        channel_coordinate_limits: ChannelLimits,
+        z_min_default: float = 0,
+        z_max_default: float = 12,
     ) -> ndarray:
-        """
-        Build coordinates for HCP (hexagonal close-packed) or FCC (face-centered cubic) close-packed lattices
-        with lattice_parameter distance between atoms
-        """
+        """ Generate coordinates for planes with a 'ABAB' close-packed stacking sequence (Hexagonal close-packed) """
 
-        x_min: float = channel_coordinate_limits.x_min
-        x_max: float = channel_coordinate_limits.x_max
-        y_min: float = channel_coordinate_limits.y_min
-        y_max: float = channel_coordinate_limits.y_max
-        z_min: float = channel_coordinate_limits.z_min
-        z_max: float = channel_coordinate_limits.z_max
+        # Extract limits
+        x_min, x_max = channel_coordinate_limits.x_min, channel_coordinate_limits.x_max
+        y_min, y_max = channel_coordinate_limits.y_min, channel_coordinate_limits.y_max
+        z_min = channel_coordinate_limits.z_min or z_min_default
+        z_max = channel_coordinate_limits.z_max or z_max_default
 
-        # For HCP:
-        if lattice_type.is_hcp:
-            c_to_a_ratio: float = np.sqrt(8 / 3)  # Ideal c/a ratio for HCP
-            a: float = lattice_parameter
-            c: float = c_to_a_ratio * a
+        c_to_a_ratio: float = np.sqrt(8 / 3)  # Ideal c/a ratio for HCP
+        a: float = lattice_parameter
+        c: float = c_to_a_ratio * a
 
-            # Base HCP coordinates within a unit cell
-            base_points: ndarray = np.array([
-                [0, 0, 0],
-                [2 / 3 * a, 1 / 3 * a * np.sqrt(3), 0],
-                [1 / 3 * a, 2 / 3 * a * np.sqrt(3), 0],
-                [0, 0, c / 2],
-                [2 / 3 * a, 1 / 3 * a * np.sqrt(3), c / 2],
-                [1 / 3 * a, 2 / 3 * a * np.sqrt(3), c / 2],
-            ])
+        # Equilateral triangle altitude
+        eq_tr_alt: float = np.sqrt(3) * a / 2
 
-            # Extend the unit cell to fill the volume
-            x_range: ndarray = np.arange(x_min, x_max, a)
-            y_range: ndarray = np.arange(y_min, y_max, a * np.sqrt(3))
-            z_range: ndarray = np.arange(z_min, z_max, c)
+        # Define the base HCP layer (A and B layers are different)
+        base_layer_a: ndarray = np.array([
+            [0, 0, 0],
+            [a, 0, 0],
+            [a / 2, eq_tr_alt, 0],
+            [3 * a / 2, eq_tr_alt, 0],
+        ])
 
-        # For FCC:
-        elif lattice_type.is_fcc:
-            a: float = lattice_parameter
-            # Base FCC coordinates within a unit cell
-            base_points = np.array([
-                [0, 0, 0],
-                [0, a / 2, a / 2],
-                [a / 2, 0, a / 2],
-                [a / 2, a / 2, 0],
-            ])
+        base_layer_b: ndarray = np.array([
+            [a / 2, eq_tr_alt / 3, 0],
+            [3 * a / 2, eq_tr_alt / 3, 0],
+            [a, 4 * eq_tr_alt / 3, 0],
+            [2 * a, 4 * eq_tr_alt / 3, 0],
+        ])
 
-            # Extend the unit cell to fill the volume
-            x_range: ndarray = np.arange(x_min, x_max, a)
-            y_range: ndarray = np.arange(y_min, y_max, a)
-            z_range: ndarray = np.arange(z_min, z_max, a)
-        else:
-            raise ValueError("Set correct packing: 'HCP' or 'FCC'")
+        # Extend the unit cell to fill the volume
+        x_step: float = 2 * a
+        x_range: ndarray = np.arange(x_min - x_step, x_max + x_step, x_step)
 
-        # Generate the full structure by replicating the base points in the x, y, and z ranges
+        y_step: float = 2 * eq_tr_alt
+        y_range: ndarray = np.arange(y_min - y_step, y_max + y_step, y_step)
+
+        z_step: float = c / 2
+        z_range: ndarray = np.arange(z_min - z_step, z_max + z_step, z_step)
+
         all_points = []
-        for x in x_range:
-            for y in y_range:
-                for z in z_range:
-                    new_points = base_points + np.array([x, y, z])
-                    all_points.append(new_points)
+        for i, z in enumerate(z_range):
+            base_layer = base_layer_a if i % 2 == 0 else base_layer_b
+            for x in x_range:
+                for y in y_range:
+                    translated_layer = base_layer + np.array([x, y, z])
+                    all_points.append(translated_layer)
 
-        # Concatenate all generated points
+        # Flatten the list of layers into a single array
         full_structure: ndarray = np.concatenate(all_points)
 
         # Filter the structure to be within the channel limits
@@ -137,4 +126,57 @@ class AtomsUniverseBuilder:
             (full_structure[:, 1] >= y_min) & (full_structure[:, 1] <= y_max) &
             (full_structure[:, 2] >= z_min) & (full_structure[:, 2] <= z_max)
         )
+
+        return full_structure[within_limits]
+
+    @staticmethod
+    def build_fcc_lattice_type(
+        lattice_parameter: float,
+        channel_coordinate_limits: ChannelLimits,
+    ) -> ndarray:
+        """ Generate coordinates for planes with a 'ABCABC' close-packed stacking sequence (Face-centered cubic) """
+
+        # Extract limits
+        x_min, x_max = channel_coordinate_limits.x_min, channel_coordinate_limits.x_max
+        y_min, y_max = channel_coordinate_limits.y_min, channel_coordinate_limits.y_max
+        z_min, z_max = channel_coordinate_limits.z_min, channel_coordinate_limits.z_max
+
+        a = lattice_parameter
+
+        # Define the base FCC layers (A, B, and C layers)
+        base_layer_a = np.array([
+            [0, 0, 0],
+            [a / 2, a / 2, 0],
+            [a, a, 0]
+        ])
+
+        base_layer_b = base_layer_a + np.array([0.5 * a, 0.5 * a, 0.5 * a])
+        base_layer_c = base_layer_a + np.array([a, a, a])
+
+        layers = [base_layer_a, base_layer_b, base_layer_c]
+
+        # Extend the unit cell to fill the volume
+        x_range = np.arange(x_min, x_max, a)
+        y_range = np.arange(y_min, y_max, a)
+        z_range = np.arange(z_min, z_max, a / np.sqrt(2))
+
+        all_points = []
+        for i, z in enumerate(z_range):
+            layer_index = i % 3  # Cycle through A, B, C layers
+            base_layer = layers[layer_index]
+            for x in x_range:
+                for y in y_range:
+                    translated_layer = base_layer + np.array([x, y, z])
+                    all_points.append(translated_layer)
+
+        # Flatten the list of layers into a single array
+        full_structure = np.concatenate(all_points)
+
+        # Filter the structure to be within the channel limits
+        within_limits = (
+            (full_structure[:, 0] >= x_min) & (full_structure[:, 0] <= x_max) &
+            (full_structure[:, 1] >= y_min) & (full_structure[:, 1] <= y_max) &
+            (full_structure[:, 2] >= z_min) & (full_structure[:, 2] <= z_max)
+        )
+
         return full_structure[within_limits]
