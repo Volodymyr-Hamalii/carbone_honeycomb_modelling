@@ -40,14 +40,22 @@ class StructureTranslator:
         x_max: float = translation_limits.x_max
         y_min: float = translation_limits.y_min
         y_max: float = translation_limits.y_max
-        z_min: float = translation_limits.z_min
-        z_max: float = translation_limits.z_max
+        z_min: float | None = translation_limits.z_min
+        z_max: float | None = translation_limits.z_max
 
         # Translate the structure in x, y, and z directions
         for x_translation in np.arange(x_min, x_max, translation_step_x):
             for y_translation in np.arange(y_min, y_max, translation_step_y):
-                for z_translation in np.arange(z_min, z_max, translation_step_z):
-                    translation_vector: ndarray = np.array([x_translation, y_translation, z_translation])
+
+                if z_min is not None and z_max is not None:
+                    for z_translation in np.arange(z_min, z_max, translation_step_z):
+                        translation_vector: ndarray = np.array([x_translation, y_translation, z_translation])
+                        translated_structure: ndarray = cell_coordinates + translation_vector
+                        translated_coordinates_list.append(translated_structure)
+
+                else:
+                    # TODO: CHECK THIS LOGIC
+                    translation_vector: ndarray = np.array([x_translation, y_translation, 0])
                     translated_structure: ndarray = cell_coordinates + translation_vector
                     translated_coordinates_list.append(translated_structure)
 
@@ -57,7 +65,10 @@ class StructureTranslator:
         # Remove duplicate coordinates
         translated_coordinates: ndarray = np.unique(translated_coordinates, axis=0)
 
-        return CoordinatesFilter.filter_by_max_min_z(translated_coordinates, z_min, z_max)
+        if z_min is not None and z_max is not None:
+            return CoordinatesFilter.filter_by_max_min_z(translated_coordinates, z_min, z_max)
+
+        return translated_coordinates
 
     @staticmethod
     def _find_translation_step(axis: str, default_step: float, axis_coordinates: ndarray) -> float:
@@ -65,5 +76,5 @@ class StructureTranslator:
 
         if translation_step == 0:
             raise ValueError(f"Translation step for {axis} axis = 0.")
-        
+
         return translation_step
