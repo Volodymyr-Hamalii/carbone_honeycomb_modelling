@@ -37,6 +37,6 @@ class Inputs:
 
     @staticmethod
     def _validate_result(result: str, available_values: list[str]) -> bool:
-        if len(available_values) == 0 or result in available_values:
+        if len(available_values) == 0 or result.lower() in [str(i).lower() for i in available_values]:
             return True
         return False
