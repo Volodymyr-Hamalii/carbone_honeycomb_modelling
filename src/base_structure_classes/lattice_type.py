@@ -14,7 +14,7 @@ class LatticeType(ABC):
                 f"Invalid structure type: {structure_type}. Available options are: {self.get_available_types()}")
 
     def _is_valid_structure(self, structure_type: str) -> bool:
-        return structure_type in self.get_available_types()
+        return structure_type.lower() in [t.lower() for t in self.get_available_types()]
 
     @staticmethod
     @abstractmethod
