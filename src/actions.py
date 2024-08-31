@@ -88,7 +88,7 @@ class Actions:
                 to_translate_al=to_translate_al)
 
             num_of_min_distances = 1
-            skip_first_distances = 1
+            skip_first_distances = 0
 
         to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
         StructureVisualizer.show_structure(
