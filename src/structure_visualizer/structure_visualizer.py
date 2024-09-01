@@ -88,7 +88,7 @@ class StructureVisualizer:
             ax: Axes,
             coordinates: ndarray,
             visual_parameters: StructureVisualParameters,
-            to_set_scaling: bool = False,
+            to_set_scaling: bool = True,
             to_build_bonds: bool = True,
             num_of_min_distances: int = 3,
             skip_first_distances: int = 0) -> None:
@@ -119,16 +119,19 @@ class StructureVisualizer:
     def _set_equal_scaling(ax: Axes, x_coor: ndarray, y_coor: ndarray, z_coor: ndarray) -> None:
         """ Set equal scaling for all axis """
 
-        max_range = np.array([
+        max_range: float = np.array([
             x_coor.max() - x_coor.min(),
             y_coor.max() - y_coor.min(),
             z_coor.max() - z_coor.min(),
         ]).max()
 
-        mid_x = (x_coor.max() + x_coor.min()) * 0.5
-        mid_y = (y_coor.max() + y_coor.min()) * 0.5
-        mid_z = (z_coor.max() + z_coor.min()) * 0.5
+        delta: float = max_range / 2
+        delta_plus: float = delta + delta / 2
 
-        ax.set_xlim(mid_x - max_range/2, mid_x + max_range/2)
-        ax.set_ylim(mid_y - max_range/2, mid_y + max_range/2)
-        ax.set_zlim(mid_z - max_range/2, mid_z + max_range/2)  # type: ignore
+        mid_x: float = (x_coor.max() + x_coor.min()) * 0.5
+        mid_y: float = (y_coor.max() + y_coor.min()) * 0.5
+        mid_z: float = (z_coor.max() + z_coor.min()) * 0.5
+
+        ax.set_xlim(mid_x - delta, mid_x + delta)
+        ax.set_ylim(mid_y - delta, mid_y + delta)
+        ax.set_zlim(mid_z - delta_plus, mid_z + delta_plus)  # type: ignore
