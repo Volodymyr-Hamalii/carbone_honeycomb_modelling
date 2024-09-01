@@ -54,7 +54,7 @@ class LinesBuilder:
         # Calculate the distance matrix for all atoms
         distances_matrix: ndarray = squareform(pdist(coordinates))
 
-        # Round all values to 5th number of decimal place (to avoid duplicates like 1.44000006 and 1.44000053)
+        # Round all values to 2nd number of decimal place (to avoid duplicates like 1.44000006 and 1.44000053)
         distances_matrix = np.round(distances_matrix, decimals=2)
 
         # Add a large value to the diagonal to ignore self-distances
