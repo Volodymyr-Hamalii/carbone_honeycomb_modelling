@@ -11,18 +11,18 @@ class FilesConverter:
     def dat_to_pdb(
         cls,
         structure_folder: str,
-        dat_file_name: str = Constants.path.INIT_DAT_FILE,
-        pdb_file_name: str = Constants.path.INIT_PDB_FILE,
+        dat_file_name: str = Constants.filenames.INIT_DAT_FILE,
+        pdb_file_name: str = Constants.filenames.INIT_PDB_FILE,
     ):
 
         # Path to init ljout.dat
         dat_file_path: str = PathBuilder.build_path_to_init_data_file(
             structure_folder=structure_folder, file=dat_file_name)
 
-        # Convert to ljout-result.pdb
+        # Convert to ljout-from-init-dat.pdb
         atom_data: list[str] = cls._build_pdb_file(dat_file_path)
 
-        # Write ljout-result.pdb
+        # Write ljout-from-init-dat.pdb
         pdb_file_path: str = PathBuilder.build_path_to_result_data_file(
             structure_folder=structure_folder, file=pdb_file_name)
         cls._write_pdb_file(pdb_file_path, atom_data)

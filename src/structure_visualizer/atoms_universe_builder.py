@@ -3,7 +3,7 @@ import MDAnalysis as mda
 import numpy as np
 from numpy import ndarray
 
-from ..utils import Logger
+from ..utils import Logger, Constants
 from ..data_preparation import ChannelLimits
 from ..base_structure_classes import LatticeType
 
@@ -50,13 +50,14 @@ class AtomsUniverseBuilder:
             # Select atoms based on the filtered indices
             single_channel_atoms = atoms[filtered_indices]  # type: ignore
 
-            # Write a result
-            one_channel_pdb_file_name: str = path_to_pdb_file.replace(".pdb", "-one-channel.pdb")
+            # Build a path to result file
+            one_channel_pdb_file_path: str = path_to_pdb_file.replace(
+                Constants.filenames.INIT_PDB_FILE, Constants.filenames.PDB_FILE_ONE_CHANNEL)
 
             # Create result-data/{structure_folder}/ljout-result-one-channel.pdb file if it didn't exist
-            if not os.path.exists(one_channel_pdb_file_name):
-                logger.info("Created", one_channel_pdb_file_name)
-                StructureUtils.write_pdb_from_mda(one_channel_pdb_file_name, single_channel_atoms)
+            if not os.path.exists(one_channel_pdb_file_path):
+                logger.info("Created", one_channel_pdb_file_path)
+                StructureUtils.write_pdb_from_mda(one_channel_pdb_file_path, single_channel_atoms)
 
             return single_channel_atoms.positions
 

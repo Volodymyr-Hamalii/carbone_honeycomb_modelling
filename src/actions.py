@@ -1,6 +1,6 @@
 from numpy import ndarray
 
-from .utils import PathBuilder, FilesConverter, Logger, Inputs
+from .utils import Constants, PathBuilder, FilesConverter, Logger, Inputs
 from .structure_visualizer import StructureVisualizer, AtomsUniverseBuilder, VisualizationParameters
 from .data_preparation import StructureSettings, StructureSettingsManager, ChannelLimits
 from .intercalation import IntercalatedChannelBuilder, AlLatticeType
@@ -36,7 +36,7 @@ class Actions:
     @staticmethod
     def convert_init_dat_to_pdb(structure_folder: str, to_set: bool) -> None:
         """
-        Convert init_data/{structure_folder}/ljout.dat into result_data/{structure_folder}/ljout-result.pdb
+        Convert init_data/{structure_folder}/ljout.dat into result_data/{structure_folder}/ljout-from-init-dat.pdb
         Also create result_data/{structure_folder}/structure_settings.json template if it didn't exist.
         """
 
@@ -47,7 +47,7 @@ class Actions:
 
     @staticmethod
     def show_init_structure(structure_folder: str, to_set: bool) -> None:
-        """ Show 3D model of result_data/{structure_folder}/ljout-result.pdb """
+        """ Show 3D model of result_data/{structure_folder}/ljout-from-init-dat.pdb """
 
         path_to_init_pdb_file: str = PathBuilder.build_path_to_result_data_file(structure_folder)
         coordinates: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
@@ -63,6 +63,7 @@ class Actions:
             to_set, default_value=True, text="To translate AL atomes to fill full volume")
 
         al_lattice_type_str: str = Inputs.text_input(
+            # to_set, default_value="FCC",
             to_set, default_value="HCP",
             text=AlLatticeType.get_info(),
             available_values=AlLatticeType.get_available_types())
@@ -72,7 +73,8 @@ class Actions:
             structure_folder=structure_folder)
 
         if al_lattice_type.is_cell:
-            al_file: str = Inputs.text_input(to_set, default_value="al.pdb", text="Init AL file")
+            al_file: str = Inputs.text_input(to_set, default_value=Constants.filenames.AL_FILE, text="Init AL file")
+
             coordinates_al: ndarray = IntercalatedChannelBuilder.build_al_coordinates_for_cell(
                 to_translate_al=to_translate_al,
                 al_file=al_file,
@@ -90,7 +92,7 @@ class Actions:
             num_of_min_distances = 1
             skip_first_distances = 0
 
-        to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
+        to_build_bonds: bool = Inputs.bool_input(to_set, default_value=False, text="To build bonds between atoms")
         StructureVisualizer.show_structure(
             coordinates=coordinates_al,
             to_build_bonds=to_build_bonds,
@@ -101,7 +103,7 @@ class Actions:
     @staticmethod
     def show_one_channel_structure(structure_folder: str, to_set: bool) -> None:
         """
-        Build one channel model from result_data/{structure_folder}/ljout-result.pdb atoms
+        Build one channel model from result_data/{structure_folder}/ljout-from-init-dat.pdb atoms
         based on result_data/{structure_folder}/structure_settings.json channel limits.
 
         Write result to result_data/{structure_folder}/ljout-result-one-channel.pdb if it didn't exist.
@@ -123,14 +125,14 @@ class Actions:
     @staticmethod
     def show_al_in_one_channel_structure(structure_folder: str, to_set: bool) -> None:
         """
-        Build one channel model from result_data/{structure_folder}/ljout-result.pdb atoms
+        Build one channel model from result_data/{structure_folder}/ljout-from-init-dat.pdb atoms
         based on result_data/{structure_folder}/structure_settings.json channel limits,
         filled with translated Al structure from init_data/al.pdb
         """
 
         structure_settings: None | StructureSettings = StructureSettingsManager.read_file(
             structure_folder=structure_folder)
-        
+
         ### Collect data to process
 
         # Carbone
@@ -152,7 +154,7 @@ class Actions:
         al_lattice_type = AlLatticeType(al_lattice_type_str)
 
         if al_lattice_type.is_cell:
-            al_file: str = Inputs.text_input(to_set, default_value="al.pdb", text="Init AL file")
+            al_file: str = Inputs.text_input(to_set, default_value=Constants.filenames.AL_FILE, text="Init AL file")
             coordinates_al: ndarray = IntercalatedChannelBuilder.build_al_coordinates_for_cell(
                 to_translate_al=to_translate_al,
                 al_file=al_file,

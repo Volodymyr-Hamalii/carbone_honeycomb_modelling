@@ -1,6 +1,6 @@
 import json
 import os
-from ..utils import PathBuilder, FileReader, Logger
+from ..utils import PathBuilder, FileReader, Constants, Logger
 from .structure_settings_map import StructureSettings, ChannelLimits, ChannelPoints
 
 
@@ -8,7 +8,7 @@ logger = Logger(__name__)
 
 
 class StructureSettingsManager:
-    file_name: str = "structure_settings.json"
+    file_name: str = Constants.filenames.STRUCTURE_SETTINGS_FILE
 
     @classmethod
     def read_file(cls, structure_folder: str) -> None | StructureSettings:

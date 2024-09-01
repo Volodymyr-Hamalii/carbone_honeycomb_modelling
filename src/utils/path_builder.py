@@ -9,7 +9,7 @@ class PathBuilder:
     @staticmethod
     def build_path_to_init_data_dir(
             path_to_script: str = Constants.path.path_to_root_script_dir,
-            init_dir: str = Constants.path.INIT_DATA_DIR) -> str:
+            init_dir: str = Constants.filenames.INIT_DATA_DIR) -> str:
 
         return os.path.join(path_to_script, init_dir)
 
@@ -18,8 +18,8 @@ class PathBuilder:
             cls,
             structure_folder: str | None = None,
             path_to_script: str = Constants.path.path_to_root_script_dir,
-            init_dir: str = Constants.path.INIT_DATA_DIR,
-            file: str = "ljout.dat") -> str:
+            init_dir: str = Constants.filenames.INIT_DATA_DIR,
+            file: str = Constants.filenames.INIT_DAT_FILE) -> str:
 
         path_dir: str = cls.build_path_to_init_data_dir(path_to_script, init_dir)
 
@@ -32,7 +32,7 @@ class PathBuilder:
     @staticmethod
     def build_path_to_result_data_dir(
             path_to_script: str = Constants.path.path_to_root_script_dir,
-            result_dir: str = Constants.path.RESULT_DATA_DIR) -> str:
+            result_dir: str = Constants.filenames.RESULT_DATA_DIR) -> str:
 
         path_to_result_dir: str = os.path.join(path_to_script, result_dir)
 
@@ -46,8 +46,8 @@ class PathBuilder:
             cls,
             structure_folder: str,
             path_to_script: str = Constants.path.path_to_root_script_dir,
-            result_dir: str = Constants.path.RESULT_DATA_DIR,
-            file: str = Constants.path.INIT_PDB_FILE) -> str:
+            result_dir: str = Constants.filenames.RESULT_DATA_DIR,
+            file: str = Constants.filenames.INIT_PDB_FILE) -> str:
 
         path_to_result_dir: str = cls.build_path_to_result_data_dir(path_to_script, result_dir)
 

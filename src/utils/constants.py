@@ -5,20 +5,28 @@ import dotenv
 dotenv.load_dotenv()
 
 
-class Path:
+class PathConstants:
+    # path_to_root_script = os.path.join()
+
+    path_to_utils_dir: str = os.path.dirname(os.path.abspath(__file__))
+    path_to_root_script_dir: str = os.path.abspath(os.path.join(path_to_utils_dir, "../.."))
+
+
+class FilenamesConstants:
+    # filenames
     INIT_DATA_DIR: str = "init_data"
     RESULT_DATA_DIR: str = "result_data"
 
     INIT_DAT_FILE: str = "ljout.dat"
-    INIT_PDB_FILE: str = "ljout-result.pdb"
+    INIT_PDB_FILE: str = "ljout-from-init-dat.pdb"
+    PDB_FILE_ONE_CHANNEL: str = "ljout-from-init-dat-one-channel.pdb"
 
-    # path_to_root_script = os.path.join()
+    STRUCTURE_SETTINGS_FILE: str = "structure_settings.json"
 
-    path_to_utils_dir = os.path.dirname(os.path.abspath(__file__))
-    path_to_root_script_dir = os.path.abspath(os.path.join(path_to_utils_dir, "../.."))
+    AL_FILE: str = "al.pdb"
 
 
-class Logger:
+class LoggerConstants:
     LEVELS: dict[str, int] = {
         "debug": logging.DEBUG,  # 10
         "info": logging.INFO,  # 20
@@ -32,8 +40,9 @@ class Logger:
 
 
 class Constants:
-    path = Path
-    logger = Logger
+    path = PathConstants
+    logger = LoggerConstants
+    filenames = FilenamesConstants
 
     MAX_NUMBER_OF_THREADS = 1
     DEFAULT_ACTION: str = os.environ.get("DEFAULT_ACTION") or "full_flow"
