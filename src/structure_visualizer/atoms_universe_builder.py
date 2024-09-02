@@ -78,9 +78,10 @@ class AtomsUniverseBuilder:
         z_min = channel_coordinate_limits.z_min or z_min_default
         z_max = channel_coordinate_limits.z_max or z_max_default
 
-        c_to_a_ratio: float = np.sqrt(8 / 3)  # Ideal c/a ratio for HCP
         a: float = lattice_parameter
-        c: float = c_to_a_ratio * a
+
+        # Regular tetrahedron altitude
+        reg_tet_alt: float = np.sqrt(6) * a / 3
 
         # Equilateral triangle altitude
         eq_tr_alt: float = np.sqrt(3) * a / 2
@@ -107,7 +108,7 @@ class AtomsUniverseBuilder:
         y_step: float = 2 * eq_tr_alt
         y_range: ndarray = np.arange(y_min - y_step, y_max + y_step, y_step)
 
-        z_step: float = c / 2
+        z_step: float = reg_tet_alt
         z_range: ndarray = np.arange(z_min - z_step, z_max + z_step, z_step)
 
         all_points = []
@@ -134,44 +135,73 @@ class AtomsUniverseBuilder:
     def build_fcc_lattice_type(
         lattice_parameter: float,
         channel_coordinate_limits: ChannelLimits,
+        z_min_default: float = 0,
+        z_max_default: float = 12,
     ) -> ndarray:
-        """ Generate coordinates for planes with a 'ABCABC' close-packed stacking sequence (Face-centered cubic) """
+        """
+        Generate coordinates for planes with a 'ABCABC' close-packed stacking sequence (Face-centered cubic).
+        """
 
         # Extract limits
         x_min, x_max = channel_coordinate_limits.x_min, channel_coordinate_limits.x_max
         y_min, y_max = channel_coordinate_limits.y_min, channel_coordinate_limits.y_max
-        z_min, z_max = channel_coordinate_limits.z_min, channel_coordinate_limits.z_max
+        z_min = channel_coordinate_limits.z_min or z_min_default
+        z_max = channel_coordinate_limits.z_max or z_max_default
 
-        a = lattice_parameter
+        a: float = lattice_parameter
 
-        # Define the base FCC layers (A, B, and C layers)
-        base_layer_a = np.array([
+        # Regular tetrahedron altitude
+        reg_tet_alt: float = np.sqrt(6) * a / 3
+
+        # Equilateral triangle altitude
+        eq_tr_alt: float = np.sqrt(3) * a / 2
+
+        # FCC base planes: A, B, and C layers are different
+        base_layer_a: ndarray = np.array([
             [0, 0, 0],
-            [a / 2, a / 2, 0],
-            [a, a, 0]
+            [a, 0, 0],
+            [a / 2, eq_tr_alt, 0],
+            [3 * a / 2, eq_tr_alt, 0],
         ])
 
-        base_layer_b = base_layer_a + np.array([0.5 * a, 0.5 * a, 0.5 * a])
-        base_layer_c = base_layer_a + np.array([a, a, a])
+        base_layer_b: ndarray = np.array([
+            [a / 2, eq_tr_alt / 3, 0],
+            [3 * a / 2, eq_tr_alt / 3, 0],
+            [a, 4 * eq_tr_alt / 3, 0],
+            [2 * a, 4 * eq_tr_alt / 3, 0],
+        ])
 
-        layers = [base_layer_a, base_layer_b, base_layer_c]
+        base_layer_c: ndarray = np.array([
+            [0, 2 * eq_tr_alt / 3, 0],
+            [a, 2 * eq_tr_alt / 3, 0],
+            [a / 2, 5 * eq_tr_alt / 3, 0],
+            [3 * a / 2, 5 * eq_tr_alt / 3, 0],
+        ])
+
+        # return np.concatenate([base_layer_a, base_layer_b, base_layer_c])
+
+        layers: list[ndarray] = [base_layer_a, base_layer_b, base_layer_c]
 
         # Extend the unit cell to fill the volume
-        x_range = np.arange(x_min, x_max, a)
-        y_range = np.arange(y_min, y_max, a)
-        z_range = np.arange(z_min, z_max, a / np.sqrt(2))
+        x_step: float = 2 * a
+        x_range: ndarray = np.arange(x_min - x_step, x_max + x_step, x_step)
 
-        all_points = []
+        y_step: float = 2 * eq_tr_alt
+        y_range: ndarray = np.arange(y_min - y_step, y_max + y_step, y_step)
+
+        z_step: float = reg_tet_alt
+        z_range: ndarray = np.arange(z_min - z_step, z_max + z_step, z_step)
+
+        all_points: list[ndarray] = []
         for i, z in enumerate(z_range):
-            layer_index = i % 3  # Cycle through A, B, C layers
-            base_layer = layers[layer_index]
+            base_layer: ndarray = layers[i % 3]  # Cycle through A, B, C layers
             for x in x_range:
                 for y in y_range:
                     translated_layer = base_layer + np.array([x, y, z])
                     all_points.append(translated_layer)
 
         # Flatten the list of layers into a single array
-        full_structure = np.concatenate(all_points)
+        full_structure: ndarray = np.concatenate(all_points)
 
         # Filter the structure to be within the channel limits
         within_limits = (
