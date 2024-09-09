@@ -1,5 +1,7 @@
 import json
 import os
+from pathlib import Path
+
 from ..utils import PathBuilder, FileReader, Constants, Logger
 from .structure_settings_map import StructureSettings, ChannelLimits, ChannelPoints
 
@@ -74,6 +76,6 @@ class StructureSettingsManager:
             logger.info(f"File {path_to_file} already exists.")
             return
 
-        with open(path_to_file, "w") as f:
-            f.write(json.dumps(structure_settings_template))
-            logger.info(f"Created structure_settings template in {path_to_file}. Please, fill it out.")
+        # Create a structure_settings.json template
+        Path(path_to_file).write_text(json.dumps(structure_settings_template), encoding="utf-8")
+        logger.info(f"Created structure_settings template in {path_to_file}. Please, fill it out.")

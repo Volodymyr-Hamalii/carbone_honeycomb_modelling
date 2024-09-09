@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from .constants import Constants
 from .path_builder import PathBuilder
 from .logger import Logger
@@ -33,7 +35,7 @@ class FilesConverter:
     def _build_pdb_file(cls, dat_file_path: str) -> list[str]:
         atom_data: list[str] = []
 
-        with open(dat_file_path, 'r') as dat_file:
+        with Path(dat_file_path).open("r") as dat_file:
             # Skip the first and second lines
             dat_file.readline()
             dat_file.readline()
@@ -53,7 +55,7 @@ class FilesConverter:
 
     @staticmethod
     def _write_pdb_file(pdb_file_path: str, atom_data: list[str]):
-        with open(pdb_file_path, 'w') as pdb_file:
+        with Path(pdb_file_path).open("w") as pdb_file:
             # Write the PDB file header
             pdb_file.write("COMPND      BENS NIEUWE KRISTALLEN\n")
             pdb_file.write("AUTHOR      BWVANDEWAAL    27 04 00\n")

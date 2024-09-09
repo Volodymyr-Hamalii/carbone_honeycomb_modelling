@@ -1,5 +1,7 @@
 import os
 import json
+from pathlib import Path
+
 from .path_builder import PathBuilder
 from .logger import Logger
 
@@ -13,7 +15,7 @@ class FileReader:
     ) -> dict | list | None:
         """
         Read JSON file (by default 'structure_settings.json').
-        If folder_path=None -- uses path to 'relust_data' folder.
+        If folder_path=None -- uses path to 'result_data' folder.
         """
 
         if folder_path is None:
@@ -26,6 +28,5 @@ class FileReader:
             logger.warning(f"File {path_to_file} not exists.")
             return None
 
-        with open(path_to_file, "r") as f:
-            data_json: str = f.read()
-            return json.loads(data_json)
+        data_json: str = Path(path_to_file).read_text(encoding="utf-8")
+        return json.loads(data_json)
