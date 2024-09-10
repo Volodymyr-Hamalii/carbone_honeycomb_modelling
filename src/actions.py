@@ -141,8 +141,6 @@ class Actions:
 
         # Aluminium
 
-        to_filter_al_atoms: bool = Inputs.bool_input(
-            to_set, default_value=True, text="To filter AL atomes relative honeycomd bondaries")
         to_translate_al: bool = Inputs.bool_input(
             to_set, default_value=True, text="To translate AL atomes to fill full volume")
 
@@ -168,6 +166,9 @@ class Actions:
                 to_translate_al=to_translate_al)
 
         ### Process data
+
+        to_filter_al_atoms: bool = Inputs.bool_input(
+            to_set, default_value=False, text="To filter AL atomes relative honeycomd bondaries")
 
         equidistant_al_points: bool = Inputs.bool_input(
             to_set=to_set, default_value=True, text="Set Al atoms maximally equidistant from the channel atoms")
