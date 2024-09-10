@@ -2,7 +2,7 @@ from ..base_structure_classes import LatticeType
 
 class AlLatticeType(LatticeType):
     def __init__(self, al_structure: str = "cell") -> None:
-        """ AL structure to fill (can be 'cell' for cubic cell, 'FCC' or 'HCP' for planes) """
+        """AL structure to fill (can be 'cell' for cubic cell, 'FCC' or 'HCP' for planes)."""
         super().__init__(al_structure)
 
         self.is_cell: bool = al_structure.lower() == "cell"  # Cubic cell
@@ -17,4 +17,5 @@ class AlLatticeType(LatticeType):
 
     @staticmethod
     def get_available_types() -> list[str]:
+        """ 'cell', 'FCC', 'HCP' """
         return ["cell", "FCC", "HCP"]
