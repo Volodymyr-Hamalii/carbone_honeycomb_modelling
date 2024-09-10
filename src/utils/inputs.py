@@ -7,6 +7,7 @@ class Inputs:
     @classmethod
     def bool_input(cls, to_set: bool, default_value: bool, text: str) -> bool:
         if to_set is False:
+            logger.info(f"{text}: {default_value}")
             return default_value
 
         available_values: list[str] = ["+", "-"]
@@ -24,6 +25,7 @@ class Inputs:
     @classmethod
     def text_input(cls, to_set: bool, default_value: str, text: str, available_values: list[str] = []):
         if to_set is False:
+            logger.info(f"{text}: {default_value}")
             return default_value
 
         message: str = f"{text} (by default is '{default_value}'): "
