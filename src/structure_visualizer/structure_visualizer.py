@@ -31,7 +31,6 @@ class StructureVisualizer:
             ax=ax,
             coordinates=coordinates,
             visual_parameters=visual_parameters,
-            to_set_scaling=True,
             to_build_bonds=to_build_bonds,
             num_of_min_distances=num_of_min_distances,
             skip_first_distances=skip_first_distances,
@@ -63,7 +62,6 @@ class StructureVisualizer:
             ax=ax,
             coordinates=coordinates_first,
             visual_parameters=visual_parameters_first,
-            to_set_scaling=True,
             to_build_bonds=to_build_bonds)
 
         # Plot second structure atoms (al by default)
@@ -73,7 +71,7 @@ class StructureVisualizer:
             visual_parameters=visual_parameters_second,
             to_build_bonds=to_build_bonds,
             num_of_min_distances=1,
-            skip_first_distances=2)
+            skip_first_distances=0)
 
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
@@ -134,4 +132,4 @@ class StructureVisualizer:
 
         ax.set_xlim(mid_x - delta, mid_x + delta)
         ax.set_ylim(mid_y - delta, mid_y + delta)
-        ax.set_zlim(mid_z - delta_plus, mid_z + delta_plus)  # type: ignore
+        ax.set_zlim(mid_z - delta, mid_z + delta)  # type: ignore
