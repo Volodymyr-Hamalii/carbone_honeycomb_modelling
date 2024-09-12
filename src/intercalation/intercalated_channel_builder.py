@@ -57,7 +57,7 @@ class IntercalatedChannelBuilder:
                 lattice_parameter=structure_settings.al_lattice_parameter,
                 channel_coordinate_limits=structure_settings.channel_limits,
             )
-        
+
         if al_lattice_type.is_hcp:
             return AtomsUniverseBuilder.build_hcp_lattice_type(
                 lattice_parameter=structure_settings.al_lattice_parameter,
@@ -81,15 +81,10 @@ class IntercalatedChannelBuilder:
             if structure_settings is None:
                 logger.error("Not able to filter AL atoms without structure_settings.json")
             else:
-                # distance_from_plane: float = structure_settings["distance_from_plane"]
-                coordinates_al_filtered: ndarray = cls._filter_atoms_related_clannel_planes(
-                    coordinates=coordinates_al,
-                    points_to_set_channel_planes=structure_settings.points_to_set_channel_planes)
-
-                coordinates_al_filtered: ndarray = cls._filter_atoms_relates_carbone_atoms(
-                    coordinates_al=coordinates_al_filtered,
+                coordinates_al_filtered: ndarray = cls._process_al_coordinates(
+                    coordinates_al=coordinates_al,
                     coordinates_carbone=coordinates_carbone,
-                    max_distance_to_carbone_atoms=structure_settings.max_distance_to_carbone_atoms)
+                    structure_settings=structure_settings)
 
                 if equidistant_al_points:
                     # Set Al atoms maximally equidistant from the channel atoms
@@ -99,6 +94,44 @@ class IntercalatedChannelBuilder:
                 return coordinates_carbone, coordinates_al_filtered
 
         return coordinates_carbone, coordinates_al
+
+    @classmethod
+    def _process_al_coordinates(
+            cls,
+            coordinates_carbone: ndarray,
+            coordinates_al: ndarray,
+            structure_settings: StructureSettings,
+    ) -> ndarray:
+        max_atoms: int = 0
+        coordinates_al_with_max_atoms: ndarray = coordinates_al.copy()
+
+        al_lattice_parameter: float = structure_settings.al_lattice_parameter
+
+        range_to_move: ndarray = np.arange(0, al_lattice_parameter, 0.1 * al_lattice_parameter)
+
+        for step_x in range_to_move:
+            moved_x_coordinates_al = coordinates_al.copy()
+            moved_x_coordinates_al[:, 0] += step_x
+
+            for step_y in range_to_move:
+                moved_xy_coordinates_al = moved_x_coordinates_al.copy()
+                moved_xy_coordinates_al = moved_xy_coordinates_al[:, 1] + step_y
+
+                coordinates_al_filtered: ndarray = cls._filter_atoms_related_clannel_planes(
+                    coordinates=moved_xy_coordinates_al,
+                    points_to_set_channel_planes=structure_settings.points_to_set_channel_planes)
+
+                coordinates_al_filtered: ndarray = cls._filter_atoms_relates_carbone_atoms(
+                    coordinates_al=coordinates_al_filtered,
+                    coordinates_carbone=coordinates_carbone,
+                    max_distance_to_carbone_atoms=structure_settings.max_distance_to_carbone_atoms)
+
+                num_of_atoms: int = len(coordinates_al_filtered)
+                if num_of_atoms > max_atoms:
+                    max_atoms = num_of_atoms
+                    coordinates_al_with_max_atoms = coordinates_al_filtered
+
+        return coordinates_al_with_max_atoms
 
     @staticmethod
     def _filter_atoms_related_clannel_planes(
