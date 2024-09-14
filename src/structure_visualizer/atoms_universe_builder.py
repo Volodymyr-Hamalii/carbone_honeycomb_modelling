@@ -63,8 +63,9 @@ class AtomsUniverseBuilder:
 
         return coordinates
 
-    @staticmethod
+    @classmethod
     def build_hcp_lattice_type(
+        cls,
         lattice_parameter: float,
         channel_coordinate_limits: ChannelLimits,
         z_min_default: float = 0,
@@ -73,10 +74,7 @@ class AtomsUniverseBuilder:
         """ Generate coordinates for planes with a 'ABAB' close-packed stacking sequence (Hexagonal close-packed) """
 
         # Extract limits
-        x_min, x_max = channel_coordinate_limits.x_min, channel_coordinate_limits.x_max
-        y_min, y_max = channel_coordinate_limits.y_min, channel_coordinate_limits.y_max
-        z_min = channel_coordinate_limits.z_min or z_min_default
-        z_max = channel_coordinate_limits.z_max or z_max_default
+        x_min, x_max, y_min, y_max, z_min, z_max = cls._get_extended_limits(channel_coordinate_limits)
 
         a: float = lattice_parameter
 
@@ -131,8 +129,9 @@ class AtomsUniverseBuilder:
 
         return full_structure[within_limits]
 
-    @staticmethod
+    @classmethod
     def build_fcc_lattice_type(
+        cls,
         lattice_parameter: float,
         channel_coordinate_limits: ChannelLimits,
         z_min_default: float = 0,
@@ -143,10 +142,7 @@ class AtomsUniverseBuilder:
         """
 
         # Extract limits
-        x_min, x_max = channel_coordinate_limits.x_min, channel_coordinate_limits.x_max
-        y_min, y_max = channel_coordinate_limits.y_min, channel_coordinate_limits.y_max
-        z_min = channel_coordinate_limits.z_min or z_min_default
-        z_max = channel_coordinate_limits.z_max or z_max_default
+        x_min, x_max, y_min, y_max, z_min, z_max = cls._get_extended_limits(channel_coordinate_limits)
 
         a: float = lattice_parameter
 
@@ -211,3 +207,23 @@ class AtomsUniverseBuilder:
         )
 
         return full_structure[within_limits]
+
+    @staticmethod
+    def _get_extended_limits(
+        channel_coordinate_limits: ChannelLimits, z_min_default: float = 0, z_max_default: float = 12
+    ) -> tuple[float, float, float, float, float, float]:
+
+        x_extend: float = channel_coordinate_limits.x_max / 2
+        x_min: float = channel_coordinate_limits.x_min - x_extend
+        x_max: float = channel_coordinate_limits.x_max + x_extend
+
+        y_extend: float = channel_coordinate_limits.y_max / 2
+        y_min: float = channel_coordinate_limits.y_min - y_extend
+        y_max: float = channel_coordinate_limits.y_max + y_extend
+
+        # z_extend: float = channel_coordinate_limits.z_max or z_max_default / 2
+        z_extend: float = 0
+        z_min: float = channel_coordinate_limits.z_min or z_min_default - z_extend
+        z_max: float = channel_coordinate_limits.z_max or z_max_default + z_extend
+
+        return x_min, x_max, y_min, y_max, z_min, z_max
