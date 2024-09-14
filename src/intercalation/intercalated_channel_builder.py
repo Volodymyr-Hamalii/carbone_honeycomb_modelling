@@ -1,11 +1,9 @@
-import numpy as np
 from numpy import ndarray
-from scipy.spatial.distance import cdist
 
 from ..utils import PathBuilder, Logger
 from ..structure_visualizer import AtomsUniverseBuilder
-from ..coordinates_actions import StructureTranslator, PlanesBuilder, CoordinatesFilter, PointsOrganizer
-from ..data_preparation import StructureSettings, ChannelPoints
+from ..coordinates_actions import StructureTranslator, PointsOrganizer
+from ..data_preparation import StructureSettings
 
 from .al_lattice_type import AlLatticeType
 from .al_atoms_filter import AlAtomsFilter

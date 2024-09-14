@@ -4,4 +4,4 @@ from .inputs import Inputs
 from .constants import Constants
 from .command_line_args_handler import CommandLineArgsHandler
 
-from .files_manager import FileReader, FileConverter, PathBuilder
+from .files_manager import *
