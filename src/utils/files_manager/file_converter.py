@@ -9,7 +9,7 @@ from .path_builder import PathBuilder
 logger = Logger(__name__)
 
 
-class FilesConverter:
+class FileConverter:
     @classmethod
     def dat_to_pdb(
         cls,

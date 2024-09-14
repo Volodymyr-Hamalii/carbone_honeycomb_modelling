@@ -1,6 +1,6 @@
 from numpy import ndarray
 
-from .utils import Constants, PathBuilder, FilesConverter, Logger, Inputs
+from .utils import Constants, PathBuilder, FileConverter, Logger, Inputs
 from .structure_visualizer import StructureVisualizer, AtomsUniverseBuilder, VisualizationParameters
 from .data_preparation import StructureSettings, StructureSettingsManager, ChannelLimits
 from .intercalation import IntercalatedChannelBuilder, AlLatticeType
@@ -40,7 +40,7 @@ class Actions:
         Also create result_data/{structure_folder}/structure_settings.json template if it didn't exist.
         """
 
-        FilesConverter.dat_to_pdb(structure_folder=structure_folder)
+        FileConverter.dat_to_pdb(structure_folder=structure_folder)
 
         # Create template for coordinates if it doesn't exists
         StructureSettingsManager.create_structure_settings_template(structure_folder=structure_folder)
@@ -63,8 +63,8 @@ class Actions:
             to_set, default_value=True, text="To translate AL atomes to fill full volume")
 
         al_lattice_type_str: str = Inputs.text_input(
-            # to_set, default_value="FCC",
-            to_set, default_value="HCP",
+            to_set, default_value="FCC",
+            # to_set, default_value="HCP",
             text=AlLatticeType.get_info(),
             available_values=AlLatticeType.get_available_types())
         al_lattice_type = AlLatticeType(al_lattice_type_str)
@@ -92,7 +92,7 @@ class Actions:
             num_of_min_distances = 1
             skip_first_distances = 0
 
-        to_build_bonds: bool = Inputs.bool_input(to_set, default_value=False, text="To build bonds between atoms")
+        to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
         StructureVisualizer.show_structure(
             coordinates=coordinates_al,
             to_build_bonds=to_build_bonds,
@@ -133,7 +133,7 @@ class Actions:
         structure_settings: None | StructureSettings = StructureSettingsManager.read_file(
             structure_folder=structure_folder)
 
-        ### Collect data to process
+        # Collect data to process
 
         # Carbone
         coordinates_carbone: ndarray = IntercalatedChannelBuilder.build_carbone_coordinates(
@@ -146,7 +146,7 @@ class Actions:
 
         al_lattice_type_str: str = Inputs.text_input(
             to_set,
-            default_value="HCP",
+            default_value="FCC",
             text=AlLatticeType.get_info(),
             available_values=AlLatticeType.get_available_types())
         al_lattice_type = AlLatticeType(al_lattice_type_str)
@@ -165,10 +165,13 @@ class Actions:
                 structure_settings=structure_settings,
                 to_translate_al=to_translate_al)
 
-        ### Process data
+        # StructureVisualizer.show_structure(
+        #     coordinates_al, to_build_bonds=True, visual_parameters=VisualizationParameters.al, num_of_min_distances=1)
+
+        # Process data
 
         to_filter_al_atoms: bool = Inputs.bool_input(
-            to_set, default_value=False, text="To filter AL atomes relative honeycomd bondaries")
+            to_set, default_value=True, text="To filter AL atomes relative honeycomd bondaries")
 
         equidistant_al_points: bool = Inputs.bool_input(
             to_set=to_set, default_value=True, text="Set Al atoms maximally equidistant from the channel atoms")

@@ -1,3 +1,3 @@
 from .file_reader import FileReader
-from .files_converter import FilesConverter
+from .file_converter import FileConverter
 from .path_builder import PathBuilder
