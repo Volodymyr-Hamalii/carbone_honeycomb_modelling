@@ -1,8 +1,9 @@
 from pathlib import Path
 
-from .constants import Constants
+from ..constants import Constants
+from ..logger import Logger
+
 from .path_builder import PathBuilder
-from .logger import Logger
 
 
 logger = Logger(__name__)

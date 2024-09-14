@@ -2,8 +2,8 @@ import os
 import json
 from pathlib import Path
 
+from ..logger import Logger
 from .path_builder import PathBuilder
-from .logger import Logger
 
 logger = Logger(__name__)
 
