@@ -1,6 +1,6 @@
 from numpy import ndarray
 
-from .utils import Constants, PathBuilder, FileConverter, Logger, Inputs
+from .utils import Constants, PathBuilder, FileConverter, FileWriter, Logger, Inputs
 from .structure_visualizer import StructureVisualizer, AtomsUniverseBuilder, VisualizationParameters
 from .data_preparation import StructureSettings, StructureSettingsManager, ChannelLimits
 from .intercalation import IntercalatedChannelBuilder, AlLatticeType
@@ -188,6 +188,8 @@ class Actions:
 
         logger.info("Number of carbone atoms:", len(processed_coordinates_carbone))
         logger.info("Number of al atoms:", len(processed_coordinates_al))
+
+        FileWriter.write_dat_file(processed_coordinates_al, structure_folder=structure_folder)
 
         to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
 
