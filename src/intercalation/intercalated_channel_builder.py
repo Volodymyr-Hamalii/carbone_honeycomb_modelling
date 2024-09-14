@@ -65,6 +65,7 @@ class IntercalatedChannelBuilder:
                 channel_coordinate_limits=structure_settings.channel_limits,
             )
 
+        logger.warning("No Al atoms built for closed packed structure.")
         return ndarray([])
 
     @classmethod

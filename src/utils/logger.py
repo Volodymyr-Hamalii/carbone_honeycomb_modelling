@@ -57,11 +57,12 @@ class Logger:
 
     @staticmethod
     def get_message(*args) -> str:
+        """Convert *args into string message."""
         messages: list[str] = []
         for arg in args:
             if isinstance(arg, (dict, list, tuple)):
                 try:
-                    messages.append(json.dumps(arg))
+                    messages.append(json.dumps(arg, indent=4))
                 except:
                     messages.append(str(arg))
             else:
