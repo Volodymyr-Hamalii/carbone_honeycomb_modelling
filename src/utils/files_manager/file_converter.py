@@ -19,21 +19,21 @@ class FileConverter:
     ) -> None:
 
         # Path to init ljout.dat
-        dat_file_path: str = PathBuilder.build_path_to_init_data_file(
+        dat_file_path: Path = PathBuilder.build_path_to_init_data_file(
             structure_folder=structure_folder, file=dat_file_name)
 
         # Convert to ljout-from-init-dat.pdb
         atom_data: list[str] = cls._read_dat_file_as_pdb_file(dat_file_path)
 
         # Write ljout-from-init-dat.pdb
-        pdb_file_path: str = PathBuilder.build_path_to_result_data_file(
+        pdb_file_path: Path = PathBuilder.build_path_to_result_data_file(
             structure_folder=structure_folder, file=pdb_file_name)
         cls._write_pdb_file(pdb_file_path, atom_data)
 
         logger.info(f"File saved {pdb_file_path}")
 
     @classmethod
-    def _read_dat_file_as_pdb_file(cls, dat_file_path: str) -> list[str]:
+    def _read_dat_file_as_pdb_file(cls, dat_file_path: Path | str) -> list[str]:
         atom_data: list[str] = []
 
         with Path(dat_file_path).open("r") as dat_file:
@@ -55,7 +55,7 @@ class FileConverter:
         return atom_data
 
     @staticmethod
-    def _write_pdb_file(pdb_file_path: str, atom_data: list[str]) -> None:
+    def _write_pdb_file(pdb_file_path: Path | str, atom_data: list[str]) -> None:
         with Path(pdb_file_path).open("w") as pdb_file:
             # Write the PDB file header
             pdb_file.write("COMPND      BENS NIEUWE KRISTALLEN\n")

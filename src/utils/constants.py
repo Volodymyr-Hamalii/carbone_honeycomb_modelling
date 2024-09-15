@@ -1,5 +1,6 @@
 import logging
 import os
+from pathlib import Path
 import dotenv
 
 dotenv.load_dotenv()
@@ -8,8 +9,8 @@ dotenv.load_dotenv()
 class PathConstants:
     # path_to_root_script = os.path.join()
 
-    path_to_utils_dir: str = os.path.dirname(os.path.abspath(__file__))
-    path_to_root_script_dir: str = os.path.abspath(os.path.join(path_to_utils_dir, "../.."))
+    path_to_utils_dir: Path = Path(__file__).resolve().parent
+    path_to_root_script_dir: Path = path_to_utils_dir.parent.parent
 
 
 class FilenamesConstants:

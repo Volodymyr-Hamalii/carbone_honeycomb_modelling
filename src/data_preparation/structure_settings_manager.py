@@ -1,5 +1,4 @@
 import json
-import os
 from pathlib import Path
 
 from ..utils import PathBuilder, FileReader, Constants, Logger
@@ -69,10 +68,10 @@ class StructureSettingsManager:
             "max_distance_to_carbone_atoms": None,
         }
 
-        path_to_file: str = PathBuilder.build_path_to_result_data_file(
+        path_to_file: Path = PathBuilder.build_path_to_result_data_file(
             structure_folder=structure_folder, file=cls.file_name)
 
-        if os.path.exists(path_to_file):
+        if path_to_file.exists():
             logger.info(f"File {path_to_file} already exists.")
             return
 

@@ -1,4 +1,3 @@
-import os
 import json
 from pathlib import Path
 
@@ -11,7 +10,7 @@ logger = Logger(__name__)
 class FileReader:
     @staticmethod
     def read_json_file(
-            structure_folder: str, folder_path: str | None = None, file_name: str = "structure_settings.json"
+            structure_folder: str, folder_path: Path | str | None = None, file_name: str = "structure_settings.json"
     ) -> dict | list | None:
         """
         Read JSON file (by default 'structure_settings.json').
@@ -19,12 +18,12 @@ class FileReader:
         """
 
         if folder_path is None:
-            path_to_file: str = PathBuilder.build_path_to_result_data_file(
+            path_to_file: Path = PathBuilder.build_path_to_result_data_file(
                 structure_folder=structure_folder, file=file_name)
         else:
-            path_to_file: str = os.path.join(folder_path, file_name)
+            path_to_file: Path = Path(structure_folder) / file_name
 
-        if not os.path.exists(path_to_file):
+        if not path_to_file.exists():
             logger.warning(f"File {path_to_file} not exists.")
             return None
 

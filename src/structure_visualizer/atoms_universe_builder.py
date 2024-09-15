@@ -1,4 +1,5 @@
-import os
+from pathlib import Path
+
 import MDAnalysis as mda
 import numpy as np
 from numpy import ndarray
@@ -20,7 +21,7 @@ logger = Logger(__name__)
 class AtomsUniverseBuilder:
     @staticmethod
     def builds_atoms_coordinates(
-        path_to_pdb_file: str,
+        path_to_pdb_file: Path,
         channel_coordinate_limits: ChannelLimits | None = None,
     ) -> ndarray:
         """ 
@@ -51,11 +52,12 @@ class AtomsUniverseBuilder:
             single_channel_atoms = atoms[filtered_indices]  # type: ignore
 
             # Build a path to result file
-            one_channel_pdb_file_path: str = path_to_pdb_file.replace(
-                Constants.filenames.INIT_PDB_FILE, Constants.filenames.PDB_FILE_ONE_CHANNEL)
+            one_channel_pdb_file_path: Path = Path(
+                str(path_to_pdb_file).replace(
+                    Constants.filenames.INIT_PDB_FILE, Constants.filenames.PDB_FILE_ONE_CHANNEL))
 
             # Create result-data/{structure_folder}/ljout-result-one-channel.pdb file if it didn't exist
-            if not os.path.exists(one_channel_pdb_file_path):
+            if not one_channel_pdb_file_path.exists():
                 logger.info("Created", one_channel_pdb_file_path)
                 StructureUtils.write_pdb_from_mda(one_channel_pdb_file_path, single_channel_atoms)
 

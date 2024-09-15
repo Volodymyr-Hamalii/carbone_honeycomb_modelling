@@ -1,3 +1,4 @@
+from pathlib import Path
 from numpy import ndarray
 
 from ..utils import PathBuilder, Logger
@@ -15,7 +16,7 @@ logger = Logger(__name__)
 class IntercalatedChannelBuilder:
     @staticmethod
     def build_carbone_coordinates(structure_folder: str, structure_settings: None | StructureSettings) -> ndarray:
-        path_to_pdb_file: str = PathBuilder.build_path_to_result_data_file(structure_folder)
+        path_to_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_folder)
 
         return AtomsUniverseBuilder.builds_atoms_coordinates(
             path_to_pdb_file,
@@ -27,7 +28,7 @@ class IntercalatedChannelBuilder:
             al_file: str,
             structure_settings: None | StructureSettings = None,
     ) -> ndarray:
-        path_to_al_pdb_file: str = PathBuilder.build_path_to_init_data_file(file=al_file)
+        path_to_al_pdb_file: Path = PathBuilder.build_path_to_init_data_file(file=al_file)
         coordinates_al: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_al_pdb_file)
 
         if to_translate_al:

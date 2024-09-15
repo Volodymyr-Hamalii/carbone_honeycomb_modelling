@@ -1,3 +1,4 @@
+from pathlib import Path
 from numpy import ndarray
 
 from .utils import Constants, PathBuilder, FileConverter, FileWriter, Logger, Inputs
@@ -49,7 +50,7 @@ class Actions:
     def show_init_structure(structure_folder: str, to_set: bool) -> None:
         """ Show 3D model of result_data/{structure_folder}/ljout-from-init-dat.pdb """
 
-        path_to_init_pdb_file: str = PathBuilder.build_path_to_result_data_file(structure_folder)
+        path_to_init_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_folder)
         coordinates: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
 
         to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
@@ -109,7 +110,7 @@ class Actions:
         Write result to result_data/{structure_folder}/ljout-result-one-channel.pdb if it didn't exist.
         """
 
-        path_to_init_pdb_file: str = PathBuilder.build_path_to_result_data_file(structure_folder)
+        path_to_init_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_folder)
 
         structure_settings: None | StructureSettings = StructureSettingsManager.read_file(
             structure_folder=structure_folder)

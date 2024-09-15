@@ -17,25 +17,32 @@ class FileWriter:
     def write_dat_file(
         cls,
         data_lines: list[str] | ndarray,
-        path_to_file: str | None = None,
+        path_to_file: Path | None = None,
         structure_folder: str | None = None,
+        overwrite: bool = True,
     ) -> None:
+
         try:
             if len(data_lines) == 0:
                 logger.warning("No data for .dat file.")
                 return
 
-            # Convert ndarray to list[str]
-            if isinstance(data_lines, ndarray):
-                data_lines = [f"{i[0]} {i[1]} {i[2]}" for i in data_lines]
-
             if path_to_file is None:
                 if structure_folder is None:
-                    raise ValueError("Provide either path_to_file or structure_folder param for FileWriter.write_dat_file")
+                    raise ValueError(
+                        "Provide either path_to_file or structure_folder param for FileWriter.write_dat_file")
 
                 path_to_file = PathBuilder.build_path_to_result_data_file(
                     structure_folder,
                     file=Constants.filenames.INIT_DAT_FILE)
+
+            if overwrite is False and path_to_file.exists():
+                # Don't overwrite existing file
+                return
+
+            # Convert ndarray to list[str]
+            if isinstance(data_lines, ndarray):
+                data_lines = [f"{i[0]} {i[1]} {i[2]}" for i in data_lines]
 
             with Path(path_to_file).open("w") as dat_file:
                 dat_file.write(cls.dat_file_first_lines)
@@ -44,5 +51,6 @@ class FileWriter:
                     dat_file.write(line + "\n")
 
             logger.info(f"File saved: {path_to_file}")
+
         except Exception as e:
             logger.error(f".dat file not saved: {e}")
