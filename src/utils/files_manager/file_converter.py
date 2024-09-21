@@ -4,6 +4,8 @@ from ..constants import Constants
 from ..logger import Logger
 
 from .path_builder import PathBuilder
+from .pdb_file_builder import PdbFileBuilder
+from .file_writer import FileWriter
 
 
 logger = Logger(__name__)
@@ -48,28 +50,8 @@ class FileConverter:
 
                     coords: list[str] = line.split()
                     if len(coords) == 3:
-                        pdb_line: str = cls._build_pdb_line(coords, atom_id)
+                        pdb_line: str = PdbFileBuilder.build_pdb_line(coords, atom_id)
                         atom_data.append(pdb_line)
                         atom_id += 1
 
         return atom_data
-
-    @staticmethod
-    def _write_pdb_file(pdb_file_path: Path | str, atom_data: list[str]) -> None:
-        with Path(pdb_file_path).open("w") as pdb_file:
-            # Write the PDB file header
-            pdb_file.write("COMPND      BENS NIEUWE KRISTALLEN\n")
-            pdb_file.write("AUTHOR      BWVANDEWAAL    27 04 00\n")
-
-            # Write the atom data
-            for atom_line in atom_data:
-                pdb_file.write(atom_line)
-
-            # Write the PDB file footer
-            pdb_file.write(f"TER      {len(atom_data)}\n")
-            pdb_file.write("END\n")
-
-    @staticmethod
-    def _build_pdb_line(coords: list[str], atom_id: int) -> str:
-        x, y, z = map(float, coords)
-        return f"ATOM  {atom_id:>5} C            1    {x:>8.3f}{y:>8.3f}{z:>8.3f}   1.000   0.000\n"
