@@ -78,13 +78,13 @@ class IntercalatedChannelBuilder:
     ) -> tuple[ndarray, ndarray]:
         """ Return coordinates_carbone, coordinates_al """
 
-        if to_filter_al_atoms:
+        if to_filter_al_atoms is True:
             if structure_settings is None:
                 logger.error("Not able to filter AL atoms without structure_settings.json")
             else:
                 coordinates_al_filtered: ndarray = AlAtomsFilter.find_max_filtered_atoms(
-                    coordinates_al=coordinates_al,
                     coordinates_carbone=coordinates_carbone,
+                    coordinates_al=coordinates_al,
                     structure_settings=structure_settings)
 
                 if equidistant_al_points:

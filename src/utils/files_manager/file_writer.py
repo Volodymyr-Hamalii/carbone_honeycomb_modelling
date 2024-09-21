@@ -5,6 +5,7 @@ from ..constants import Constants
 from ..logger import Logger
 
 from .path_builder import PathBuilder
+from .pdb_file_builder import PdbFileBuilder
 
 
 logger = Logger(__name__)
@@ -22,6 +23,7 @@ class FileWriter:
         structure_folder: str | None = None,
         overwrite: bool = True,
     ) -> None:
+        """For the path you can provide either path_to_file or structure_folder."""
 
         try:
             if len(data_lines) == 0:
