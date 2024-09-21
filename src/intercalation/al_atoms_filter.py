@@ -1,9 +1,10 @@
+import math
 import numpy as np
 from numpy import ndarray
 from scipy.spatial.distance import cdist
 
 from ..utils import Logger
-from ..coordinates_actions import PlanesBuilder, CoordinatesFilter
+from ..coordinates_actions import PlanesBuilder, CoordinatesFilter, StructureRotator
 from ..data_preparation import StructureSettings, ChannelPoints
 
 from .al_lattice_type import AlLatticeType
@@ -30,9 +31,8 @@ class AlAtomsFilter:
 
         al_lattice_parameter: float = structure_settings.al_lattice_parameter
 
-        logger.info(structure_settings)
-
-        range_to_move: ndarray = np.arange(0, al_lattice_parameter, 0.05 * al_lattice_parameter)
+        range_to_move: ndarray = np.arange(0, al_lattice_parameter, 0.1 * al_lattice_parameter)
+        angle_range_to_rotate: ndarray = np.arange(0, math.pi / 2, math.pi / 25)
 
         for step_x in range_to_move:
             moved_x_coordinates_al: ndarray = coordinates_al.copy()
@@ -42,16 +42,28 @@ class AlAtomsFilter:
                 moved_xy_coordinates_al: ndarray = moved_x_coordinates_al.copy()
                 moved_xy_coordinates_al[:, 1] += step_y
 
-                coordinates_al_filtered: ndarray = cls.filter_al_atoms_related_carbone(
-                    moved_xy_coordinates_al, coordinates_carbone, structure_settings)
+                for angle_x in angle_range_to_rotate:
+                    x_rotaded_coordinates_al: ndarray = StructureRotator.rotate_on_angle_related_center(
+                        moved_xy_coordinates_al.copy(), angle_x=angle_x)
 
-                num_of_atoms: int = len(coordinates_al_filtered)
+                    for angle_y in angle_range_to_rotate:
+                        xy_rotaded_coordinates_al: ndarray = StructureRotator.rotate_on_angle_related_center(
+                            x_rotaded_coordinates_al.copy(), angle_y=angle_y)
 
-                if num_of_atoms > max_atoms:
-                    logger.info("max_atoms", max_atoms)
+                        for angle_z in angle_range_to_rotate:
+                            xyz_rotaded_coordinates_al: ndarray = StructureRotator.rotate_on_angle_related_center(
+                                xy_rotaded_coordinates_al.copy(), angle_z=angle_z)
 
-                    max_atoms = num_of_atoms
-                    coordinates_al_with_max_atoms = coordinates_al_filtered
+                            coordinates_al_filtered: ndarray = cls.filter_al_atoms_related_carbone(
+                                xyz_rotaded_coordinates_al, coordinates_carbone, structure_settings)
+
+                            num_of_atoms: int = len(coordinates_al_filtered)
+
+                            if num_of_atoms > max_atoms:
+                                logger.info("max_atoms", max_atoms)
+
+                                max_atoms = num_of_atoms
+                                coordinates_al_with_max_atoms = coordinates_al_filtered
 
         return coordinates_al_with_max_atoms
 
