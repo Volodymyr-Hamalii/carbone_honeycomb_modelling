@@ -68,10 +68,13 @@ class AlAtomsFilter:
             coordinates=coordinates_al,
             points_to_set_channel_planes=structure_settings.points_to_set_channel_planes)
 
-        return cls._filter_atoms_relates_carbone_atoms(
+        coordinates_al_filtered = cls._filter_atoms_relates_carbone_atoms(
             coordinates_al=coordinates_al_filtered,
             coordinates_carbone=coordinates_carbone,
             max_distance_to_carbone_atoms=structure_settings.al_lattice_parameter / 2)
+
+        return AlAtomsFilter.filter_by_z_channel_coordinates(
+            coordinates_carbone=coordinates_carbone, coordinates_al=coordinates_al_filtered)
 
     @staticmethod
     def _filter_atoms_related_clannel_planes(
@@ -123,3 +126,13 @@ class AlAtomsFilter:
         filtered_coordinates: ndarray = coordinates_al[min_distances >= max_distance_to_carbone_atoms]
 
         return filtered_coordinates
+
+    @staticmethod
+    def filter_by_z_channel_coordinates(
+        coordinates_carbone: ndarray,
+        coordinates_al: ndarray,
+    ) -> ndarray:
+        """Filter coordinates_al by min and max z coordinate of coordinates_carbone."""
+        z_min: np.float32 = np.min(coordinates_carbone[:, 2])
+        z_max: np.float32 = np.max(coordinates_carbone[:, 2])
+        return coordinates_al[(coordinates_al[:, 2] >= z_min) & (coordinates_al[:, 2] <= z_max)]
