@@ -3,6 +3,7 @@ from numpy import ndarray
 
 from ..constants import Constants
 from ..logger import Logger
+
 from .path_builder import PathBuilder
 
 
@@ -54,3 +55,52 @@ class FileWriter:
 
         except Exception as e:
             logger.error(f".dat file not saved: {e}")
+
+    @staticmethod
+    def write_pdb_file(
+        data_lines: list[str] | ndarray,
+        path_to_file: Path | None = None,
+        structure_folder: str | None = None,
+        overwrite: bool = True,
+    ) -> None:
+        """For the path you can provide either path_to_file or structure_folder."""
+
+        try:
+            if len(data_lines) == 0:
+                logger.warning("No data for .dat file.")
+                return
+
+            if path_to_file is None:
+                if structure_folder is None:
+                    raise ValueError(
+                        "Provide either path_to_file or structure_folder param for FileWriter.write_pdb_file")
+
+                path_to_file = PathBuilder.build_path_to_result_data_file(
+                    structure_folder,
+                    file=Constants.filenames.INIT_DAT_FILE)
+
+            if overwrite is False and path_to_file.exists():
+                # Don't overwrite existing file
+                return
+
+            # Convert ndarray to list[str]
+            if isinstance(data_lines, ndarray):
+                data_lines = [
+                    PdbFileBuilder.build_pdb_line(
+                        coords=[str(coord[0]), str(coord[1]), str(coord[2])], atom_id=i
+                    ) for i, coord in enumerate(data_lines)
+                ]
+
+            with Path(path_to_file).open("w") as pdb_file:
+                # Write the PDB file header
+                pdb_file.write(PdbFileBuilder.first_lines)
+
+                # Write the data
+                for line in data_lines:
+                    pdb_file.write(line)
+
+                # Write the PDB file footer
+                pdb_file.write(PdbFileBuilder.get_end_lines(num_of_lines=len(data_lines)))
+
+        except Exception as e:
+            logger.error(f".pdb file not saved: {e}")

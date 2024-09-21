@@ -30,8 +30,8 @@ class FileConverter:
         # Write ljout-from-init-dat.pdb
         pdb_file_path: Path = PathBuilder.build_path_to_result_data_file(
             structure_folder=structure_folder, file=pdb_file_name)
-        cls._write_pdb_file(pdb_file_path, atom_data)
 
+        FileWriter.write_pdb_file(atom_data, pdb_file_path)
         logger.info(f"File saved {pdb_file_path}")
 
     @classmethod
