@@ -43,22 +43,28 @@ class CoordinatesFilter:
             raise ValueError("Direction should be 1 (above the plane) or -1 (below the plane)")
         return filtered_points
 
-    @classmethod
-    def filter_by_max_min_z(cls, coordinates: ndarray, z_min: float, z_max: float) -> ndarray:
-        """ Remove coordinates below z_min and above z_max limits """
+    @staticmethod
+    def filter_by_min_max_z(
+        coordinates_to_filter: ndarray,
+        coordinates_with_min_max_z: ndarray,
+        move_align_z: bool = False,
+    ) -> ndarray:
+        """Filter coordinates_to_filter by min and max z coordinate of coordinates_with_min_max_z."""
 
-        # Below
-        min_plane_params: tuple[float, float, float, float] = PlanesBuilder.build_plane_parameters(
-            p1=[0, 0, z_min], p2=[1, 1, z_min], p3=[1, 0, z_min])
-        coordinates = cls.filter_coordinates_related_to_plane(
-            coordinates, *min_plane_params, direction=-1
-        )
+        if coordinates_to_filter.size == 0:
+            return coordinates_to_filter
 
-        # Above
-        max_plane_params: tuple[float, float, float, float] = PlanesBuilder.build_plane_parameters(
-            p1=[0, 0, z_max], p2=[1, 1, z_max], p3=[1, 0, z_max])
-        coordinates = cls.filter_coordinates_related_to_plane(
-            coordinates, *max_plane_params, direction=1
-        )
+        z_min: np.float32 = np.min(coordinates_with_min_max_z[:, 2])
+        z_max: np.float32 = np.max(coordinates_with_min_max_z[:, 2])
 
-        return coordinates
+        filtered_by_min_z = coordinates_to_filter[coordinates_to_filter[:, 2] >= z_min]
+
+        if filtered_by_min_z.size == 0:
+            return filtered_by_min_z
+
+        if move_align_z is True:
+            # Move Al atoms along Oz down to align the lowest Al atom with the channel bottom
+            move_to: np.float32 = np.min(filtered_by_min_z[:, 2]) - z_min
+            filtered_by_min_z[:, 2] = filtered_by_min_z[:, 2] - move_to
+
+        return coordinates_to_filter[coordinates_to_filter[:, 2] <= z_max]

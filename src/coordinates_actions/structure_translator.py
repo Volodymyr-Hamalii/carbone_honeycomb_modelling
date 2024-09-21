@@ -66,7 +66,8 @@ class StructureTranslator:
         translated_coordinates: ndarray = np.unique(translated_coordinates, axis=0)
 
         if z_min is not None and z_max is not None:
-            return CoordinatesFilter.filter_by_max_min_z(translated_coordinates, z_min, z_max)
+            return translated_coordinates[(translated_coordinates[:, 2] >= z_min) &
+                                          (translated_coordinates[:, 2] <= z_max)]
 
         return translated_coordinates
 
