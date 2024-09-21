@@ -115,21 +115,22 @@ class StructureVisualizer:
 
     @staticmethod
     def _set_equal_scaling(ax: Axes, x_coor: ndarray, y_coor: ndarray, z_coor: ndarray) -> None:
-        """ Set equal scaling for all axis """
+        """Set equal scaling for all axis."""
 
-        max_range: float = np.array([
-            x_coor.max() - x_coor.min(),
-            y_coor.max() - y_coor.min(),
-            z_coor.max() - z_coor.min(),
-        ]).max()
+        x_min, x_max = x_coor.min(), x_coor.max()
+        y_min, y_max = y_coor.min(), y_coor.max()
+        z_min, z_max = z_coor.min(), z_coor.max()
 
-        delta: float = max_range / 2
-        delta_plus: float = delta + delta / 2
+        min_lim = np.min([x_min, y_min, z_min])
+        max_lim = np.max([x_max, y_max, z_max])
+        
+        delta = (max_lim + min_lim) / 2
+        delta_plus = delta * 1.25  # to stretch specific axis
 
-        mid_x: float = (x_coor.max() + x_coor.min()) * 0.5
-        mid_y: float = (y_coor.max() + y_coor.min()) * 0.5
-        mid_z: float = (z_coor.max() + z_coor.min()) * 0.5
+        x_mid = (x_max + x_min) / 2
+        y_mid = (y_max + y_min) / 2
+        z_mid = (z_max + z_min) / 2
 
-        ax.set_xlim(mid_x - delta, mid_x + delta)
-        ax.set_ylim(mid_y - delta, mid_y + delta)
-        ax.set_zlim(mid_z - delta, mid_z + delta)  # type: ignore
+        ax.set_xlim(x_mid - delta_plus, x_mid + delta_plus)
+        ax.set_ylim(y_mid - delta_plus, y_mid + delta_plus)
+        ax.set_zlim(z_mid - delta, z_mid + delta)  # type: ignore
