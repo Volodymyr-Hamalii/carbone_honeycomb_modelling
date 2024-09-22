@@ -38,6 +38,30 @@ class PointsOrganizer:
         return variance
 
     @staticmethod
+    def _calculate_rotation_variance(angles: ndarray, inner_points: ndarray, channel_points: ndarray) -> floating:
+        """
+        Objective function for the optimizer to minimize. It rotates the inner points using the angles and then
+        calculates the variance of the minimum distances.
+        """
+        angle_x, angle_y = angles
+
+        # Rotate inner points by angle_x and angle_y
+        rotated_points_x: ndarray = StructureRotator.rotate_on_angle_related_center(
+            inner_points.copy(), angle_x=angle_x
+        )
+        rotated_points_xy: ndarray = StructureRotator.rotate_on_angle_related_center(
+            rotated_points_x.copy(), angle_y=angle_y
+        )
+
+        # Calculate variance
+        # variance: floating = PointsOrganizer._calculate_total_variance(
+        #     translated_and_rotated_inner_points=rotated_points_xy, channel_points=channel_points
+        # )
+        variance: floating = np.var(rotated_points_xy[:, 0]) + np.var(rotated_points_xy[:, 1])
+
+        return variance
+
+    @staticmethod
     def _calculate_total_variance(
         translated_and_rotated_inner_points: ndarray, channel_points: ndarray
     ) -> floating:
@@ -55,38 +79,31 @@ class PointsOrganizer:
         Rotate the points inside the channel (from inner_points set) to find equilibrium positions,
         i.e., maximally equidistant from the channel atoms.
         """
-        min_variance = float("inf")  # To track the minimal variance found
-        best_inner_points = inner_points.copy()
 
-        # Define angle ranges to rotate over
-        angle_range_to_rotate = np.arange(0, math.pi / 8, math.pi / 25)
+        # Initial guess for angles (both x and y) in radians
+        initial_angles = np.array([0.0, 0.0])
 
-        for angle_x in angle_range_to_rotate:
-            # Rotate inner points around the x-axis
-            x_rotated_points: ndarray = StructureRotator.rotate_on_angle_related_center(
-                inner_points.copy(), angle_x=angle_x
-            )
+        # Minimize the objective function with respect to the rotation angles
+        result = minimize(
+            PointsOrganizer._calculate_rotation_variance,
+            initial_angles,
+            args=(inner_points, channel_points),
+            method="BFGS",
+            options={"disp": True}
+        )
 
-            for angle_y in angle_range_to_rotate:
-                # Rotate inner points around the y-axis after the x-axis rotation
-                xy_rotated_points: ndarray = StructureRotator.rotate_on_angle_related_center(
-                    x_rotated_points.copy(), angle_y=angle_y
-                )
+        # Extract the optimal angles
+        optimal_angle_x, optimal_angle_y = result.x
 
-                # Calculate the variance after this rotation
-                variance = PointsOrganizer._calculate_total_variance(
-                    translated_and_rotated_inner_points=xy_rotated_points, channel_points=channel_points
-                )
+        # Apply the optimal rotations to the inner points
+        rotated_points_x = StructureRotator.rotate_on_angle_related_center(
+            inner_points.copy(), angle_x=optimal_angle_x
+        )
+        rotated_points_xy = StructureRotator.rotate_on_angle_related_center(
+            rotated_points_x.copy(), angle_y=optimal_angle_y
+        )
 
-                # Check if this is the best configuration so far
-                if variance < min_variance:
-                    min_variance = variance
-                    best_inner_points: ndarray = xy_rotated_points
-
-                    print("min_variance", min_variance)
-                    StructureVisualizer.show_structure(coordinates=xy_rotated_points)
-
-        return best_inner_points
+        return rotated_points_xy
 
     @classmethod
     def equidistant_points_sets_in_channel(
@@ -99,6 +116,11 @@ class PointsOrganizer:
 
         Returns updated inner_points.
         """
+
+        if to_rotate:
+            # Return the best inner points configuration found (both translated and rotated)
+            inner_points = cls.rotate_to_find_min_variance(channel_points, inner_points)
+
         # Initial translation vector (starting with no translation)
         initial_translation: ndarray = np.array([0.0, 0.0, 0.0])
 
@@ -112,13 +134,9 @@ class PointsOrganizer:
         )
 
         # Optimal translation vector found
-        optimal_translation = result.x
+        optimal_translation: ndarray = result.x
 
         # Apply the optimal translation to the inner points
         optimized_inner_points: ndarray = inner_points + optimal_translation
-
-        if to_rotate:
-            # Return the best inner points configuration found (both translated and rotated)
-            return cls.rotate_to_find_min_variance(channel_points, inner_points)
 
         return optimized_inner_points
