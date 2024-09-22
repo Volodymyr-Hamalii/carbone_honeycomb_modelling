@@ -27,12 +27,14 @@ class AlAtomsFilter:
         """
 
         max_atoms: int = 0
+        xy_variance: float = np.inf
+
         coordinates_al_with_max_atoms: ndarray = coordinates_al.copy()
 
         al_lattice_parameter: float = structure_settings.al_lattice_parameter
 
         range_to_move: ndarray = np.arange(0, al_lattice_parameter, 0.1 * al_lattice_parameter)
-        angle_range_to_rotate: ndarray = np.arange(0, math.pi / 2, math.pi / 25)
+        angle_range_to_rotate: ndarray = np.arange(- math.pi / 4, math.pi / 2, math.pi / 16)
 
         for step_x in range_to_move:
             moved_x_coordinates_al: ndarray = coordinates_al.copy()
@@ -60,10 +62,25 @@ class AlAtomsFilter:
                             num_of_atoms: int = len(coordinates_al_filtered)
 
                             if num_of_atoms > max_atoms:
+                                max_atoms = num_of_atoms
                                 logger.info("max_atoms", max_atoms)
 
-                                max_atoms = num_of_atoms
                                 coordinates_al_with_max_atoms = coordinates_al_filtered
+
+                                # Reset xy_variance
+                                xy_variance = np.inf
+
+                            elif num_of_atoms == max_atoms:
+                                # Calculate the xy_variance to check if these X and Y coordinates
+                                # are more equidistant (to have a more equilibrium structure)
+
+                                # TODO: check case for complex structures
+                                current_xy_variance = float(
+                                    np.var(coordinates_al_filtered[:, 0]) + np.var(coordinates_al_filtered[:, 1]))
+
+                                if current_xy_variance < xy_variance:
+                                    coordinates_al_with_max_atoms = coordinates_al_filtered
+                                    xy_variance = current_xy_variance
 
         return coordinates_al_with_max_atoms
 
