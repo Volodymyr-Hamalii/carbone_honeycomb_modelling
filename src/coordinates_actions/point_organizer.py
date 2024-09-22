@@ -5,8 +5,13 @@ from numpy import ndarray, floating
 from scipy.optimize import minimize
 from scipy.spatial.distance import cdist
 
+from src.utils import Logger
+
 from .structure_rotator import StructureRotator
 from ..structure_visualizer import StructureVisualizer
+
+
+logger = Logger(__name__)
 
 
 class PointsOrganizer:
