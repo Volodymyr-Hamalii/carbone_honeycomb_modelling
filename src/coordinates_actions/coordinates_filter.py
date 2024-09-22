@@ -1,8 +1,6 @@
 import numpy as np
 from numpy import ndarray
 
-from .planes_builder import PlanesBuilder
-
 
 class CoordinatesFilter:
     @staticmethod
@@ -57,7 +55,7 @@ class CoordinatesFilter:
         z_min: np.float32 = np.min(coordinates_with_min_max_z[:, 2])
         z_max: np.float32 = np.max(coordinates_with_min_max_z[:, 2])
 
-        filtered_by_min_z = coordinates_to_filter[coordinates_to_filter[:, 2] >= z_min]
+        filtered_by_min_z: ndarray = coordinates_to_filter[coordinates_to_filter[:, 2] >= z_min]
 
         if filtered_by_min_z.size == 0:
             return filtered_by_min_z
@@ -67,4 +65,4 @@ class CoordinatesFilter:
             move_to: np.float32 = np.min(filtered_by_min_z[:, 2]) - z_min
             filtered_by_min_z[:, 2] = filtered_by_min_z[:, 2] - move_to
 
-        return coordinates_to_filter[coordinates_to_filter[:, 2] <= z_max]
+        return filtered_by_min_z[filtered_by_min_z[:, 2] <= z_max]
