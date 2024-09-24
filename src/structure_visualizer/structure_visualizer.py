@@ -86,10 +86,14 @@ class StructureVisualizer:
             ax: Axes,
             coordinates: ndarray,
             visual_parameters: StructureVisualParameters,
-            to_set_scaling: bool = True,
+            set_equal_scale: bool | None = None,
             to_build_bonds: bool = True,
             num_of_min_distances: int = 3,
             skip_first_distances: int = 0) -> None:
+
+        if coordinates.size == 0:
+            logger.warning(f"No points to plot for {visual_parameters.label}.")
+            return
 
         x_first: ndarray = coordinates[:, 0]
         y_first: ndarray = coordinates[:, 1]
@@ -102,8 +106,11 @@ class StructureVisualizer:
             s=visual_parameters.size,  # type: ignore
             alpha=visual_parameters.transparency)
 
-        if to_set_scaling:
-            cls._set_equal_scaling(ax, x_first, y_first, z_first)
+        if set_equal_scale is None:
+            set_equal_scale = visual_parameters.set_equal_scale
+
+        if set_equal_scale:
+            cls._set_equal_scale(ax, x_first, y_first, z_first)
 
         if to_build_bonds:
             # Carbone
@@ -114,7 +121,7 @@ class StructureVisualizer:
                 skip_first_distances=skip_first_distances)
 
     @staticmethod
-    def _set_equal_scaling(ax: Axes, x_coor: ndarray, y_coor: ndarray, z_coor: ndarray) -> None:
+    def _set_equal_scale(ax: Axes, x_coor: ndarray, y_coor: ndarray, z_coor: ndarray) -> None:
         """Set equal scaling for all axis."""
 
         x_min, x_max = x_coor.min(), x_coor.max()
@@ -123,7 +130,7 @@ class StructureVisualizer:
 
         min_lim = np.min([x_min, y_min, z_min])
         max_lim = np.max([x_max, y_max, z_max])
-        
+
         delta = (max_lim + min_lim) / 2
         delta_plus = delta * 1.25  # to stretch specific axis
 

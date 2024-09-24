@@ -7,6 +7,7 @@ class StructureVisualParameters:
     color_bonds: str
     size: int
     transparency: float
+    set_equal_scale: bool
     label: str
 
 
@@ -16,6 +17,7 @@ class VisualizationParameters:
         color_atoms="#0500a4",
         color_bonds="#00065f",
         transparency=0.25,
+        set_equal_scale=True,
         size=200,
     )
 
@@ -24,5 +26,6 @@ class VisualizationParameters:
         color_atoms="#e00000",
         color_bonds="#500000",
         transparency=0.5,
+        set_equal_scale=False,
         size=400,
     )
