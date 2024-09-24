@@ -9,7 +9,7 @@ from .visualization_parameters import VisualizationParameters, StructureVisualPa
 from ..utils import Logger
 
 
-logger = Logger(__name__)
+logger = Logger("StructureVisualizer")
 
 
 class StructureVisualizer:
