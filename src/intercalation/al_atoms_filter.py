@@ -2,12 +2,11 @@ import math
 import numpy as np
 from numpy import ndarray
 from scipy.spatial.distance import cdist
+from scipy.optimize import minimize
 
 from ..utils import Logger
 from ..coordinates_actions import PlanesBuilder, CoordinatesFilter, StructureRotator
 from ..data_preparation import StructureSettings, ChannelPoints
-
-from .al_lattice_type import AlLatticeType
 
 logger = Logger(__name__)
 
@@ -83,6 +82,115 @@ class AlAtomsFilter:
                                     xy_variance = current_xy_variance
 
         return coordinates_al_with_max_atoms
+
+    @classmethod
+    def find_max_filtered_atoms_by_minimize(
+            cls,
+            coordinates_carbone: ndarray,
+            coordinates_al: ndarray,
+            structure_settings: StructureSettings,
+    ) -> ndarray:
+        """
+        Parallel move and filter Al atoms related carbone atoms
+        to find the option with the maximum Al atoms after filtering.
+        """
+
+        al_lattice_parameter: float = structure_settings.al_lattice_parameter
+
+        # Objective function to optimize (to maximize number of atoms)
+        def objective_function(params):
+            # Unpack translation and rotation parameters
+            step_x, step_y, angle_x, angle_y, angle_z = params
+
+            # Apply translations
+            moved_coordinates_al = coordinates_al.copy()
+            moved_coordinates_al[:, 0] += step_x
+            moved_coordinates_al[:, 1] += step_y
+
+            # Apply rotations
+            rotated_coordinates_al = StructureRotator.rotate_on_angle_related_center(
+                moved_coordinates_al, angle_x=angle_x, angle_y=angle_y, angle_z=angle_z)
+
+            # Filter coordinates based on the given criteria
+            coordinates_al_filtered: ndarray = cls.filter_al_atoms_related_carbone(
+                rotated_coordinates_al, coordinates_carbone, structure_settings)
+
+            # Calculate the negative number of atoms (since we want to maximize it)
+            num_of_atoms = len(coordinates_al_filtered)
+
+            # Return negative of number of atoms for minimization
+            return -num_of_atoms
+
+        # Another objective function that also considers xy variance
+        def variance_function(params):
+            # Unpack translation and rotation parameters
+            step_x, step_y, angle_x, angle_y, angle_z = params
+
+            # Apply translations
+            moved_coordinates_al = coordinates_al.copy()
+            moved_coordinates_al[:, 0] += step_x
+            moved_coordinates_al[:, 1] += step_y
+
+            # Apply rotations
+            rotated_coordinates_al = StructureRotator.rotate_on_angle_related_center(
+                moved_coordinates_al, angle_x=angle_x, angle_y=angle_y, angle_z=angle_z)
+
+            # Filter coordinates based on the given criteria
+            coordinates_al_filtered: ndarray = cls.filter_al_atoms_related_carbone(
+                rotated_coordinates_al, coordinates_carbone, structure_settings)
+
+            # Count the number of atoms
+            num_of_atoms = len(coordinates_al_filtered)
+
+            # If number of atoms is less than the maximum, discard this configuration
+            if num_of_atoms < max_atoms:
+                return np.inf  # Higher value to discourage this solution
+
+            # Otherwise, calculate xy variance
+            xy_variance = float(
+                np.var(coordinates_al_filtered[:, 0]) + np.var(coordinates_al_filtered[:, 1]))
+
+            print(-len(coordinates_al_filtered) + xy_variance)
+            return -len(coordinates_al_filtered) + xy_variance
+
+        # Optimization settings
+        initial_guess = [0.0, 0.0, 0.0, 0.0, 0.0]
+        bounds = [
+            (0, al_lattice_parameter),  # bounds for x translation
+            (0, al_lattice_parameter),  # bounds for y translation
+            (-math.pi / 4, math.pi / 2),  # bounds for x rotation
+            (-math.pi / 4, math.pi / 2),  # bounds for y rotation
+            (-math.pi / 4, math.pi / 2),  # bounds for z rotation
+        ]
+
+        # First, maximize the number of atoms
+        res = minimize(objective_function, initial_guess, method='L-BFGS-B', bounds=bounds)
+
+        # Extract optimal translation and rotation parameters that maximize atoms
+        optimal_translation_and_rotation = res.x
+
+        # Calculate the maximum number of atoms found (the negative of the optimized result)
+        max_atoms = -res.fun
+
+        # Now, minimize the variance using the best translation/rotation found so far
+        res_variance = minimize(variance_function, optimal_translation_and_rotation, method='L-BFGS-B', bounds=bounds)
+
+        # Extract optimized results
+        optimized_params = res_variance.x
+        step_x, step_y, angle_x, angle_y, angle_z = optimized_params
+
+        # Apply final optimized translation and rotation
+        final_coordinates_al = coordinates_al.copy()
+        final_coordinates_al[:, 0] += step_x
+        final_coordinates_al[:, 1] += step_y
+        final_rotated_coordinates_al = StructureRotator.rotate_on_angle_related_center(
+            final_coordinates_al, angle_x=angle_x, angle_y=angle_y, angle_z=angle_z)
+
+        # Filter final coordinates
+        coordinates_al_filtered = cls.filter_al_atoms_related_carbone(
+            final_rotated_coordinates_al, coordinates_carbone, structure_settings)
+
+        return coordinates_al_filtered
 
     @classmethod
     def filter_al_atoms_related_carbone(
