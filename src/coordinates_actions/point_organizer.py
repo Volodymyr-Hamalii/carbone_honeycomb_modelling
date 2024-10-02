@@ -17,14 +17,16 @@ logger = Logger(__name__)
 class PointsOrganizer:
     @staticmethod
     def _calculate_distance_variance(
-            translation_vector: ndarray, channel_points: ndarray, inner_points: ndarray) -> floating:
+            translation_vector: ndarray, channel_points: ndarray, inner_points: ndarray) -> floating | float:
         """
         Calculate the variance of the minimum distances between inner points
         and channel points after applying a translation.
         """
 
         # Apply translation to inner points
-        translated_inner_points = inner_points + translation_vector
+        translated_inner_points: ndarray = inner_points.copy()
+        translated_inner_points[:, 0] += translation_vector[0]  # Along Ox
+        translated_inner_points[:, 1] += translation_vector[1]  # Along Oy
 
         # Calculate distances between each translated inner point and all channel points
         distances: ndarray = cdist(translated_inner_points, channel_points)
@@ -53,6 +55,11 @@ class PointsOrganizer:
             rotated_points_x.copy(), angle_y=angle_y
         )
 
+        if (np.min(rotated_points_xy[:, 2]) < np.min(channel_points[:, 2])) or (
+                np.max(rotated_points_xy[:, 2]) > np.max(channel_points[:, 2])):
+            # Filter the cases when inner_points are out of the channel
+            return np.inf
+
         # Calculate variance
         # variance: floating = PointsOrganizer._calculate_total_variance(
         #     translated_and_rotated_inner_points=rotated_points_xy, channel_points=channel_points
@@ -79,6 +86,9 @@ class PointsOrganizer:
         Rotate the points inside the channel (from inner_points set) to find equilibrium positions,
         i.e., maximally equidistant from the channel atoms.
         """
+
+        cls.align_inner_points_along_channel_oz(
+            channel_points=channel_points, inner_points=inner_points)
 
         # Initial guess for angles (both x and y) in radians
         initial_angles = np.array([0.0, 0.0])
@@ -121,8 +131,8 @@ class PointsOrganizer:
             # Return the best inner points configuration found (both translated and rotated)
             inner_points = cls.rotate_to_find_min_variance(channel_points, inner_points)
 
-        # Initial translation vector (starting with no translation)
-        initial_translation: ndarray = np.array([0.0, 0.0, 0.0])
+        # Initial translation vector for x and y (starting with no translation)
+        initial_translation: ndarray = np.array([0.0, 0.0])
 
         # Use optimization to find the best translation that minimizes the variance
         result = minimize(
@@ -137,6 +147,7 @@ class PointsOrganizer:
         optimal_translation: ndarray = result.x
 
         # Apply the optimal translation to the inner points
-        optimized_inner_points: ndarray = inner_points + optimal_translation
+        inner_points[:, 0] += optimal_translation[0]
+        inner_points[:, 1] += optimal_translation[1]
 
-        return optimized_inner_points
+        return inner_points
