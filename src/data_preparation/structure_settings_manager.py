@@ -66,6 +66,7 @@ class StructureSettingsManager:
                 },
             ],
             "max_distance_to_carbone_atoms": None,
+            "al_lattice_parameter": Constants.physics.AL_LATTICE_PARAM,
         }
 
         path_to_file: Path = PathBuilder.build_path_to_result_data_file(

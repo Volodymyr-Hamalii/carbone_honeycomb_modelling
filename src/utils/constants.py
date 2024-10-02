@@ -40,10 +40,15 @@ class LoggerConstants:
     LEVEL: int = int(os.environ.get("LEVEL", 0)) or LEVELS[DEFAULT_LEVEL]
 
 
+class PhysicsConstants:
+    AL_LATTICE_PARAM = 4.0414
+
+
 class Constants:
     path = PathConstants
     logger = LoggerConstants
     filenames = FilenamesConstants
+    physics = PhysicsConstants
 
     MAX_NUMBER_OF_THREADS = 1
     DEFAULT_ACTION: str = os.environ.get("DEFAULT_ACTION") or "full_flow"
