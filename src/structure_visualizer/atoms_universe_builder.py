@@ -15,7 +15,7 @@ import warnings
 warnings.filterwarnings('ignore')
 
 
-logger = Logger(__name__)
+logger = Logger("AtomsUniverseBuilder")
 
 
 class AtomsUniverseBuilder:

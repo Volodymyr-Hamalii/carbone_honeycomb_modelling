@@ -1,6 +1,6 @@
 from .logger import Logger
 
-logger = Logger(__name__)
+logger = Logger("Inputs")
 
 
 class Inputs:

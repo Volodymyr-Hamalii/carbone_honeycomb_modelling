@@ -8,7 +8,7 @@ from .pdb_file_builder import PdbFileBuilder
 from .file_writer import FileWriter
 
 
-logger = Logger(__name__)
+logger = Logger("FileConverter")
 
 
 class FileConverter:

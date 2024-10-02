@@ -2,11 +2,10 @@ import sys
 from src import Actions, CommandLineArgsHandler, Constants, Logger
 
 
-logger = Logger(__name__)
+logger = Logger("Main")
 
 
-
-def main() -> None:
+def run_action() -> None:
     action: str = CommandLineArgsHandler.get_str_arg(1, default=Constants.DEFAULT_ACTION)
     structure_folder: str = CommandLineArgsHandler.get_str_arg(2, default=Constants.DEFAULT_STRUCTURE_FOLDER)
     to_set: bool = CommandLineArgsHandler.get_bool_arg(3, to_compare="set", default=False)
@@ -39,4 +38,4 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    run_action()

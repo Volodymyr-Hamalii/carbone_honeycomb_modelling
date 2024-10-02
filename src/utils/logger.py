@@ -8,10 +8,10 @@ from .constants import Constants
 
 if Constants.MAX_NUMBER_OF_THREADS == 1:
     # Printing without a name of the thread
-    log_format: str = "> %(levelname)s (%(name)s): %(message)s"
+    log_format: str = "> %(levelname)s (%(name)s.%(funcName)s): %(message)s"
 else:
     # Log also the thread name for multithreading processes
-    log_format: str = "> [%(threadName)s] %(levelname)s (%(name)s): %(message)s"
+    log_format: str = "> [%(threadName)s] %(levelname)s (%(name)s.%(funcName)s): %(message)s"
 
 
 # Logging configs
@@ -33,25 +33,26 @@ class Logger:
         self.logger: logging.Logger = logging.getLogger(name)
 
     def debug(self, *args) -> None:
-        self.logger.debug(self.get_message(*args))
+        self.logger.debug(self.get_message(*args), stacklevel=2)
 
     def info(self, *args) -> None:
-        self.logger.info(self.get_message(*args))
+        self.logger.info(self.get_message(*args), stacklevel=2)
 
     def metrics(self, *args) -> None:
         if self.logger.isEnabledFor(METRICS_LEVEL):
-            self.logger._log(METRICS_LEVEL, self.get_message(*args), ())
+            self.logger._log(METRICS_LEVEL, self.get_message(*args), (), stacklevel=2)
 
     def performance(self, *args) -> None:
         if self.logger.isEnabledFor(PERFORMANCE_LEVEL):
-            self.logger._log(PERFORMANCE_LEVEL, self.get_message(*args), ())
+            self.logger._log(PERFORMANCE_LEVEL, self.get_message(*args), (), stacklevel=2)
 
     def warning(self, *args) -> None:
-        self.logger.warning(self.get_message(*args))
+        self.logger.warning(self.get_message(*args), stacklevel=2)
 
     def error(self, *args) -> None:
         self.logger.error(
             self.get_message(*args),
+            stacklevel=2,
             exc_info=Constants.DEV_MODE,  # to print tracebacks
         )
 

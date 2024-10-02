@@ -13,7 +13,7 @@ from ..coordinates_actions import (
     PointsOrganizer,
 )
 
-logger = Logger(__name__)
+logger = Logger("AlAtomsFilter")
 
 
 class AlAtomsFilter:

@@ -11,7 +11,7 @@ from .structure_rotator import StructureRotator
 from ..structure_visualizer import StructureVisualizer
 
 
-logger = Logger(__name__)
+logger = Logger("PointsOrganizer")
 
 
 class PointsOrganizer:

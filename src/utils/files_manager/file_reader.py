@@ -4,7 +4,7 @@ from pathlib import Path
 from ..logger import Logger
 from .path_builder import PathBuilder
 
-logger = Logger(__name__)
+logger = Logger("FileReader")
 
 
 class FileReader:

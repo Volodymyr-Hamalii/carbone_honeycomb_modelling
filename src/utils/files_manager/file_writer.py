@@ -8,7 +8,7 @@ from .path_builder import PathBuilder
 from .pdb_file_builder import PdbFileBuilder
 
 
-logger = Logger(__name__)
+logger = Logger("FileWriter")
 
 
 class FileWriter:

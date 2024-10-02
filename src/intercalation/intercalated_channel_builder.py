@@ -10,7 +10,7 @@ from .al_lattice_type import AlLatticeType
 from .al_atoms_filter import AlAtomsFilter
 
 
-logger = Logger(__name__)
+logger = Logger("IntercalatedChannelBuilder")
 
 
 class IntercalatedChannelBuilder:

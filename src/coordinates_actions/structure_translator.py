@@ -6,7 +6,7 @@ from ..data_preparation import ChannelLimits
 from .coordinates_filter import CoordinatesFilter
 
 
-logger = Logger(__name__)
+logger = Logger("StructureTranslator")
 
 
 class StructureTranslator:

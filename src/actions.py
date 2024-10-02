@@ -6,7 +6,7 @@ from .structure_visualizer import StructureVisualizer, AtomsUniverseBuilder, Vis
 from .data_preparation import StructureSettings, StructureSettingsManager, ChannelLimits
 from .intercalation import IntercalatedChannelBuilder, AlLatticeType
 
-logger = Logger(__name__)
+logger = Logger("Actions")
 
 
 class Actions:

@@ -5,7 +5,7 @@ from ..utils import PathBuilder, FileReader, Constants, Logger
 from .structure_settings_map import StructureSettings, ChannelLimits, ChannelPoints
 
 
-logger = Logger(__name__)
+logger = Logger("StructureSettingsManager")
 
 
 class StructureSettingsManager:
