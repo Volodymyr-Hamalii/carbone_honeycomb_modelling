@@ -5,8 +5,13 @@ from scipy.spatial.distance import cdist
 from scipy.optimize import minimize
 
 from ..utils import Logger
-from ..coordinates_actions import PlanesBuilder, CoordinatesFilter, StructureRotator
 from ..data_preparation import StructureSettings, ChannelPoints
+from ..coordinates_actions import (
+    PlanesBuilder,
+    CoordinatesFilter,
+    StructureRotator,
+    PointsOrganizer,
+)
 
 logger = Logger(__name__)
 
@@ -26,7 +31,7 @@ class AlAtomsFilter:
         """
 
         max_atoms: int = 0
-        xy_variance: float = np.inf
+        xy_variance: float | np.floating = np.inf
 
         coordinates_al_with_max_atoms: ndarray = coordinates_al.copy()
 
@@ -74,8 +79,11 @@ class AlAtomsFilter:
                                 # are more equidistant (to have a more equilibrium structure)
 
                                 # TODO: check case for complex structures
-                                current_xy_variance = float(
-                                    np.var(coordinates_al_filtered[:, 0]) + np.var(coordinates_al_filtered[:, 1]))
+                                current_xy_variance = min(
+                                    PointsOrganizer.calculate_xy_variance(coordinates_al_filtered),
+                                    PointsOrganizer.calculate_variance_related_channel(
+                                        inner_points=coordinates_al_filtered, channel_points=coordinates_carbone)
+                                )
 
                                 if current_xy_variance < xy_variance:
                                     coordinates_al_with_max_atoms = coordinates_al_filtered
@@ -150,7 +158,6 @@ class AlAtomsFilter:
             xy_variance = float(
                 np.var(coordinates_al_filtered[:, 0]) + np.var(coordinates_al_filtered[:, 1]))
 
-            print(-len(coordinates_al_filtered) + xy_variance)
             return -len(coordinates_al_filtered) + xy_variance
 
         # Optimization settings
