@@ -36,9 +36,12 @@ class AlAtomsFilter:
         coordinates_al_with_max_atoms: ndarray = coordinates_al.copy()
 
         al_lattice_parameter: float = structure_settings.al_lattice_parameter
+        
+        range_to_move_step: float = 0.1 * al_lattice_parameter
+        range_to_move: ndarray = np.arange(0, al_lattice_parameter, range_to_move_step)
 
-        range_to_move: ndarray = np.arange(0, al_lattice_parameter, 0.1 * al_lattice_parameter)
-        angle_range_to_rotate: ndarray = np.arange(- math.pi / 4, math.pi / 2, math.pi / 16)
+        angle_range_to_rotate_step: float = math.pi / 16
+        angle_range_to_rotate: ndarray = np.arange(- math.pi / 4, math.pi / 2, angle_range_to_rotate_step)
 
         for step_x in range_to_move:
             moved_x_coordinates_al: ndarray = coordinates_al.copy()
