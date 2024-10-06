@@ -1,7 +1,7 @@
 from pathlib import Path
 from numpy import ndarray
 
-from .utils import Constants, PathBuilder, FileConverter, FileWriter, Logger, Inputs
+from .utils import Constants, PathBuilder, FileReader, FileConverter, FileWriter, Logger, Inputs
 from .structure_visualizer import StructureVisualizer, AtomsUniverseBuilder, VisualizationParameters
 from .data_preparation import StructureSettings, StructureSettingsManager, ChannelLimits
 from .intercalation import IntercalatedChannelBuilder, AlLatticeType
@@ -123,8 +123,8 @@ class Actions:
         to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
         StructureVisualizer.show_structure(coordinates, to_build_bonds=to_build_bonds)
 
-    @staticmethod
-    def show_al_in_one_channel_structure(structure_folder: str, to_set: bool) -> None:
+    @classmethod
+    def show_al_in_one_channel_structure(cls, structure_folder: str, to_set: bool) -> None:
         """
         Build one channel model from result_data/{structure_folder}/ljout-from-init-dat.pdb atoms
         based on result_data/{structure_folder}/structure_settings.json channel limits,
@@ -141,7 +141,41 @@ class Actions:
             structure_folder=structure_folder, structure_settings=structure_settings)
 
         # Aluminium
+        to_open_calculated_atoms: bool = Inputs.bool_input(
+            to_set, default_value=True, text="To open previously calculated atoms (if they exist)")
 
+        if to_open_calculated_atoms:
+            # Try to load previously calculated points from the file
+            folder_path: Path = PathBuilder.build_path_to_result_data_dir()
+            try:
+                processed_coordinates_al: ndarray = FileReader.read_dat_file(
+                    structure_folder=structure_folder, folder_path=folder_path)
+
+            except FileNotFoundError:
+                logger.warning(f"Calculated Al points for {structure_folder} not found.")
+                processed_coordinates_al: ndarray = cls._calculdate_al_points(
+                    to_set, structure_settings, coordinates_carbone)
+
+        else:
+            processed_coordinates_al: ndarray = cls._calculdate_al_points(
+                to_set, structure_settings, coordinates_carbone)
+
+        logger.info("Number of carbone atoms:", len(coordinates_carbone))
+        logger.info("Number of al atoms:", len(processed_coordinates_al))
+
+        FileWriter.write_dat_file(processed_coordinates_al, structure_folder=structure_folder)
+        to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
+
+        StructureVisualizer.show_two_structures(
+            coordinates_first=coordinates_carbone,
+            coordinates_second=processed_coordinates_al,
+            to_build_bonds=to_build_bonds)
+
+    @staticmethod
+    def _calculdate_al_points(
+            to_set: bool, structure_settings: None | StructureSettings, coordinates_carbone: ndarray
+    ) -> ndarray:
+        """ Calculate Al points inside channel from coordinates_carbone. """
         to_translate_al: bool = Inputs.bool_input(
             to_set, default_value=True, text="To translate AL atomes to fill full volume")
 
@@ -166,9 +200,6 @@ class Actions:
                 structure_settings=structure_settings,
                 to_translate_al=to_translate_al)
 
-        # StructureVisualizer.show_structure(
-        #     coordinates_al, to_build_bonds=True, visual_parameters=VisualizationParameters.al, num_of_min_distances=1)
-
         # Process data
 
         to_filter_al_atoms: bool = Inputs.bool_input(
@@ -177,27 +208,12 @@ class Actions:
         equidistant_al_points: bool = Inputs.bool_input(
             to_set=to_set, default_value=True, text="Set Al atoms maximally equidistant from the channel atoms")
 
-        coordinates: tuple[ndarray, ndarray] = IntercalatedChannelBuilder.build_al_in_carbone(
+        return IntercalatedChannelBuilder.build_al_in_carbone(
             coordinates_carbone=coordinates_carbone,
             coordinates_al=coordinates_al,
             structure_settings=structure_settings,
             to_filter_al_atoms=to_filter_al_atoms,
             equidistant_al_points=equidistant_al_points)
-
-        processed_coordinates_carbone: ndarray = coordinates[0]
-        processed_coordinates_al: ndarray = coordinates[1]
-
-        logger.info("Number of carbone atoms:", len(processed_coordinates_carbone))
-        logger.info("Number of al atoms:", len(processed_coordinates_al))
-
-        FileWriter.write_dat_file(processed_coordinates_al, structure_folder=structure_folder)
-
-        to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
-
-        StructureVisualizer.show_two_structures(
-            coordinates_first=processed_coordinates_carbone,
-            coordinates_second=processed_coordinates_al,
-            to_build_bonds=to_build_bonds)
 
     @classmethod
     def full_flow(cls, structure_folder: str, to_set: bool) -> None:
