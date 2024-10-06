@@ -72,7 +72,7 @@ class Logger:
 
 
 def execution_time_logger(func):
-    """ Decorator to print the execution duration of the function """
+    """ Decorator to print the execution duration of the function. """
 
     def wrapper(*args, **kwargs):
         start_time: float = time.time()

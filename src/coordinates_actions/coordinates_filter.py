@@ -60,7 +60,7 @@ class CoordinatesFilter:
         if filtered_by_min_z.size == 0:
             return filtered_by_min_z
 
-        if move_align_z is True:
+        if move_align_z:
             # Move Al atoms along Oz down to align the lowest Al atom with the channel bottom
             move_to: np.float32 = np.min(filtered_by_min_z[:, 2]) - z_min
             filtered_by_min_z[:, 2] = filtered_by_min_z[:, 2] - move_to
