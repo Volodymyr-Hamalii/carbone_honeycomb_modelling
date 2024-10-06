@@ -16,8 +16,14 @@ logger = Logger("PointsOrganizer")
 
 class PointsOrganizer:
     @staticmethod
+    def calculate_min_distance(points_set_1: ndarray, points_set_2: ndarray) -> floating:
+        """ Returns min distance between 2 provided point sets. """
+        distances: ndarray = cdist(points_set_1, points_set_2)
+        return np.min(distances)
+
+    @classmethod
     def _calculate_distance_variance(
-            translation_vector: ndarray, channel_points: ndarray, inner_points: ndarray) -> floating | float:
+            cls, translation_vector: ndarray, channel_points: ndarray, inner_points: ndarray) -> floating | float:
         """
         Calculate the variance of the minimum distances between inner points
         and channel points after applying a translation.
@@ -29,15 +35,15 @@ class PointsOrganizer:
         translated_inner_points[:, 1] += translation_vector[1]  # Along Oy
 
         # Calculate distances between each translated inner point and all channel points
-        distances: ndarray = cdist(translated_inner_points, channel_points)
+        # distances: ndarray = cdist(translated_inner_points, channel_points)
 
-        # Get minimum distance from each inner point to any channel point
-        min_distances: floating = np.min(distances, axis=1)
+        # # Get minimum distance from each inner point to any channel point
+        # min_distances: floating = np.min(distances, axis=1)
 
-        # Calculate the variance of these minimum distances
-        variance: floating = np.var(min_distances)
+        # # Calculate the variance of these minimum distances
+        # variance: floating = np.var(min_distances)
 
-        return variance
+        return -cls.calculate_min_distance(translated_inner_points, channel_points)
 
     @classmethod
     def _calculate_rotation_variance(
@@ -151,7 +157,7 @@ class PointsOrganizer:
                     channel_points=channel_points, inner_points=inner_points)
 
                 if min(inner_points[:, 2]) < min(channel_points[:, 2]):
-                    # Skip if we are out the channel limits
+                    # Skip if some inner_points are out the channel along Oz
                     continue
 
                 # Calculate the variance after this rotation
