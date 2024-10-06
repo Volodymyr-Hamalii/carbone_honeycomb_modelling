@@ -24,7 +24,7 @@ class FileReader:
             path_to_file: Path = PathBuilder.build_path_to_result_data_file(
                 structure_folder=structure_folder, file=file_name)
         else:
-            path_to_file: Path = Path(structure_folder) / file_name
+            path_to_file: Path = Path(folder_path) / structure_folder / file_name
 
         if not path_to_file.exists():
             logger.warning(f"File {path_to_file} not exists.")
@@ -44,7 +44,7 @@ class FileReader:
             path_to_file: Path = PathBuilder.build_path_to_init_data_file(
                 structure_folder=structure_folder, file=file_name)
         else:
-            path_to_file: Path = Path(structure_folder) / file_name
+            path_to_file: Path = Path(folder_path) / structure_folder / file_name
 
         atom_data: list[list[float]] = []
 
