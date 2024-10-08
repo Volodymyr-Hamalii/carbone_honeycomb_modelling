@@ -123,10 +123,10 @@ class PointsOrganizer:
         moved_points: ndarray = cls._move_and_rotate_related_xy(
             vectors=initial_vectors, points=inner_points)
 
-        distance_and_rotation_variance: floating = - cls.calculate_min_distance_sum(
-            moved_points, channel_points) + cls.calculate_variance_related_channel(
-                inner_points, channel_points)
-
+        min_distance_sum: floating = cls.calculate_min_distance_sum(moved_points, channel_points)
+        variance_related_channel: floating = cls.calculate_variance_related_channel(
+            moved_points, channel_points) * len(inner_points)
+        distance_and_rotation_variance: floating = variance_related_channel - min_distance_sum
         return distance_and_rotation_variance
 
     # Rotations

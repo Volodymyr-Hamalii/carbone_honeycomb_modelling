@@ -1,10 +1,10 @@
 import math
 import numpy as np
-from numpy import ndarray
+from numpy import ndarray, floating
 from scipy.spatial.distance import cdist
 from scipy.optimize import minimize
 
-from ..utils import Logger
+from ..utils import Logger, execution_time_logger
 from ..data_preparation import StructureSettings, ChannelPoints
 from ..coordinates_actions import (
     PlanesBuilder,
@@ -19,6 +19,7 @@ logger = Logger("AlAtomsFilter")
 class AlAtomsFilter:
 
     @classmethod
+    @execution_time_logger
     def find_max_filtered_atoms(
             cls,
             coordinates_carbone: ndarray,
@@ -31,7 +32,7 @@ class AlAtomsFilter:
         """
 
         max_atoms: int = 0
-        xy_variance: float | np.floating = np.inf
+        min_distances_sum: float | floating = 0
 
         coordinates_al_with_max_atoms: ndarray = coordinates_al.copy()
 
@@ -65,7 +66,7 @@ class AlAtomsFilter:
 
                             coordinates_al_filtered: ndarray = cls.filter_al_atoms_related_carbone(
                                 xyz_rotaded_coordinates_al, coordinates_carbone, structure_settings)
-
+                            
                             num_of_atoms: int = len(coordinates_al_filtered)
 
                             if num_of_atoms > max_atoms:
@@ -74,23 +75,21 @@ class AlAtomsFilter:
 
                                 coordinates_al_with_max_atoms = coordinates_al_filtered
 
-                                # Reset xy_variance
-                                xy_variance = np.inf
+                            elif num_of_atoms > 0 and num_of_atoms == max_atoms:
+                                # The advantage is the maximum equidistant points from the channel
+                                # current_min_distances_sum: floating = PointsOrganizer.calculate_min_distance_sum(
+                                #     coordinates_al_filtered, coordinates_carbone)
 
-                            elif num_of_atoms == max_atoms:
-                                # Calculate the xy_variance to check if these X and Y coordinates
-                                # are more equidistant (to have a more equilibrium structure)
+                                min_distance_sum: floating = PointsOrganizer.calculate_min_distance_sum(
+                                    coordinates_al_filtered, coordinates_carbone)
+                                variance_related_channel: floating = PointsOrganizer.calculate_variance_related_channel(
+                                    coordinates_al_filtered, coordinates_carbone)
 
-                                # TODO: check case for complex structures
-                                current_xy_variance = min(
-                                    PointsOrganizer.calculate_xy_variance(coordinates_al_filtered),
-                                    PointsOrganizer.calculate_variance_related_channel(
-                                        inner_points=coordinates_al_filtered, channel_points=coordinates_carbone)
-                                )
+                                distance_and_rotation_variance: floating = min_distance_sum - variance_related_channel
 
-                                if current_xy_variance < xy_variance:
+                                if distance_and_rotation_variance > min_distances_sum:
                                     coordinates_al_with_max_atoms = coordinates_al_filtered
-                                    xy_variance = current_xy_variance
+                                    min_distances_sum = distance_and_rotation_variance
 
         return coordinates_al_with_max_atoms
 
@@ -215,15 +214,15 @@ class AlAtomsFilter:
             coordinates=coordinates_al,
             points_to_set_channel_planes=structure_settings.points_to_set_channel_planes)
 
-        coordinates_al_filtered = cls._filter_atoms_relates_carbone_atoms(
-            coordinates_al=coordinates_al_filtered,
-            coordinates_carbone=coordinates_carbone,
-            max_distance_to_carbone_atoms=structure_settings.al_lattice_parameter / 2)
-
-        return CoordinatesFilter.filter_by_min_max_z(
+        coordinates_al_filtered = CoordinatesFilter.filter_by_min_max_z(
             coordinates_to_filter=coordinates_al_filtered,
             coordinates_with_min_max_z=coordinates_carbone,
             move_align_z=True)
+        
+        return cls._filter_atoms_relates_carbone_atoms(
+            coordinates_al=coordinates_al_filtered,
+            coordinates_carbone=coordinates_carbone,
+            max_distance_to_carbone_atoms=structure_settings.al_lattice_parameter / 2)
 
     @staticmethod
     def _filter_atoms_related_clannel_planes(
