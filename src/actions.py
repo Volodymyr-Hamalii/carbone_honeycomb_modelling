@@ -142,7 +142,8 @@ class Actions:
 
         # Aluminium
         to_open_calculated_atoms: bool = Inputs.bool_input(
-            to_set, default_value=True, text="To open previously calculated atoms (if they exist)")
+            to_set, default_value=True, text="To open previously calculated atoms (if they exist)",
+            env_id="open_calculated_atoms")
 
         if to_open_calculated_atoms:
             # Try to load previously calculated points from the file
@@ -183,7 +184,8 @@ class Actions:
             to_set,
             default_value="FCC",
             text=AlLatticeType.get_info(),
-            available_values=AlLatticeType.get_available_types())
+            available_values=AlLatticeType.get_available_types(),
+            env_id="al_lattice_type")
         al_lattice_type = AlLatticeType(al_lattice_type_str)
 
         if al_lattice_type.is_cell:
@@ -206,7 +208,8 @@ class Actions:
             to_set, default_value=True, text="To filter AL atomes relative honeycomd bondaries")
 
         equidistant_al_points: bool = Inputs.bool_input(
-            to_set=to_set, default_value=True, text="Set Al atoms maximally equidistant from the channel atoms")
+            to_set=to_set, default_value=True, text="Set Al atoms maximally equidistant from the channel atoms",
+            env_id="set_equidistant")
 
         return IntercalatedChannelBuilder.build_al_in_carbone(
             coordinates_carbone=coordinates_carbone,
