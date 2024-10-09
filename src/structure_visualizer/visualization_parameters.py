@@ -12,7 +12,7 @@ class StructureVisualParameters:
 
 
 class VisualizationParameters:
-    carbone = StructureVisualParameters(
+    carbon = StructureVisualParameters(
         label="Carbon",
         color_atoms="#0500a4",
         color_bonds="#00065f",

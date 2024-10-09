@@ -136,8 +136,8 @@ class Actions:
 
         # Collect data to process
 
-        # Carbone
-        coordinates_carbone: ndarray = IntercalatedChannelBuilder.build_carbone_coordinates(
+        # Carbon
+        coordinates_carbon: ndarray = IntercalatedChannelBuilder.build_carbon_coordinates(
             structure_folder=structure_folder, structure_settings=structure_settings)
 
         # Aluminium
@@ -155,28 +155,28 @@ class Actions:
             except FileNotFoundError:
                 logger.warning(f"Calculated Al points for {structure_folder} not found.")
                 processed_coordinates_al: ndarray = cls._calculdate_al_points(
-                    to_set, structure_settings, coordinates_carbone)
+                    to_set, structure_settings, coordinates_carbon)
 
         else:
             processed_coordinates_al: ndarray = cls._calculdate_al_points(
-                to_set, structure_settings, coordinates_carbone)
+                to_set, structure_settings, coordinates_carbon)
 
-        logger.info("Number of carbone atoms:", len(coordinates_carbone))
+        logger.info("Number of carbon atoms:", len(coordinates_carbon))
         logger.info("Number of al atoms:", len(processed_coordinates_al))
 
         FileWriter.write_dat_file(processed_coordinates_al, structure_folder=structure_folder)
         to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
 
         StructureVisualizer.show_two_structures(
-            coordinates_first=coordinates_carbone,
+            coordinates_first=coordinates_carbon,
             coordinates_second=processed_coordinates_al,
             to_build_bonds=to_build_bonds)
 
     @staticmethod
     def _calculdate_al_points(
-            to_set: bool, structure_settings: None | StructureSettings, coordinates_carbone: ndarray
+            to_set: bool, structure_settings: None | StructureSettings, coordinates_carbon: ndarray
     ) -> ndarray:
-        """ Calculate Al points inside channel from coordinates_carbone. """
+        """ Calculate Al points inside channel from coordinates_carbon. """
         to_translate_al: bool = Inputs.bool_input(
             to_set, default_value=True, text="To translate AL atomes to fill full volume")
 
@@ -211,8 +211,8 @@ class Actions:
             to_set=to_set, default_value=True, text="Set Al atoms maximally equidistant from the channel atoms",
             env_id="set_equidistant")
 
-        return IntercalatedChannelBuilder.build_al_in_carbone(
-            coordinates_carbone=coordinates_carbone,
+        return IntercalatedChannelBuilder.build_al_in_carbon(
+            coordinates_carbon=coordinates_carbon,
             coordinates_al=coordinates_al,
             structure_settings=structure_settings,
             to_filter_al_atoms=to_filter_al_atoms,

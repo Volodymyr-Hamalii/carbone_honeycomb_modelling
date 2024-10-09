@@ -16,7 +16,7 @@ logger = Logger("IntercalatedChannelBuilder")
 
 class IntercalatedChannelBuilder:
     @staticmethod
-    def build_carbone_coordinates(structure_folder: str, structure_settings: None | StructureSettings) -> ndarray:
+    def build_carbon_coordinates(structure_folder: str, structure_settings: None | StructureSettings) -> ndarray:
         path_to_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_folder)
 
         return AtomsUniverseBuilder.builds_atoms_coordinates(
@@ -69,29 +69,29 @@ class IntercalatedChannelBuilder:
         return ndarray([])
 
     @classmethod
-    def build_al_in_carbone(
+    def build_al_in_carbon(
             cls,
-            coordinates_carbone: ndarray,
+            coordinates_carbon: ndarray,
             coordinates_al: ndarray,
             structure_settings: None | StructureSettings,
             to_filter_al_atoms: bool = True,
             equidistant_al_points: bool = True
     ) -> ndarray:
-        """ Return coordinates_carbone, coordinates_al """
+        """ Return coordinates_carbon, coordinates_al """
 
         if to_filter_al_atoms:
             if structure_settings is None:
                 logger.error("Not able to filter AL atoms without structure_settings.json")
             else:
                 coordinates_al_filtered: ndarray = AlAtomsFilter.find_max_filtered_atoms(
-                    coordinates_carbone=coordinates_carbone,
+                    coordinates_carbon=coordinates_carbon,
                     coordinates_al=coordinates_al,
                     structure_settings=structure_settings)
 
                 if equidistant_al_points:
                     # Set Al atoms maximally equidistant from the channel atoms
                     coordinates_al_filtered: ndarray = AlAtomsSetter.equidistant_points_sets_in_channel(
-                        coordinates_carbone, coordinates_al_filtered, structure_settings)
+                        coordinates_carbon, coordinates_al_filtered, structure_settings)
 
                 return coordinates_al_filtered
 

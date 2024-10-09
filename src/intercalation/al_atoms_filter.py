@@ -22,12 +22,12 @@ class AlAtomsFilter:
     @execution_time_logger
     def find_max_filtered_atoms(
             cls,
-            coordinates_carbone: ndarray,
+            coordinates_carbon: ndarray,
             coordinates_al: ndarray,
             structure_settings: StructureSettings,
     ) -> ndarray:
         """
-        Parallel move and filter Al atoms related carbone atoms
+        Parallel move and filter Al atoms related carbon atoms
         to find the option with the maximum Al atoms after filtering.
         """
 
@@ -66,7 +66,7 @@ class AlAtomsFilter:
                                 xy_rotaded_coordinates_al.copy(), angle_z=angle_z)
 
                             result: tuple = cls._get_filtered_al_atoms(
-                                coordinates_carbone=coordinates_carbone,
+                                coordinates_carbon=coordinates_carbon,
                                 coordinates_al=xyz_rotaded_coordinates_al,
                                 structure_settings=structure_settings,
                                 coordinates_al_prev=coordinates_al_result,
@@ -85,7 +85,7 @@ class AlAtomsFilter:
     @classmethod
     def _get_filtered_al_atoms(
             cls,
-            coordinates_carbone: ndarray,
+            coordinates_carbon: ndarray,
             coordinates_al: ndarray,
             structure_settings: StructureSettings,
             coordinates_al_prev: ndarray,
@@ -100,8 +100,8 @@ class AlAtomsFilter:
         dist_and_rotation_variance_result: float | floating = dist_and_rotation_variance_prev
         max_atoms_result: int = max_atoms
 
-        coordinates_al_filtered: ndarray = cls.filter_al_atoms_related_carbone(
-            coordinates_al, coordinates_carbone, structure_settings)
+        coordinates_al_filtered: ndarray = cls.filter_al_atoms_related_carbon(
+            coordinates_al, coordinates_carbon, structure_settings)
 
         num_of_atoms: int = len(coordinates_al_filtered)
 
@@ -141,9 +141,9 @@ class AlAtomsFilter:
             else:
                 # Check variance
                 current_min_dist_sum: floating = DistanceCalculator.calculate_min_distance_sum(
-                    coordinates_al_filtered, coordinates_carbone)
+                    coordinates_al_filtered, coordinates_carbon)
                 variance_related_channel: floating = VarianceCalculator.calculate_variance_related_channel(
-                    coordinates_al_filtered, coordinates_carbone)
+                    coordinates_al_filtered, coordinates_carbon)
 
                 current_dist_and_rotation_variance: floating = current_min_dist_sum - variance_related_channel
 
@@ -168,12 +168,12 @@ class AlAtomsFilter:
     @classmethod
     def find_max_filtered_atoms_by_minimize(
             cls,
-            coordinates_carbone: ndarray,
+            coordinates_carbon: ndarray,
             coordinates_al: ndarray,
             structure_settings: StructureSettings,
     ) -> ndarray:
         """
-        Parallel move and filter Al atoms related carbone atoms
+        Parallel move and filter Al atoms related carbon atoms
         to find the option with the maximum Al atoms after filtering.
         """
 
@@ -194,8 +194,8 @@ class AlAtomsFilter:
                 moved_coordinates_al, angle_x=angle_x, angle_y=angle_y, angle_z=angle_z)
 
             # Filter coordinates based on the given criteria
-            coordinates_al_filtered: ndarray = cls.filter_al_atoms_related_carbone(
-                rotated_coordinates_al, coordinates_carbone, structure_settings)
+            coordinates_al_filtered: ndarray = cls.filter_al_atoms_related_carbon(
+                rotated_coordinates_al, coordinates_carbon, structure_settings)
 
             # Calculate the negative number of atoms (since we want to maximize it)
             num_of_atoms = len(coordinates_al_filtered)
@@ -218,8 +218,8 @@ class AlAtomsFilter:
                 moved_coordinates_al, angle_x=angle_x, angle_y=angle_y, angle_z=angle_z)
 
             # Filter coordinates based on the given criteria
-            coordinates_al_filtered: ndarray = cls.filter_al_atoms_related_carbone(
-                rotated_coordinates_al, coordinates_carbone, structure_settings)
+            coordinates_al_filtered: ndarray = cls.filter_al_atoms_related_carbon(
+                rotated_coordinates_al, coordinates_carbon, structure_settings)
 
             # Count the number of atoms
             num_of_atoms = len(coordinates_al_filtered)
@@ -268,19 +268,19 @@ class AlAtomsFilter:
             final_coordinates_al, angle_x=angle_x, angle_y=angle_y, angle_z=angle_z)
 
         # Filter final coordinates
-        coordinates_al_filtered = cls.filter_al_atoms_related_carbone(
-            final_rotated_coordinates_al, coordinates_carbone, structure_settings)
+        coordinates_al_filtered = cls.filter_al_atoms_related_carbon(
+            final_rotated_coordinates_al, coordinates_carbon, structure_settings)
 
         return coordinates_al_filtered
 
     @classmethod
-    def filter_al_atoms_related_carbone(
+    def filter_al_atoms_related_carbon(
             cls,
             coordinates_al: ndarray,
-            coordinates_carbone: ndarray,
+            coordinates_carbon: ndarray,
             structure_settings: StructureSettings
     ) -> ndarray:
-        """Filter Al atoms related planes and then related carbone atoms."""
+        """Filter Al atoms related planes and then related carbon atoms."""
 
         coordinates_al_filtered: ndarray = cls._filter_atoms_related_clannel_planes(
             coordinates=coordinates_al,
@@ -288,13 +288,13 @@ class AlAtomsFilter:
 
         coordinates_al_filtered = CoordinatesFilter.filter_by_min_max_z(
             coordinates_to_filter=coordinates_al_filtered,
-            coordinates_with_min_max_z=coordinates_carbone,
+            coordinates_with_min_max_z=coordinates_carbon,
             move_align_z=True)
 
-        return cls._filter_atoms_relates_carbone_atoms(
+        return cls._filter_atoms_relates_carbon_atoms(
             coordinates_al=coordinates_al_filtered,
-            coordinates_carbone=coordinates_carbone,
-            max_distance_to_carbone_atoms=structure_settings.al_lattice_parameter / 2)
+            coordinates_carbon=coordinates_carbon,
+            max_distance_to_carbon_atoms=structure_settings.al_lattice_parameter / 2)
 
     @staticmethod
     def _filter_atoms_related_clannel_planes(
@@ -325,24 +325,24 @@ class AlAtomsFilter:
         return filtered_coordinates
 
     @staticmethod
-    def _filter_atoms_relates_carbone_atoms(
+    def _filter_atoms_relates_carbon_atoms(
         coordinates_al: ndarray,
-        coordinates_carbone: ndarray,
-        max_distance_to_carbone_atoms: float,
+        coordinates_carbon: ndarray,
+        max_distance_to_carbon_atoms: float,
     ) -> ndarray:
         """
         Filter points from the coordinates_al array
-        by the max distance (max_distance_to_carbone_atoms param)
-        to the points in the coordinates_carbone array.
+        by the max distance (max_distance_to_carbon_atoms param)
+        to the points in the coordinates_carbon array.
         """
 
         # Calculate the distance matrix
-        distances_matrix: ndarray = cdist(coordinates_al, coordinates_carbone)
+        distances_matrix: ndarray = cdist(coordinates_al, coordinates_carbon)
 
-        # Find the minimum distance for each atom in coordinates_al to any atom in coordinates_carbone
+        # Find the minimum distance for each atom in coordinates_al to any atom in coordinates_carbon
         min_distances: ndarray = np.min(distances_matrix, axis=1)
 
-        # Filter the atoms in coordinates_al based on the max distance to carbone atoms
-        filtered_coordinates: ndarray = coordinates_al[min_distances >= max_distance_to_carbone_atoms]
+        # Filter the atoms in coordinates_al based on the max distance to carbon atoms
+        filtered_coordinates: ndarray = coordinates_al[min_distances >= max_distance_to_carbon_atoms]
 
         return filtered_coordinates

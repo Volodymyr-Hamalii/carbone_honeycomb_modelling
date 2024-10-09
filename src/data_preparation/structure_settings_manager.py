@@ -40,7 +40,7 @@ class StructureSettingsManager:
             ],
 
             distance_from_plane=structure_settings.get("distance_from_plane", 0),
-            max_distance_to_carbone_atoms=structure_settings.get("max_distance_to_carbone_atoms", 0),
+            max_distance_to_carbon_atoms=structure_settings.get("max_distance_to_carbon_atoms", 0),
             al_lattice_parameter=structure_settings.get("al_lattice_parameter", 0),
         )
 
@@ -65,7 +65,7 @@ class StructureSettingsManager:
                     "direction": 1
                 },
             ],
-            "max_distance_to_carbone_atoms": None,
+            "max_distance_to_carbon_atoms": None,
             "al_lattice_parameter": Constants.physics.AL_LATTICE_PARAM,
         }
 

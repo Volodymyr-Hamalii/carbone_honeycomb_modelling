@@ -87,9 +87,9 @@ class AlAtomsSetter:
         moved_points: ndarray = PointsOrganizer.move_and_rotate_related_xy(
             vectors=initial_vectors, points=inner_points)
 
-        filtered_atoms: ndarray = AlAtomsFilter.filter_al_atoms_related_carbone(
+        filtered_atoms: ndarray = AlAtomsFilter.filter_al_atoms_related_carbon(
             coordinates_al=inner_points,
-            coordinates_carbone=channel_points,
+            coordinates_carbon=channel_points,
             structure_settings=structure_settings)
         num_of_atoms_after_filter: int = len(filtered_atoms)
 
