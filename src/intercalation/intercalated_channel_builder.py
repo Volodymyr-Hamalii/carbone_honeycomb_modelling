@@ -91,7 +91,7 @@ class IntercalatedChannelBuilder:
                 if equidistant_al_points:
                     # Set Al atoms maximally equidistant from the channel atoms
                     coordinates_al_filtered: ndarray = AlAtomsSetter.equidistant_points_sets_in_channel(
-                        coordinates_carbone, coordinates_al_filtered)
+                        coordinates_carbone, coordinates_al_filtered, structure_settings)
 
                 return coordinates_al_filtered
 

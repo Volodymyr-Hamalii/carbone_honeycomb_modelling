@@ -20,7 +20,12 @@ logger = Logger("equidistant_points_sets_in_channel")
 class AlAtomsSetter:
     @classmethod
     def equidistant_points_sets_in_channel(
-            cls, channel_points: ndarray, inner_points: ndarray, to_rotate: bool = True) -> ndarray:
+            cls,
+            channel_points: ndarray,
+            inner_points: ndarray,
+            structure_settings: StructureSettings,
+            to_rotate: bool = True,
+    ) -> ndarray:
         """
         Move the points inside the channel (from inner_points set) to occupy equilibrium positions,
         i.e., maximally equidistant from the channel atoms.
@@ -37,20 +42,25 @@ class AlAtomsSetter:
         return cls.rotate_and_translate_points(
             channel_points=channel_points,
             inner_points=inner_points,
+            structure_settings=structure_settings
         )
 
     @classmethod
     def rotate_and_translate_points(
-        cls, channel_points: ndarray, inner_points: ndarray
+        cls, channel_points: ndarray, inner_points: ndarray, structure_settings: StructureSettings
     ) -> ndarray:
         # translation coordinates (X and Y) and rotation angles (along Ox and Oy)
         initial_vectors: ndarray = np.array([0.0, 0.0, 0.0, 0.0])
+
+        PointsOrganizer.align_inner_points_along_channel_oz(
+            channel_points=channel_points, inner_points=inner_points
+        )
 
         # Use optimization to find the best translation that minimizes the variance
         result = minimize(
             cls.calculate_distance_and_rotation_variance,
             initial_vectors,
-            args=(inner_points, channel_points),
+            args=(inner_points, channel_points, structure_settings),
             method="BFGS",
             options={"disp": True}
         )
@@ -71,12 +81,12 @@ class AlAtomsSetter:
             channel_points: ndarray,
             structure_settings: StructureSettings
     ) -> float | floating:
-        
+
         num_of_atoms: int = len(inner_points)
 
         moved_points: ndarray = PointsOrganizer.move_and_rotate_related_xy(
             vectors=initial_vectors, points=inner_points)
-        
+
         filtered_atoms: ndarray = AlAtomsFilter.filter_al_atoms_related_carbone(
             coordinates_al=inner_points,
             coordinates_carbone=channel_points,
@@ -88,6 +98,6 @@ class AlAtomsSetter:
 
         min_distance_sum: floating = DistanceCalculator.calculate_min_distance_sum(moved_points, channel_points)
         variance_related_channel: floating = VarianceCalculator.calculate_variance_related_channel(
-            moved_points, channel_points) * len(inner_points)
-        distance_and_rotation_variance: floating = variance_related_channel - min_distance_sum
+            moved_points, channel_points)
+        distance_and_rotation_variance: floating = variance_related_channel * len(inner_points) - min_distance_sum
         return distance_and_rotation_variance
