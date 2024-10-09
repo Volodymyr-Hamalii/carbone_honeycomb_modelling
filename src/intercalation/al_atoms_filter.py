@@ -32,17 +32,18 @@ class AlAtomsFilter:
         """
 
         max_atoms: int = 0
-        min_distances_sum: float | floating = 0
+        min_dist_sum: float | floating = 0
+        min_dist_between_al_sum: float | floating = np.inf
 
         coordinates_al_with_max_atoms: ndarray = coordinates_al.copy()
 
         al_lattice_parameter: float = structure_settings.al_lattice_parameter
-        
-        range_to_move_step: float = 0.1 * al_lattice_parameter
+
+        range_to_move_step: float = 0.025 * al_lattice_parameter
         range_to_move: ndarray = np.arange(0, al_lattice_parameter, range_to_move_step)
 
-        angle_range_to_rotate_step: float = math.pi / 16
-        angle_range_to_rotate: ndarray = np.arange(- math.pi / 4, math.pi / 2, angle_range_to_rotate_step)
+        angle_range_to_rotate_step: float = math.pi / 32
+        angle_range_to_rotate: ndarray = np.arange(0, math.pi / 3, angle_range_to_rotate_step)
 
         for step_x in range_to_move:
             moved_x_coordinates_al: ndarray = coordinates_al.copy()
@@ -66,30 +67,48 @@ class AlAtomsFilter:
 
                             coordinates_al_filtered: ndarray = cls.filter_al_atoms_related_carbone(
                                 xyz_rotaded_coordinates_al, coordinates_carbone, structure_settings)
-                            
+
                             num_of_atoms: int = len(coordinates_al_filtered)
 
                             if num_of_atoms > max_atoms:
                                 max_atoms = num_of_atoms
-                                logger.info("max_atoms", max_atoms)
+                                # logger.info("max_atoms", max_atoms)
 
                                 coordinates_al_with_max_atoms = coordinates_al_filtered
+
+                                # Reset metrics
+                                min_dist_between_al_sum = np.inf
+                                min_dist_sum = 0
 
                             elif num_of_atoms > 0 and num_of_atoms == max_atoms:
                                 # The advantage is the maximum equidistant points from the channel
                                 # current_min_distances_sum: floating = PointsOrganizer.calculate_min_distance_sum(
                                 #     coordinates_al_filtered, coordinates_carbone)
 
-                                min_distance_sum: floating = PointsOrganizer.calculate_min_distance_sum(
-                                    coordinates_al_filtered, coordinates_carbone)
-                                variance_related_channel: floating = PointsOrganizer.calculate_variance_related_channel(
-                                    coordinates_al_filtered, coordinates_carbone)
+                                # Calculate min distances between Al atoms
+                                min_dist_between_al: ndarray = DistanceCalculator.calculate_min_distances_between_points(
+                                    coordinates_al_filtered)
+                                current_min_dist_between_al_sum: float = round(np.sum(min_dist_between_al), 3)
 
-                                distance_and_rotation_variance: floating = min_distance_sum - variance_related_channel
-
-                                if distance_and_rotation_variance > min_distances_sum:
+                                if current_min_dist_between_al_sum < min_dist_between_al_sum:
+                                    # The nearest atoms have priority
                                     coordinates_al_with_max_atoms = coordinates_al_filtered
-                                    min_distances_sum = distance_and_rotation_variance
+                                    min_dist_between_al_sum = current_min_dist_between_al_sum
+                                    min_dist_sum = 0
+
+                                    logger.info("min_dist_between_al", min_dist_between_al)
+                                else:
+                                    # Check variance
+                                    current_min_dist_sum: floating = DistanceCalculator.calculate_min_distance_sum(
+                                        coordinates_al_filtered, coordinates_carbone)
+                                    variance_related_channel: floating = VarianceCalculator.calculate_variance_related_channel(
+                                        coordinates_al_filtered, coordinates_carbone)
+
+                                    dist_and_rotation_variance: floating = current_min_dist_sum - variance_related_channel
+
+                                    if dist_and_rotation_variance > min_dist_sum:
+                                        coordinates_al_with_max_atoms = coordinates_al_filtered
+                                        min_dist_sum = dist_and_rotation_variance
 
         return coordinates_al_with_max_atoms
 
@@ -218,7 +237,7 @@ class AlAtomsFilter:
             coordinates_to_filter=coordinates_al_filtered,
             coordinates_with_min_max_z=coordinates_carbone,
             move_align_z=True)
-        
+
         return cls._filter_atoms_relates_carbone_atoms(
             coordinates_al=coordinates_al_filtered,
             coordinates_carbone=coordinates_carbone,
