@@ -2,12 +2,13 @@ from pathlib import Path
 from numpy import ndarray
 
 from ..utils import PathBuilder, Logger
-from ..structure_visualizer import AtomsUniverseBuilder
-from ..coordinates_actions import StructureTranslator, PointsOrganizer
+from ..structure_visualizer import AtomsUniverseBuilder, StructureVisualizer
+from ..coordinates_actions import StructureTranslator
 from ..data_preparation import StructureSettings
 
 from .al_lattice_type import AlLatticeType
 from .al_atoms_filter import AlAtomsFilter
+from .al_atoms_setter import AlAtomsSetter
 
 
 logger = Logger("IntercalatedChannelBuilder")
@@ -89,7 +90,7 @@ class IntercalatedChannelBuilder:
 
                 if equidistant_al_points:
                     # Set Al atoms maximally equidistant from the channel atoms
-                    coordinates_al_filtered: ndarray = PointsOrganizer.equidistant_points_sets_in_channel(
+                    coordinates_al_filtered: ndarray = AlAtomsSetter.equidistant_points_sets_in_channel(
                         coordinates_carbone, coordinates_al_filtered)
 
                 return coordinates_al_filtered
