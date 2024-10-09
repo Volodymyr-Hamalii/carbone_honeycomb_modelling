@@ -10,8 +10,8 @@ from ..coordinates_actions import (
     PlanesBuilder,
     CoordinatesFilter,
     StructureRotator,
-    PointsOrganizer,
 )
+from ..calculators import VarianceCalculator, DistanceCalculator
 
 logger = Logger("AlAtomsFilter")
 

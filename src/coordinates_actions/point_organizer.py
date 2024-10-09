@@ -9,6 +9,7 @@ from src.utils import Logger, execution_time_logger
 
 from .structure_rotator import StructureRotator
 from ..structure_visualizer import StructureVisualizer
+from ..calculators import DistanceCalculator, VarianceCalculator
 
 
 logger = Logger("PointsOrganizer")
@@ -16,47 +17,19 @@ logger = Logger("PointsOrganizer")
 
 class PointsOrganizer:
 
-    # Calculate distances
-
     @staticmethod
-    def calculate_min_distance(points_set_1: ndarray, points_set_2: ndarray) -> floating:
-        """ Returns min distance between 2 provided point sets. """
-        distances: ndarray = cdist(points_set_1, points_set_2)
-        return np.min(distances, axis=1)
-
-    @staticmethod
-    def calculate_min_distance_sum(points_set_1: ndarray, points_set_2: ndarray) -> floating:
-        """ Returns sum of min distances between 2 provided point sets. """
-        distances: ndarray = cdist(points_set_1, points_set_2)
-        min_distances: ndarray = np.min(distances, axis=1)
-        return np.sum(min_distances)
-
-    # Calculate variance
-
-    @classmethod
-    def _calculate_distance_variance(
-            cls, translation_vector: ndarray, channel_points: ndarray, inner_points: ndarray) -> floating | float:
-        """
-        Calculate the variance of the minimum distances between inner points
-        and channel points after applying a translation.
-        """
+    def move_and_rotate_related_xy(vectors: ndarray, points: ndarray) -> ndarray:
+        translation_x, translation_y = vectors[:2]
+        angle_x, angle_y = vectors[2:]
 
         # Apply translation to inner points
-        translated_inner_points: ndarray = inner_points.copy()
-        translated_inner_points[:, 0] += translation_vector[0]  # Along Ox
-        translated_inner_points[:, 1] += translation_vector[1]  # Along Oy
+        translated_inner_points: ndarray = points.copy()
+        translated_inner_points[:, 0] += translation_x  # Along Ox
+        translated_inner_points[:, 1] += translation_y  # Along Oy
 
-        # Calculate distances between each translated inner point and all channel points
-        # distances: ndarray = cdist(translated_inner_points, channel_points)
-
-        # # Get minimum distance from each inner point to any channel point
-        # min_distances: floating = np.min(distances, axis=1)
-
-        # # Calculate the variance of these minimum distances
-        # variance: floating = np.var(min_distances)
-
-        # TO CHECK ValueError: The user-provided objective function must return a scalar value.
-        return -cls.calculate_min_distance_sum(translated_inner_points, channel_points)
+        # Rotate inner points by angle_x and angle_y
+        return StructureRotator.rotate_on_angle_related_center(
+            translated_inner_points, angle_x=angle_x, angle_y=angle_y)
 
     @classmethod
     def _calculate_rotation_variance(
@@ -83,51 +56,8 @@ class PointsOrganizer:
         # )
         # variance_xy: floating = cls.calculate_xy_variance(rotated_points)
         # return min(variance_related_channel, variance_xy)
-        return -cls.calculate_min_distance_sum(rotated_points, channel_points)
-
-    @staticmethod
-    def calculate_variance_related_channel(
-        inner_points: ndarray, channel_points: ndarray
-    ) -> floating:
-        """ Calculate variance of the minimum distances after translation and rotation. """
-
-        distances: ndarray = cdist(inner_points, channel_points)
-        min_distances: ndarray = np.min(distances, axis=1)
-        variance: floating = np.var(min_distances)
-        return variance
-
-    @staticmethod
-    def calculate_xy_variance(points: ndarray) -> floating:
-        """ Calculate variance of the x and y coordinates. """
-        return np.var(points[:, 0]) + np.var(points[:, 1])
-
-    @staticmethod
-    def _move_and_rotate_related_xy(vectors: ndarray, points: ndarray) -> ndarray:
-        translation_x, translation_y = vectors[:2]
-        angle_x, angle_y = vectors[2:]
-
-        # Apply translation to inner points
-        translated_inner_points: ndarray = points.copy()
-        translated_inner_points[:, 0] += translation_x  # Along Ox
-        translated_inner_points[:, 1] += translation_y  # Along Oy
-
-        # Rotate inner points by angle_x and angle_y
-        return StructureRotator.rotate_on_angle_related_center(
-            translated_inner_points, angle_x=angle_x, angle_y=angle_y)
-
-    @classmethod
-    def _calculate_distance_and_rotation_variance(
-        cls, initial_vectors: ndarray, inner_points: ndarray, channel_points: ndarray
-    ) -> floating:
-
-        moved_points: ndarray = cls._move_and_rotate_related_xy(
-            vectors=initial_vectors, points=inner_points)
-
-        min_distance_sum: floating = cls.calculate_min_distance_sum(moved_points, channel_points)
-        variance_related_channel: floating = cls.calculate_variance_related_channel(
-            moved_points, channel_points) * len(inner_points)
-        distance_and_rotation_variance: floating = variance_related_channel - min_distance_sum
-        return distance_and_rotation_variance
+        return -DistanceCalculator.calculate_min_distance_sum(rotated_points, channel_points)
+    
 
     # Rotations
 
@@ -198,7 +128,7 @@ class PointsOrganizer:
                     continue
 
                 # Calculate the variance after this rotation
-                variance: floating = cls.calculate_variance_related_channel(
+                variance: floating = VarianceCalculator.calculate_variance_related_channel(
                     channel_points=channel_points, inner_points=xy_rotated_points)
 
                 # Check if this is the best configuration so far
