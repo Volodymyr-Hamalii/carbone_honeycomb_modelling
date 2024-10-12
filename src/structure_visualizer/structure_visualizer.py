@@ -21,6 +21,7 @@ class StructureVisualizer:
             visual_parameters: StructureVisualParameters = VisualizationParameters.carbon,
             num_of_min_distances: int = 3,
             skip_first_distances: int = 0,
+            set_equal_scale: bool | None = None,
             title: str | None = None,
     ) -> None:
 
@@ -35,6 +36,7 @@ class StructureVisualizer:
             to_build_bonds=to_build_bonds,
             num_of_min_distances=num_of_min_distances,
             skip_first_distances=skip_first_distances,
+            set_equal_scale=set_equal_scale,
         )
 
         ax.set_xlabel('X')

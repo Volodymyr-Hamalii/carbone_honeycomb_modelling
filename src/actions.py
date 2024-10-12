@@ -54,7 +54,7 @@ class Actions:
         coordinates: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
 
         to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
-        StructureVisualizer.show_structure(coordinates, to_build_bonds=to_build_bonds)
+        StructureVisualizer.show_structure(coordinates, to_build_bonds=to_build_bonds, set_equal_scale=False)
 
     @staticmethod
     def show_init_al_structure(structure_folder: str, to_set: bool) -> None:
