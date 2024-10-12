@@ -106,9 +106,6 @@ class AlAtomsFilter:
         num_of_atoms: int = len(coordinates_al_filtered)
 
         if num_of_atoms > max_atoms:
-            if max_atoms > 0:
-                logger.info("max_atoms", max_atoms)
-
             coordinates_al_result = coordinates_al_filtered
             max_atoms_result = len(coordinates_al_result)
 
@@ -116,11 +113,15 @@ class AlAtomsFilter:
             min_dist_between_al_sum_result = cls._calculate_min_dist_between_al_sum(
                 coordinates_al_filtered)
 
-            # if min_dist_between_al_sum_result < np.inf:
-            # logger.info("min_dist_between_al_sum", min_dist_between_al_sum_result)
-
             # Reset dist_and_rotation_variance
             dist_and_rotation_variance_result = 0
+
+            if num_of_atoms > 1:
+                logger.info(f"Number of Al atoms: {num_of_atoms}")
+
+                # Print average min distance between Al atoms
+                ave_min_dist: float = round(min_dist_between_al_sum_result / max_atoms_result, 4)
+                logger.info(f"Average min distance between Al atoms: {ave_min_dist}")
 
         elif num_of_atoms > 0 and num_of_atoms == max_atoms:
 
