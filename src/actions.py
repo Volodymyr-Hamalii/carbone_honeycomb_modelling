@@ -54,7 +54,8 @@ class Actions:
         coordinates: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
 
         to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
-        StructureVisualizer.show_structure(coordinates, to_build_bonds=to_build_bonds, set_equal_scale=False)
+        StructureVisualizer.show_structure(
+            coordinates, to_build_bonds=to_build_bonds, set_equal_scale=False, title=structure_folder)
 
     @staticmethod
     def show_init_al_structure(structure_folder: str, to_set: bool) -> None:
@@ -99,7 +100,8 @@ class Actions:
             to_build_bonds=to_build_bonds,
             visual_parameters=VisualizationParameters.al,
             num_of_min_distances=num_of_min_distances,
-            skip_first_distances=skip_first_distances)
+            skip_first_distances=skip_first_distances,
+            title="Aluminium")
 
     @staticmethod
     def show_one_channel_structure(structure_folder: str, to_set: bool) -> None:
@@ -121,7 +123,7 @@ class Actions:
             path_to_init_pdb_file, channel_limits)
 
         to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
-        StructureVisualizer.show_structure(coordinates, to_build_bonds=to_build_bonds)
+        StructureVisualizer.show_structure(coordinates, to_build_bonds=to_build_bonds, title=structure_folder)
 
     @classmethod
     def show_al_in_one_channel_structure(cls, structure_folder: str, to_set: bool) -> None:
@@ -183,7 +185,7 @@ class Actions:
 
         structure_settings: None | StructureSettings = StructureSettingsManager.read_file(
             structure_folder=structure_folder)
-        
+
         if structure_settings is None:
             logger.error("Please, provide structure_settings.")
             return
