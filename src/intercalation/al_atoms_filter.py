@@ -117,7 +117,7 @@ class AlAtomsFilter:
                 coordinates_al_filtered)
 
             # if min_dist_between_al_sum_result < np.inf:
-                # logger.info("min_dist_between_al_sum", min_dist_between_al_sum_result)
+            # logger.info("min_dist_between_al_sum", min_dist_between_al_sum_result)
 
             # Reset dist_and_rotation_variance
             dist_and_rotation_variance_result = 0
@@ -134,10 +134,13 @@ class AlAtomsFilter:
                 max_atoms_result = len(coordinates_al_result)
                 min_dist_between_al_sum_result = current_min_dist_between_al_sum
 
+                # Print average min distance between Al atoms
+                ave_min_dist: float = round(min_dist_between_al_sum_result / max_atoms_result, 4)
+                logger.info(f"Average min distance between Al atoms: {ave_min_dist}")
+
                 # Reset dist_and_rotation_variance
                 dist_and_rotation_variance_result = 0
 
-                logger.info("min_dist_between_al_sum", min_dist_between_al_sum_result)
             else:
                 # Check variance
                 current_min_dist_sum: floating = DistanceCalculator.calculate_min_distance_sum(
