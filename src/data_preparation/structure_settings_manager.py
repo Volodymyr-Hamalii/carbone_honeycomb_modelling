@@ -36,12 +36,12 @@ class StructureSettingsManager:
         channel_limits_data: dict = structure_settings.get("channel_limits", {})
 
         channel_limits = ChannelLimits(
-            x_min=channel_limits_data.get("x_min", channel_limits_from_channel_points.x_min),
-            x_max=channel_limits_data.get("x_max", channel_limits_from_channel_points.x_max),
-            y_min=channel_limits_data.get("y_min", channel_limits_from_channel_points.y_min),
-            y_max=channel_limits_data.get("y_max", channel_limits_from_channel_points.y_max),
-            z_min=channel_limits_data.get("z_min", channel_limits_from_channel_points.z_min),
-            z_max=channel_limits_data.get("z_max", channel_limits_from_channel_points.z_max),
+            x_min=channel_limits_data.get("x_min") or channel_limits_from_channel_points.x_min,
+            x_max=channel_limits_data.get("x_max") or channel_limits_from_channel_points.x_max,
+            y_min=channel_limits_data.get("y_min") or channel_limits_from_channel_points.y_min,
+            y_max=channel_limits_data.get("y_max") or channel_limits_from_channel_points.y_max,
+            z_min=channel_limits_data.get("z_min") or channel_limits_from_channel_points.z_min,
+            z_max=channel_limits_data.get("z_max") or channel_limits_from_channel_points.z_max,
         )
 
         return StructureSettings(
@@ -55,14 +55,14 @@ class StructureSettingsManager:
     @classmethod
     def create_structure_settings_template(cls, structure_folder: str) -> None:
         structure_settings_template: dict = {
-            # "channel_limits": {
-            #     "x_min": None,
-            #     "x_max": None,
-            #     "y_min": None,
-            #     "y_max": None,
-            #     "z_min": None,
-            #     "z_max": None,
-            # },
+            "channel_limits": {
+                "x_min": None,
+                "x_max": None,
+                "y_min": None,
+                "y_max": None,
+                "z_min": None,
+                "z_max": None,
+            },
             "points_to_set_channel_planes": [
                 {
                     "points": [
