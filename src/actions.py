@@ -130,7 +130,7 @@ class Actions:
         """
         Build one channel model from result_data/{structure_folder}/ljout-from-init-dat.pdb atoms
         based on result_data/{structure_folder}/structure_settings.json channel limits,
-        filled with translated Al structure from init_data/al.pdb
+        filled with translated Al structure
         """
 
         structure_settings: None | StructureSettings = StructureSettingsManager.get_structure_settings(
@@ -180,7 +180,7 @@ class Actions:
         """
         Build one channel model from result_data/{structure_folder}/ljout-from-init-dat.pdb atoms
         based on result_data/{structure_folder}/structure_settings.json channel limits,
-        filled with translated Al structure from init_data/al.pdb
+        filled with Al structure
         """
 
         structure_settings: None | StructureSettings = StructureSettingsManager.get_structure_settings(
