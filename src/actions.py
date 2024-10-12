@@ -71,7 +71,7 @@ class Actions:
             available_values=AlLatticeType.get_available_types())
         al_lattice_type = AlLatticeType(al_lattice_type_str)
 
-        structure_settings: None | StructureSettings = StructureSettingsManager.read_file(
+        structure_settings: None | StructureSettings = StructureSettingsManager.get_structure_settings(
             structure_folder=structure_folder)
 
         if al_lattice_type.is_cell:
@@ -114,7 +114,7 @@ class Actions:
 
         path_to_init_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_folder)
 
-        structure_settings: None | StructureSettings = StructureSettingsManager.read_file(
+        structure_settings: None | StructureSettings = StructureSettingsManager.get_structure_settings(
             structure_folder=structure_folder)
 
         channel_limits: ChannelLimits | None = structure_settings.channel_limits if structure_settings else None
@@ -133,7 +133,7 @@ class Actions:
         filled with translated Al structure from init_data/al.pdb
         """
 
-        structure_settings: None | StructureSettings = StructureSettingsManager.read_file(
+        structure_settings: None | StructureSettings = StructureSettingsManager.get_structure_settings(
             structure_folder=structure_folder)
 
         # Collect data to process
@@ -183,7 +183,7 @@ class Actions:
         filled with translated Al structure from init_data/al.pdb
         """
 
-        structure_settings: None | StructureSettings = StructureSettingsManager.read_file(
+        structure_settings: None | StructureSettings = StructureSettingsManager.get_structure_settings(
             structure_folder=structure_folder)
 
         if structure_settings is None:

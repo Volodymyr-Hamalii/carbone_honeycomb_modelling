@@ -12,7 +12,9 @@ class StructureSettingsManager:
     file_name: str = Constants.filenames.STRUCTURE_SETTINGS_FILE
 
     @classmethod
-    def read_file(cls, structure_folder: str) -> None | StructureSettings:
+    def get_structure_settings(cls, structure_folder: str) -> None | StructureSettings:
+        """ Read structure_settings file, parse it and calculate some fields. """
+
         structure_settings: dict | None = FileReader.read_json_file(
             structure_folder=structure_folder, file_name=cls.file_name)  # type: ignore
 
