@@ -8,6 +8,9 @@ def _clear_env_cache() -> None:
     env_vars_to_clear: list[str] = [
         "DEFAULT_ACTION",
         "DEFAULT_STRUCTURE_FOLDER",
+        "open_calculated_atoms",
+        "set_equidistant",
+        "al_lattice_type",
     ]
 
     for var in env_vars_to_clear:
