@@ -7,8 +7,8 @@ class ChannelLimits:
     x_max: float
     y_min: float
     y_max: float
-    z_min: float | None = None
-    z_max: float | None = None
+    z_min: float
+    z_max: float
 
 
 @dataclass
