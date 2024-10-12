@@ -13,6 +13,7 @@ from ..coordinates_actions import (
 )
 from ..calculators import VarianceCalculator, DistanceCalculator
 
+
 logger = Logger("AlAtomsFilter")
 
 

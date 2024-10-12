@@ -154,11 +154,11 @@ class Actions:
 
             except FileNotFoundError:
                 logger.warning(f"Calculated Al points for {structure_folder} not found.")
-                processed_coordinates_al: ndarray = cls._calculdate_al_points(
+                processed_coordinates_al: ndarray = cls._calculate_al_points(
                     to_set, structure_settings, coordinates_carbon)
 
         else:
-            processed_coordinates_al: ndarray = cls._calculdate_al_points(
+            processed_coordinates_al: ndarray = cls._calculate_al_points(
                 to_set, structure_settings, coordinates_carbon)
 
         logger.info("Number of carbon atoms:", len(coordinates_carbon))
