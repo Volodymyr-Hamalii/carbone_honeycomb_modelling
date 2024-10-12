@@ -3,6 +3,20 @@ import os
 from pathlib import Path
 import dotenv
 
+
+def _clear_env_cache() -> None:
+    env_vars_to_clear: list[str] = [
+        "DEFAULT_ACTION",
+        "DEFAULT_STRUCTURE_FOLDER",
+    ]
+
+    for var in env_vars_to_clear:
+        if var in os.environ:
+            del os.environ[var]
+
+
+# Remove cached env vars and load .env file
+_clear_env_cache()
 dotenv.load_dotenv()
 
 
