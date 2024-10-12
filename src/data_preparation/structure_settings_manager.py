@@ -62,8 +62,8 @@ class StructureSettingsManager:
                         [None, None, None],
                         [None, None, None]
                     ],
-                    "direction": 1
-                },
+                    "direction": 1 if i % 2 else -1
+                } for i in range(1, 7)
             ],
             "max_distance_to_carbon_atoms": None,
             "al_lattice_parameter": Constants.physics.AL_LATTICE_PARAM,
@@ -77,5 +77,5 @@ class StructureSettingsManager:
             return
 
         # Create a structure_settings.json template
-        Path(path_to_file).write_text(json.dumps(structure_settings_template), encoding="utf-8")
+        Path(path_to_file).write_text(json.dumps(structure_settings_template, indent=4), encoding="utf-8")
         logger.info(f"Created structure_settings template in {path_to_file}. Please, fill it out.")
