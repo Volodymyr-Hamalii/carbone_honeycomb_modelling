@@ -172,11 +172,34 @@ class Actions:
             coordinates_second=processed_coordinates_al,
             to_build_bonds=to_build_bonds)
 
+    @classmethod
+    def show_filtered_al_one_channel_structure(cls, structure_folder: str, to_set: bool) -> None:
+        """
+        Build one channel model from result_data/{structure_folder}/ljout-from-init-dat.pdb atoms
+        based on result_data/{structure_folder}/structure_settings.json channel limits,
+        filled with translated Al structure from init_data/al.pdb
+        """
+
+        structure_settings: None | StructureSettings = StructureSettingsManager.read_file(
+            structure_folder=structure_folder)
+
+        # Carbon
+        coordinates_carbon: ndarray = IntercalatedChannelBuilder.build_carbon_coordinates(
+            structure_folder=structure_folder, structure_settings=structure_settings)
+
+        # Aluminium
+        coordinates_al: ndarray = cls._build_al_atoms(to_set, structure_settings, coordinates_carbon)
+
+        to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
+        StructureVisualizer.show_two_structures(
+            coordinates_first=coordinates_carbon,
+            coordinates_second=coordinates_al,
+            to_build_bonds=to_build_bonds)
+
     @staticmethod
-    def _calculdate_al_points(
+    def _build_al_atoms(
             to_set: bool, structure_settings: None | StructureSettings, coordinates_carbon: ndarray
     ) -> ndarray:
-        """ Calculate Al points inside channel from coordinates_carbon. """
         to_translate_al: bool = Inputs.bool_input(
             to_set, default_value=True, text="To translate AL atomes to fill full volume")
 
@@ -190,17 +213,25 @@ class Actions:
 
         if al_lattice_type.is_cell:
             al_file: str = Inputs.text_input(to_set, default_value=Constants.filenames.AL_FILE, text="Init AL file")
-            coordinates_al: ndarray = IntercalatedChannelBuilder.build_al_coordinates_for_cell(
+            return IntercalatedChannelBuilder.build_al_coordinates_for_cell(
                 to_translate_al=to_translate_al,
                 al_file=al_file,
                 structure_settings=structure_settings)
 
         else:
             # Fill the volume with aluminium for close-packed lattice
-            coordinates_al: ndarray = IntercalatedChannelBuilder.build_al_coordinates_for_close_packed(
+            return IntercalatedChannelBuilder.build_al_coordinates_for_close_packed(
                 al_lattice_type=al_lattice_type,
                 structure_settings=structure_settings,
                 to_translate_al=to_translate_al)
+
+    @classmethod
+    def _calculate_al_points(
+            cls, to_set: bool, structure_settings: None | StructureSettings, coordinates_carbon: ndarray
+    ) -> ndarray:
+        """ Calculate Al points inside channel from coordinates_carbon. """
+
+        coordinates_al: ndarray = cls._build_al_atoms(to_set, structure_settings, coordinates_carbon)
 
         # Process data
 
@@ -224,6 +255,6 @@ class Actions:
 
         cls.convert_init_dat_to_pdb(structure_folder, to_set)
         cls.show_init_structure(structure_folder, to_set)
-        cls.show_init_al_structure(structure_folder, to_set)
         cls.show_one_channel_structure(structure_folder, to_set)
+        cls.show_filtered_al_one_channel_structure(structure_folder, to_set)
         cls.show_al_in_one_channel_structure(structure_folder, to_set)
