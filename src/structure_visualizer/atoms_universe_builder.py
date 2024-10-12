@@ -232,7 +232,7 @@ class AtomsUniverseBuilder:
 
     @staticmethod
     def _get_extended_limits_for_coordinate(min_coord: float, max_coord: float) -> tuple[float, float]:
-        delta: float = abs((max_coord - min_coord)) / 4
+        delta: float = abs((max_coord - min_coord)) / 2
         min_coord_extended: float = min_coord - delta
         max_coord_extended: float = max_coord + delta
         return min_coord_extended, max_coord_extended
