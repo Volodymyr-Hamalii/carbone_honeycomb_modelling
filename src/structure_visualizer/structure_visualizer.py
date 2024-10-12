@@ -20,7 +20,8 @@ class StructureVisualizer:
             to_build_bonds: bool = True,
             visual_parameters: StructureVisualParameters = VisualizationParameters.carbon,
             num_of_min_distances: int = 3,
-            skip_first_distances: int = 0
+            skip_first_distances: int = 0,
+            title: str | None = None,
     ) -> None:
 
         # Prepare to visualize
@@ -40,6 +41,9 @@ class StructureVisualizer:
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')  # type: ignore
 
+        if title is not None:
+            ax.set_title(title)
+
         plt.show()
 
     @classmethod
@@ -50,6 +54,7 @@ class StructureVisualizer:
         to_build_bonds: bool = False,
         visual_parameters_first: StructureVisualParameters = VisualizationParameters.carbon,
         visual_parameters_second: StructureVisualParameters = VisualizationParameters.al,
+        title: str | None = None,
     ) -> None:
         """ Show 3D plot with 2 structures (by default there are carbon and aluminium) """
 
@@ -77,6 +82,9 @@ class StructureVisualizer:
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')  # type: ignore
         ax.legend()
+
+        if title is not None:
+            ax.set_title(title)
 
         plt.show()
 

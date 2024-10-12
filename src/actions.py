@@ -170,7 +170,8 @@ class Actions:
         StructureVisualizer.show_two_structures(
             coordinates_first=coordinates_carbon,
             coordinates_second=processed_coordinates_al,
-            to_build_bonds=to_build_bonds)
+            to_build_bonds=to_build_bonds,
+            title=structure_folder)
 
     @classmethod
     def show_filtered_al_one_channel_structure(cls, structure_folder: str, to_set: bool) -> None:
@@ -194,7 +195,8 @@ class Actions:
         StructureVisualizer.show_two_structures(
             coordinates_first=coordinates_carbon,
             coordinates_second=coordinates_al,
-            to_build_bonds=to_build_bonds)
+            to_build_bonds=to_build_bonds,
+            title=structure_folder)
 
     @staticmethod
     def _build_al_atoms(
