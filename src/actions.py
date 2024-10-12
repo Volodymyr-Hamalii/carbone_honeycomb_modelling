@@ -4,7 +4,7 @@ from numpy import ndarray
 from .utils import Constants, PathBuilder, FileReader, FileConverter, FileWriter, Logger, Inputs
 from .structure_visualizer import StructureVisualizer, AtomsUniverseBuilder, VisualizationParameters
 from .data_preparation import StructureSettings, StructureSettingsManager, ChannelLimits
-from .intercalation import IntercalatedChannelBuilder, AlLatticeType
+from .intercalation import IntercalatedChannelBuilder, AlLatticeType, AlAtomsFilter
 
 logger = Logger("Actions")
 
@@ -183,6 +183,10 @@ class Actions:
 
         structure_settings: None | StructureSettings = StructureSettingsManager.read_file(
             structure_folder=structure_folder)
+        
+        if structure_settings is None:
+            logger.error("Please, provide structure_settings.")
+            return
 
         # Carbon
         coordinates_carbon: ndarray = IntercalatedChannelBuilder.build_carbon_coordinates(
@@ -190,6 +194,8 @@ class Actions:
 
         # Aluminium
         coordinates_al: ndarray = cls._build_al_atoms(to_set, structure_settings, coordinates_carbon)
+        coordinates_al = AlAtomsFilter.filter_al_atoms_related_carbon(
+            coordinates_al, coordinates_carbon, structure_settings)
 
         to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
         StructureVisualizer.show_two_structures(
