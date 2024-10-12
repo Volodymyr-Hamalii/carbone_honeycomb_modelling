@@ -40,10 +40,10 @@ class AlAtomsFilter:
 
         al_lattice_parameter: float = structure_settings.al_lattice_parameter
 
-        range_to_move_step: float = al_lattice_parameter / 20
+        range_to_move_step: float = al_lattice_parameter / 25
         range_to_move: ndarray = np.arange(0, al_lattice_parameter, range_to_move_step)
 
-        angle_range_to_rotate_step: float = math.pi / 30
+        angle_range_to_rotate_step: float = math.pi / 45
         angle_range_to_rotate: ndarray = np.arange(0, math.pi / 3, angle_range_to_rotate_step)
 
         for step_x in range_to_move:
@@ -117,8 +117,8 @@ class AlAtomsFilter:
             min_dist_between_al_sum_result = cls._calculate_min_dist_between_al_sum(
                 coordinates_al_filtered)
 
-            if min_dist_between_al_sum_result < np.inf:
-                logger.info("min_dist_between_al_sum", min_dist_between_al_sum_result)
+            # if min_dist_between_al_sum_result < np.inf:
+                # logger.info("min_dist_between_al_sum", min_dist_between_al_sum_result)
 
             # Reset dist_and_rotation_variance
             dist_and_rotation_variance_result = 0
