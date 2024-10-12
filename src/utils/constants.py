@@ -54,4 +54,4 @@ class Constants:
     DEFAULT_ACTION: str = os.environ.get("DEFAULT_ACTION") or "full_flow"
     DEFAULT_STRUCTURE_FOLDER: str = os.environ.get("DEFAULT_STRUCTURE_FOLDER") or "A1-7_h3"
 
-    DEV_MODE: bool = os.environ.get("DEV_MODE", "false") == "true"
+    DEV_MODE: bool = os.environ.get("DEV_MODE", "false") == "true"  # False by default
