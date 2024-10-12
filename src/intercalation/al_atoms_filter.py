@@ -38,13 +38,12 @@ class AlAtomsFilter:
 
         coordinates_al_result: ndarray = coordinates_al.copy()
 
-        al_lattice_parameter: float = structure_settings.al_lattice_parameter
+        al_param: float = structure_settings.al_lattice_parameter
+        step_to_move: float = al_param / 25
+        range_to_move: ndarray = np.arange(0, al_param, step_to_move)
 
-        range_to_move_step: float = al_lattice_parameter / 25
-        range_to_move: ndarray = np.arange(0, al_lattice_parameter, range_to_move_step)
-
-        angle_range_to_rotate_step: float = math.pi / 45
-        angle_range_to_rotate: ndarray = np.arange(0, math.pi / 3, angle_range_to_rotate_step)
+        step_to_rotate: float = math.pi / 45
+        angle_range_to_rotate: ndarray = np.arange(0, math.pi / 3, step_to_rotate)
 
         for step_x in range_to_move:
             moved_x_coordinates_al: ndarray = coordinates_al.copy()
@@ -295,7 +294,7 @@ class AlAtomsFilter:
         return cls._filter_atoms_relates_carbon_atoms(
             coordinates_al=coordinates_al_filtered,
             coordinates_carbon=coordinates_carbon,
-            max_distance_to_carbon_atoms=structure_settings.al_lattice_parameter / 2)
+            max_distance_to_carbon_atoms=structure_settings.max_distance_to_carbon_atoms)
 
     @staticmethod
     def _filter_atoms_related_clannel_planes(
