@@ -208,22 +208,31 @@ class AtomsUniverseBuilder:
 
         return full_structure[within_limits]
 
-    @staticmethod
+    @classmethod
     def _get_extended_limits(
-        channel_coordinate_limits: ChannelLimits
+        cls, channel_coordinate_limits: ChannelLimits
     ) -> tuple[float, float, float, float, float, float]:
 
-        x_extend: float = channel_coordinate_limits.x_max / 2
-        x_min: float = channel_coordinate_limits.x_min - x_extend
-        x_max: float = channel_coordinate_limits.x_max + x_extend
+        x_min, x_max = cls._get_extended_limits_for_coordinate(
+            min_coord=channel_coordinate_limits.x_min,
+            max_coord=channel_coordinate_limits.x_max,
+        )
 
-        y_extend: float = channel_coordinate_limits.y_max / 2
-        y_min: float = channel_coordinate_limits.y_min - y_extend
-        y_max: float = channel_coordinate_limits.y_max + y_extend
+        y_min, y_max = cls._get_extended_limits_for_coordinate(
+            min_coord=channel_coordinate_limits.y_min,
+            max_coord=channel_coordinate_limits.y_max,
+        )
 
-        # z_extend: float = channel_coordinate_limits.z_max or z_max_default / 2
-        z_extend: float = 0
-        z_min: float = channel_coordinate_limits.z_min
-        z_max: float = channel_coordinate_limits.z_max
+        z_min, z_max = cls._get_extended_limits_for_coordinate(
+            min_coord=channel_coordinate_limits.z_min,
+            max_coord=channel_coordinate_limits.z_max,
+        )
 
         return x_min, x_max, y_min, y_max, z_min, z_max
+
+    @staticmethod
+    def _get_extended_limits_for_coordinate(min_coord: float, max_coord: float) -> tuple[float, float]:
+        delta: float = abs((max_coord - min_coord)) / 4
+        min_coord_extended: float = min_coord - delta
+        max_coord_extended: float = max_coord + delta
+        return min_coord_extended, max_coord_extended
