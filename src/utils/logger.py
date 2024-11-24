@@ -6,12 +6,12 @@ from .constants import Constants
 
 # Set logging message format
 
-if Constants.MAX_NUMBER_OF_THREADS == 1:
-    # Printing without a name of the thread
-    log_format: str = "> %(levelname)s (%(name)s.%(funcName)s): %(message)s"
-else:
+if Constants.settings.MULTI_THREADED:
     # Log also the thread name for multithreading processes
     log_format: str = "> [%(threadName)s] %(levelname)s (%(name)s.%(funcName)s): %(message)s"
+else:
+    # Printing without a name of the thread
+    log_format: str = "> %(levelname)s (%(name)s.%(funcName)s): %(message)s"
 
 
 # Logging configs
@@ -49,11 +49,11 @@ class Logger:
     def warning(self, *args) -> None:
         self.logger.warning(self.get_message(*args), stacklevel=2)
 
-    def error(self, *args) -> None:
+    def error(self, *args, exc_info: bool = True) -> None:
         self.logger.error(
             self.get_message(*args),
             stacklevel=2,
-            exc_info=Constants.DEV_MODE,  # to print tracebacks
+            exc_info=exc_info or Constants.settings.DEV_MODE,  # to print tracebacks
         )
 
     @staticmethod

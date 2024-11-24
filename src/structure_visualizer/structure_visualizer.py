@@ -18,9 +18,11 @@ class StructureVisualizer:
             cls,
             coordinates: ndarray,
             to_build_bonds: bool = True,
-            visual_parameters: StructureVisualParameters = VisualizationParameters.carbone,
+            visual_parameters: StructureVisualParameters = VisualizationParameters.carbon,
             num_of_min_distances: int = 3,
-            skip_first_distances: int = 0
+            skip_first_distances: int = 0,
+            set_equal_scale: bool | None = None,
+            title: str | None = None,
     ) -> None:
 
         # Prepare to visualize
@@ -34,11 +36,15 @@ class StructureVisualizer:
             to_build_bonds=to_build_bonds,
             num_of_min_distances=num_of_min_distances,
             skip_first_distances=skip_first_distances,
+            set_equal_scale=set_equal_scale,
         )
 
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')  # type: ignore
+
+        if title is not None:
+            ax.set_title(title)
 
         plt.show()
 
@@ -48,16 +54,17 @@ class StructureVisualizer:
         coordinates_first: ndarray,
         coordinates_second: ndarray,
         to_build_bonds: bool = False,
-        visual_parameters_first: StructureVisualParameters = VisualizationParameters.carbone,
+        visual_parameters_first: StructureVisualParameters = VisualizationParameters.carbon,
         visual_parameters_second: StructureVisualParameters = VisualizationParameters.al,
+        title: str | None = None,
     ) -> None:
-        """ Show 3D plot with 2 structures (by default there are carbone and aluminium) """
+        """ Show 3D plot with 2 structures (by default there are carbon and aluminium) """
 
         # Prepare to visualize
         fig: Figure = plt.figure()
         ax: Axes = fig.add_subplot(111, projection='3d')
 
-        # Plot first structure atoms (carbone by default)
+        # Plot first structure atoms (carbon by default)
         cls._plot_atoms(
             ax=ax,
             coordinates=coordinates_first,
@@ -77,6 +84,9 @@ class StructureVisualizer:
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')  # type: ignore
         ax.legend()
+
+        if title is not None:
+            ax.set_title(title)
 
         plt.show()
 
@@ -113,7 +123,7 @@ class StructureVisualizer:
             cls._set_equal_scale(ax, x_first, y_first, z_first)
 
         if to_build_bonds:
-            # Carbone
+            # Carbon
             LinesBuilder.add_lines(
                 coordinates=coordinates, ax=ax,
                 color_bonds=visual_parameters.color_bonds,

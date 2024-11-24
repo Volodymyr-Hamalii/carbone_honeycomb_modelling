@@ -5,12 +5,14 @@ from numpy import ndarray, floating
 from scipy.optimize import minimize
 
 from src.utils import Logger, execution_time_logger
-
-from ..coordinates_actions import PointsOrganizer
-from ..calculators import DistanceCalculator, VarianceCalculator
-from ..data_preparation import StructureSettings
-# from ..structure_visualizer import StructureVisualizer
-
+from src.data_preparation import StructureSettings
+from src.coordinate_operations import (
+    DistanceMeasure,
+    PointsMover,
+    PointsRotator,
+)
+from ..variance_calculator import VarianceCalculator
+from ..intercalated_coordinates_utils import IntercalatedCoordinatesUtils
 from .al_atoms_filter import AlAtomsFilter
 
 
@@ -52,8 +54,8 @@ class AlAtomsSetter:
         # translation coordinates (X and Y) and rotation angles (along Ox and Oy)
         initial_vectors: ndarray = np.array([0.0, 0.0, 0.0, 0.0])
 
-        PointsOrganizer.align_inner_points_along_channel_oz(
-            channel_points=channel_points, inner_points=inner_points
+        IntercalatedCoordinatesUtils.align_inner_points_along_channel_oz(
+            channel_points=channel_points, intercaleted_points=inner_points
         )
 
         # Use optimization to find the best translation that minimizes the variance
@@ -68,7 +70,7 @@ class AlAtomsSetter:
         # Optimal translation vector found
         optimal_vectors: ndarray = result.x
 
-        moved_points: ndarray = PointsOrganizer.move_and_rotate_related_xy(
+        moved_points: ndarray = cls.move_and_rotate_related_xy(
             vectors=optimal_vectors, points=inner_points)
 
         return moved_points
@@ -84,20 +86,37 @@ class AlAtomsSetter:
 
         num_of_atoms: int = len(inner_points)
 
-        moved_points: ndarray = PointsOrganizer.move_and_rotate_related_xy(
+        moved_points: ndarray = cls.move_and_rotate_related_xy(
             vectors=initial_vectors, points=inner_points)
 
-        filtered_atoms: ndarray = AlAtomsFilter.filter_al_atoms_related_carbone(
+        filtered_atoms: ndarray = AlAtomsFilter.filter_al_atoms_related_carbon(
             coordinates_al=inner_points,
-            coordinates_carbone=channel_points,
+            coordinates_carbon=channel_points,
             structure_settings=structure_settings)
         num_of_atoms_after_filter: int = len(filtered_atoms)
 
         if num_of_atoms_after_filter < num_of_atoms:
             return np.inf
 
-        min_distance_sum: floating = DistanceCalculator.calculate_min_distance_sum(moved_points, channel_points)
+        min_distance_sum: floating = DistanceMeasure.calculate_min_distance_sum(moved_points, channel_points)
         variance_related_channel: floating = VarianceCalculator.calculate_variance_related_channel(
             moved_points, channel_points)
         distance_and_rotation_variance: floating = variance_related_channel * len(inner_points) - min_distance_sum
         return distance_and_rotation_variance
+
+    @staticmethod
+    def move_and_rotate_related_xy(vectors: ndarray, points: ndarray) -> ndarray:
+        translation_x, translation_y = vectors[:2]
+        move_vector = np.array([translation_x, translation_y, 0])
+        angle_x, angle_y = vectors[2:]
+
+        # Apply translation to inner points
+        translated_inner_points: ndarray = points.copy()
+
+        moved_points = PointsMover.move_on_vector(
+            points=translated_inner_points,
+            vector=np.array([vectors[0], vectors[1], 0]),
+        )
+        # Rotate inner points by angle_x and angle_y
+        return PointsRotator.rotate_on_angle_related_center(
+            translated_inner_points, angle_x=angle_x, angle_y=angle_y)

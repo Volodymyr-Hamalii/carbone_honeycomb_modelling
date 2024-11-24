@@ -1,4 +1,4 @@
-# Carbone honeycomb modelling
+# Carbon honeycomb modelling
 
 To build honeycomb models from .dat or .pdb files. Allows intercalation with other structures.
 
@@ -29,7 +29,7 @@ If you don't want to specify some argument -- just provide '\_' on this place.
 
 ## Note
 
-1. You have one processed example for A1-7_h3 carbone honeycomb structure.
+1. You have one processed example for A1-7_h3 carbon honeycomb structure.
 2. Available actions you can check with 'python main.py help' command.
 3. If we don't have .pbd init file (but you have ljout.dat) -- run as a first action 'convert_init_dat_to_pdb'.
 4. To put Al into carbon channel set parameters in result_data/{structure}/structure_settings.json JSON file.

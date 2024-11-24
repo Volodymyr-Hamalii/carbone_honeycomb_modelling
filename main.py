@@ -1,5 +1,5 @@
 import sys
-from src import Actions, CommandLineArgsHandler, Constants, Logger
+from src import AppActions, CommandLineArgsHandler, Constants, Logger
 
 
 logger = Logger("Main")
@@ -12,14 +12,14 @@ def run_action() -> None:
     args: list[str] = sys.argv[4:]
 
     if action == "help":
-        Actions.help(structure_folder)
+        AppActions.help(structure_folder)
         return
 
     try:
         logger.info(f"Run '{action}' for '{structure_folder}' structure.")
 
-        # Get the method from the Actions class
-        method = getattr(Actions, action)
+        # Get the method from the AppActions class
+        method = getattr(AppActions, action)
 
         if args:
             # Call the method with the structure_folder and other parameters
@@ -30,11 +30,11 @@ def run_action() -> None:
 
     except AttributeError:
         logger.error(f"Action '{action}' is not available.")
-        Actions.help(structure_folder)
+        AppActions.help(structure_folder)
 
     except TypeError as e:
         logger.error(f"Parameters error:", e)
-        Actions.help(structure_folder)
+        AppActions.help(structure_folder)
 
 
 if __name__ == "__main__":
