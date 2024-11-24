@@ -1,3 +1,3 @@
 from .intercalated_channel_builder import IntercalatedChannelBuilder
-from .al_lattice_type import AlLatticeType
 from .al_atoms_filter import AlAtomsFilter
+from .al_atoms_setter import AlAtomsSetter

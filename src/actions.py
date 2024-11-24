@@ -4,7 +4,8 @@ from numpy import ndarray
 from .utils import Constants, PathBuilder, FileReader, FileConverter, FileWriter, Logger, Inputs
 from .structure_visualizer import StructureVisualizer, AtomsUniverseBuilder, VisualizationParameters
 from .data_preparation import StructureSettings, StructureSettingsManager, ChannelLimits
-from .intercalation import IntercalatedChannelBuilder, AlLatticeType, AlAtomsFilter
+from .projects.intercalation_and_sorption import IntercalatedChannelBuilder, AlAtomsFilter
+from .base_structure_classes import AlLatticeType
 
 logger = Logger("Actions")
 

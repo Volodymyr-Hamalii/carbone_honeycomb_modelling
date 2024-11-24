@@ -1,12 +1,21 @@
+import math
 from pathlib import Path
-from numpy import ndarray
 
-from ..utils import PathBuilder, Logger
-from ..structure_visualizer import AtomsUniverseBuilder, StructureVisualizer
-from ..coordinates_actions import StructureTranslator
-from ..data_preparation import StructureSettings
+import numpy as np
+from numpy import ndarray, floating
+from scipy.spatial.distance import cdist
+from scipy.optimize import minimize
 
-from .al_lattice_type import AlLatticeType
+from src.utils import PathBuilder, Logger, execution_time_logger
+from src.structure_visualizer import AtomsUniverseBuilder, StructureVisualizer
+from src.data_preparation import StructureSettings
+from src.base_structure_classes import AlLatticeType
+from src.coordinate_operations import (
+    PointsRotator,
+)
+
+from ..structure_operations import StructureTranslator
+
 from .al_atoms_filter import AlAtomsFilter
 from .al_atoms_setter import AlAtomsSetter
 
@@ -83,7 +92,7 @@ class IntercalatedChannelBuilder:
             if structure_settings is None:
                 logger.error("Not able to filter AL atoms without structure_settings.json")
             else:
-                coordinates_al_filtered: ndarray = AlAtomsFilter.find_max_filtered_atoms(
+                coordinates_al_filtered: ndarray = cls.find_max_filtered_atoms(
                     coordinates_carbon=coordinates_carbon,
                     coordinates_al=coordinates_al,
                     structure_settings=structure_settings)
@@ -97,3 +106,66 @@ class IntercalatedChannelBuilder:
 
         logger.info("Build AL in the channel without Al atoms filtering.")
         return coordinates_al
+
+    @classmethod
+    @execution_time_logger
+    def find_max_filtered_atoms(
+            cls,
+            coordinates_carbon: ndarray,
+            coordinates_al: ndarray,
+            structure_settings: StructureSettings,
+    ) -> ndarray:
+        """
+        Parallel move, rotate and filter Al atoms related carbon atoms
+        to find the option with the maximum Al atoms after filtering.
+        """
+
+        max_atoms: int = 0
+        min_dist_between_al_sum: float = np.inf
+        dist_and_rotation_variance: float | floating = 0
+
+        coordinates_al_result: ndarray = coordinates_al.copy()
+
+        al_param: float = structure_settings.al_lattice_parameter
+        step_to_move: float = al_param / 25
+        range_to_move: ndarray = np.arange(0, al_param, step_to_move)
+
+        step_to_rotate: float = math.pi / 45
+        angle_range_to_rotate: ndarray = np.arange(0, math.pi / 3, step_to_rotate)
+
+        for step_x in range_to_move:
+            moved_x_coordinates_al: ndarray = coordinates_al.copy()
+            moved_x_coordinates_al[:, 0] += step_x
+
+            for step_y in range_to_move:
+                moved_xy_coordinates_al: ndarray = moved_x_coordinates_al.copy()
+                moved_xy_coordinates_al[:, 1] += step_y
+
+                for angle_x in angle_range_to_rotate:
+                    x_rotaded_coordinates_al: ndarray = PointsRotator.rotate_on_angle_related_center(
+                        moved_xy_coordinates_al.copy(), angle_x=angle_x)
+
+                    for angle_y in angle_range_to_rotate:
+                        xy_rotaded_coordinates_al: ndarray = PointsRotator.rotate_on_angle_related_center(
+                            x_rotaded_coordinates_al.copy(), angle_y=angle_y)
+
+                        for angle_z in angle_range_to_rotate:
+                            xyz_rotaded_coordinates_al: ndarray = PointsRotator.rotate_on_angle_related_center(
+                                xy_rotaded_coordinates_al.copy(), angle_z=angle_z)
+
+                            result: tuple = AlAtomsFilter._get_filtered_al_atoms(
+                                coordinates_carbon=coordinates_carbon,
+                                coordinates_al=xyz_rotaded_coordinates_al,
+                                structure_settings=structure_settings,
+                                coordinates_al_prev=coordinates_al_result,
+                                max_atoms=max_atoms,
+                                min_dist_between_al_sum_prev=min_dist_between_al_sum,
+                                dist_and_rotation_variance_prev=dist_and_rotation_variance,
+                            )
+
+                            coordinates_al_result = result[0]
+                            min_dist_between_al_sum = result[1]
+                            dist_and_rotation_variance = result[2]
+                            max_atoms = result[3]
+
+        return coordinates_al_result

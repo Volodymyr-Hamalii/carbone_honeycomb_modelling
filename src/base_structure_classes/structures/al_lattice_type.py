@@ -1,4 +1,5 @@
-from ..base_structure_classes import LatticeType
+from ..lattice_type import LatticeType
+
 
 class AlLatticeType(LatticeType):
     def __init__(self, al_structure: str = "cell") -> None:
@@ -9,11 +10,9 @@ class AlLatticeType(LatticeType):
         self.is_fcc: bool = al_structure.lower() == "fcc"  # Face-centered cubic
         self.is_hcp: bool = al_structure.lower() == "hcp"  # Hexagonal close-packed
 
-
     @staticmethod
     def get_info() -> str:
         return "AL structure to fill (can be 'cell' for cubic cell, 'FCC' or 'HCP' for planes)"
-
 
     @staticmethod
     def get_available_types() -> list[str]:

@@ -1,7 +1,6 @@
 import numpy as np
 from numpy import ndarray
 
-
 class PlanesBuilder:
     @staticmethod
     def build_plane_parameters(
@@ -14,7 +13,7 @@ class PlanesBuilder:
         Takes 3 points as a parameters as lists with 3 coordinates.
         Returns A, B, C, D parameters from the equation above.
         """
-        
+
         p1_np: ndarray = np.array(p1)
         p2_np: ndarray = np.array(p2)
         p3_np: ndarray = np.array(p3)
@@ -27,7 +26,3 @@ class PlanesBuilder:
         D = -np.dot(normal, p1_np)
 
         return A, B, C, D
-
-    @staticmethod
-    def _filter_one_plane_coordinates(coordinates: ndarray, x: float = 0, y: float = 0) -> ndarray:
-        return coordinates[(coordinates[:, 0] == x) | (coordinates[:, 1] == y)]
