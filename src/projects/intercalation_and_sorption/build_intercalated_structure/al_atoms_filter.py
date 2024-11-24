@@ -20,7 +20,7 @@ logger = Logger("AlAtomsFilter")
 
 class AlAtomsFilter:
     @classmethod
-    def _get_filtered_al_atoms(
+    def get_filtered_al_atoms(
             cls,
             coordinates_carbon: ndarray,
             coordinates_al: ndarray,

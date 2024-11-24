@@ -153,7 +153,7 @@ class IntercalatedChannelBuilder:
                             xyz_rotaded_coordinates_al: ndarray = PointsRotator.rotate_on_angle_related_center(
                                 xy_rotaded_coordinates_al.copy(), angle_z=angle_z)
 
-                            result: tuple = AlAtomsFilter._get_filtered_al_atoms(
+                            result: tuple = AlAtomsFilter.get_filtered_al_atoms(
                                 coordinates_carbon=coordinates_carbon,
                                 coordinates_al=xyz_rotaded_coordinates_al,
                                 structure_settings=structure_settings,
