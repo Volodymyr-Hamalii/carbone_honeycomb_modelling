@@ -6,22 +6,6 @@ from ...coordinate_operations.distance_measurer import DistanceMeasure
 
 
 class VarianceCalculator:
-    # @classmethod
-    # def _calculate_rotation_variance(
-    #         cls, angles: ndarray, inner_points: ndarray, channel_points: ndarray) -> floating | float:
-    #     """
-    #     Objective function for the optimizer to minimize. It rotates the inner points using the angles and then
-    #     calculates the variance of the minimum distances.
-    #     """
-
-        # Calculate variance
-        # variance_related_channel: floating = cls.calculate_variance_related_channel(
-        #     inner_points=rotated_points, channel_points=channel_points
-        # )
-        # variance_xy: floating = cls.calculate_xy_variance(rotated_points)
-        # return min(variance_related_channel, variance_xy)
-        # return -DistanceMeasure.calculate_min_distance_sum(rotated_points, channel_points)
-
     @classmethod
     def _calculate_distance_variance(
             cls, translation_vector: ndarray, channel_points: ndarray, inner_points: ndarray) -> floating | float:

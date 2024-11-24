@@ -106,110 +106,110 @@ class AlAtomsFilter:
             coordinates_al)
         return round(np.sum(min_dist_between_al), 4)
 
-    @classmethod
-    def find_max_filtered_atoms_by_minimize(
-            cls,
-            coordinates_carbon: ndarray,
-            coordinates_al: ndarray,
-            structure_settings: StructureSettings,
-    ) -> ndarray:
-        """
-        Parallel move and filter Al atoms related carbon atoms
-        to find the option with the maximum Al atoms after filtering.
-        """
+    # @classmethod
+    # def find_max_filtered_atoms_by_minimize(
+    #         cls,
+    #         coordinates_carbon: ndarray,
+    #         coordinates_al: ndarray,
+    #         structure_settings: StructureSettings,
+    # ) -> ndarray:
+    #     """
+    #     Parallel move and filter Al atoms related carbon atoms
+    #     to find the option with the maximum Al atoms after filtering.
+    #     """
 
-        al_lattice_parameter: float = structure_settings.al_lattice_parameter
+    #     al_lattice_parameter: float = structure_settings.al_lattice_parameter
 
-        # Objective function to optimize (to maximize number of atoms)
-        def objective_function(params):
-            # Unpack translation and rotation parameters
-            step_x, step_y, angle_x, angle_y, angle_z = params
+    #     # Objective function to optimize (to maximize number of atoms)
+    #     def objective_function(params):
+    #         # Unpack translation and rotation parameters
+    #         step_x, step_y, angle_x, angle_y, angle_z = params
 
-            # Apply translations
-            moved_coordinates_al = coordinates_al.copy()
-            moved_coordinates_al[:, 0] += step_x
-            moved_coordinates_al[:, 1] += step_y
+    #         # Apply translations
+    #         moved_coordinates_al = coordinates_al.copy()
+    #         moved_coordinates_al[:, 0] += step_x
+    #         moved_coordinates_al[:, 1] += step_y
 
-            # Apply rotations
-            rotated_coordinates_al: ndarray = PointsRotator.rotate_on_angle_related_center(
-                moved_coordinates_al, angle_x=angle_x, angle_y=angle_y, angle_z=angle_z)
+    #         # Apply rotations
+    #         rotated_coordinates_al: ndarray = PointsRotator.rotate_on_angle_related_center(
+    #             moved_coordinates_al, angle_x=angle_x, angle_y=angle_y, angle_z=angle_z)
 
-            # Filter coordinates based on the given criteria
-            coordinates_al_filtered: ndarray = cls.filter_al_atoms_related_carbon(
-                rotated_coordinates_al, coordinates_carbon, structure_settings)
+    #         # Filter coordinates based on the given criteria
+    #         coordinates_al_filtered: ndarray = cls.filter_al_atoms_related_carbon(
+    #             rotated_coordinates_al, coordinates_carbon, structure_settings)
 
-            # Calculate the negative number of atoms (since we want to maximize it)
-            num_of_atoms: int = len(coordinates_al_filtered)
+    #         # Calculate the negative number of atoms (since we want to maximize it)
+    #         num_of_atoms: int = len(coordinates_al_filtered)
 
-            # Return negative of number of atoms for minimization
-            return -num_of_atoms
+    #         # Return negative of number of atoms for minimization
+    #         return -num_of_atoms
 
-        # Another objective function that also considers xy variance
-        def variance_function(params) -> float:
-            step_x, step_y, angle_x, angle_y, angle_z = params
+    #     # Another objective function that also considers xy variance
+    #     def variance_function(params) -> float:
+    #         step_x, step_y, angle_x, angle_y, angle_z = params
 
-            # Apply translations
-            moved_coordinates_al: ndarray = coordinates_al.copy()
-            moved_coordinates_al[:, 0] += step_x
-            moved_coordinates_al[:, 1] += step_y
+    #         # Apply translations
+    #         moved_coordinates_al: ndarray = coordinates_al.copy()
+    #         moved_coordinates_al[:, 0] += step_x
+    #         moved_coordinates_al[:, 1] += step_y
 
-            # Apply rotations
-            rotated_coordinates_al: ndarray = PointsRotator.rotate_on_angle_related_center(
-                moved_coordinates_al, angle_x=angle_x, angle_y=angle_y, angle_z=angle_z)
+    #         # Apply rotations
+    #         rotated_coordinates_al: ndarray = PointsRotator.rotate_on_angle_related_center(
+    #             moved_coordinates_al, angle_x=angle_x, angle_y=angle_y, angle_z=angle_z)
 
-            # Filter coordinates
-            coordinates_al_filtered: ndarray = cls.filter_al_atoms_related_carbon(
-                rotated_coordinates_al, coordinates_carbon, structure_settings)
+    #         # Filter coordinates
+    #         coordinates_al_filtered: ndarray = cls.filter_al_atoms_related_carbon(
+    #             rotated_coordinates_al, coordinates_carbon, structure_settings)
 
-            num_of_atoms: int = len(coordinates_al_filtered)
+    #         num_of_atoms: int = len(coordinates_al_filtered)
 
-            # If number of atoms is less than the maximum, discard this configuration
-            if num_of_atoms < max_atoms:
-                return np.inf
+    #         # If number of atoms is less than the maximum, discard this configuration
+    #         if num_of_atoms < max_atoms:
+    #             return np.inf
 
-            # Otherwise, calculate xy variance
-            xy_variance = float(
-                np.var(coordinates_al_filtered[:, 0]) + np.var(coordinates_al_filtered[:, 1]))
+    #         # Otherwise, calculate xy variance
+    #         xy_variance = float(
+    #             np.var(coordinates_al_filtered[:, 0]) + np.var(coordinates_al_filtered[:, 1]))
 
-            return -len(coordinates_al_filtered) + xy_variance
+    #         return -len(coordinates_al_filtered) + xy_variance
 
-        # Optimization settings
-        initial_guess: list[float] = [0.0, 0.0, 0.0, 0.0, 0.0]
-        bounds: list[tuple[float, float]] = [
-            (0, al_lattice_parameter),  # bounds for x translation
-            (0, al_lattice_parameter),  # bounds for y translation
-            (-math.pi / 4, math.pi / 2),  # bounds for x rotation
-            (-math.pi / 4, math.pi / 2),  # bounds for y rotation
-            (-math.pi / 4, math.pi / 2),  # bounds for z rotation
-        ]
+    #     # Optimization settings
+    #     initial_guess: list[float] = [0.0, 0.0, 0.0, 0.0, 0.0]
+    #     bounds: list[tuple[float, float]] = [
+    #         (0, al_lattice_parameter),  # bounds for x translation
+    #         (0, al_lattice_parameter),  # bounds for y translation
+    #         (-math.pi / 4, math.pi / 2),  # bounds for x rotation
+    #         (-math.pi / 4, math.pi / 2),  # bounds for y rotation
+    #         (-math.pi / 4, math.pi / 2),  # bounds for z rotation
+    #     ]
 
-        res = minimize(objective_function, initial_guess, method='L-BFGS-B', bounds=bounds)
+    #     res = minimize(objective_function, initial_guess, method='L-BFGS-B', bounds=bounds)
 
-        # Extract optimal translation and rotation parameters that maximize atoms
-        optimal_translation_and_rotation = res.x
+    #     # Extract optimal translation and rotation parameters that maximize atoms
+    #     optimal_translation_and_rotation = res.x
 
-        # Calculate the maximum number of atoms found (the negative of the optimized result)
-        max_atoms = -res.fun
+    #     # Calculate the maximum number of atoms found (the negative of the optimized result)
+    #     max_atoms = -res.fun
 
-        # Now, minimize the variance using the best translation/rotation found so far
-        res_variance = minimize(variance_function, optimal_translation_and_rotation, method='L-BFGS-B', bounds=bounds)
+    #     # Now, minimize the variance using the best translation/rotation found so far
+    #     res_variance = minimize(variance_function, optimal_translation_and_rotation, method='L-BFGS-B', bounds=bounds)
 
-        # Extract optimized results
-        optimized_params = res_variance.x
-        step_x, step_y, angle_x, angle_y, angle_z = optimized_params
+    #     # Extract optimized results
+    #     optimized_params = res_variance.x
+    #     step_x, step_y, angle_x, angle_y, angle_z = optimized_params
 
-        # Apply final optimized translation and rotation
-        final_coordinates_al = coordinates_al.copy()
-        final_coordinates_al[:, 0] += step_x
-        final_coordinates_al[:, 1] += step_y
-        final_rotated_coordinates_al = PointsRotator.rotate_on_angle_related_center(
-            final_coordinates_al, angle_x=angle_x, angle_y=angle_y, angle_z=angle_z)
+    #     # Apply final optimized translation and rotation
+    #     final_coordinates_al = coordinates_al.copy()
+    #     final_coordinates_al[:, 0] += step_x
+    #     final_coordinates_al[:, 1] += step_y
+    #     final_rotated_coordinates_al = PointsRotator.rotate_on_angle_related_center(
+    #         final_coordinates_al, angle_x=angle_x, angle_y=angle_y, angle_z=angle_z)
 
-        # Filter final coordinates
-        coordinates_al_filtered: ndarray = cls.filter_al_atoms_related_carbon(
-            final_rotated_coordinates_al, coordinates_carbon, structure_settings)
+    #     # Filter final coordinates
+    #     coordinates_al_filtered: ndarray = cls.filter_al_atoms_related_carbon(
+    #         final_rotated_coordinates_al, coordinates_carbon, structure_settings)
 
-        return coordinates_al_filtered
+    #     return coordinates_al_filtered
 
     @classmethod
     def filter_al_atoms_related_carbon(
