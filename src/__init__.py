@@ -1,3 +1,3 @@
 from .utils import *
-from .actions import Actions
 from .structure_visualizer import *
+from .app_actions import AppActions
