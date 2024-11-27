@@ -11,8 +11,8 @@ from src.coordinate_operations import (
     PointsMover,
     PointsRotator,
 )
-from ..variance_calculator import VarianceCalculator
-from ..intercalated_coordinates_utils import IntercalatedCoordinatesUtils
+from ...intercalated_coordinates_utils import IntercalatedCoordinatesUtils
+from .variance_calculator import VarianceCalculator
 from .al_atoms_filter import AlAtomsFilter
 
 

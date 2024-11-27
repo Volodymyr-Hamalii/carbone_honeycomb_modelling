@@ -2,7 +2,7 @@ import numpy as np
 from numpy import ndarray, floating
 from scipy.spatial.distance import cdist
 
-from ...coordinate_operations.distance_measurer import DistanceMeasure
+from src.coordinate_operations.distance_measurer import DistanceMeasure
 
 
 class VarianceCalculator:

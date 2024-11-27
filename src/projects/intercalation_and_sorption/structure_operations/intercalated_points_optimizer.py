@@ -9,7 +9,7 @@ from src.utils import Logger, execution_time_logger
 from src.coordinate_operations import (
     PointsRotator,
 )
-from ..variance_calculator import VarianceCalculator
+from ..build_intercalated_structure.by_variance.variance_calculator import VarianceCalculator
 from ..intercalated_coordinates_utils import IntercalatedCoordinatesUtils
 
 

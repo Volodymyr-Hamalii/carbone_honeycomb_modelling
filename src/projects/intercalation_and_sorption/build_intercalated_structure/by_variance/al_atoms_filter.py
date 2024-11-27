@@ -12,7 +12,7 @@ from src.coordinate_operations import (
     DistanceMeasure,
     PointsFilter,
 )
-from ..variance_calculator import VarianceCalculator
+from .variance_calculator import VarianceCalculator
 
 
 logger = Logger("AlAtomsFilter")

@@ -14,7 +14,7 @@ from src.coordinate_operations import (
     PointsRotator,
 )
 
-from ..structure_operations import StructureTranslator
+from ...structure_operations import StructureTranslator
 
 from .al_atoms_filter import AlAtomsFilter
 from .al_atoms_setter import AlAtomsSetter
