@@ -91,13 +91,14 @@ class StructureVisualizer:
 
         plt.show()
 
+
     @classmethod
     def show_2d_graph(
-            cls,
-            coordinates: np.ndarray,
-            # to_build_lines: bool = True,
-            title: str | None = None,
-            visual_parameters: StructureVisualParameters = VisualizationParameters.carbon,
+        cls,
+        coordinates: np.ndarray,
+        title: str | None = None,
+        visual_parameters: StructureVisualParameters = VisualizationParameters.carbon,
+        show_coordinates: bool = False,
     ) -> None:
         # Prepare to visualize in 2D
         fig: Figure = plt.figure()
@@ -108,10 +109,16 @@ class StructureVisualizer:
         y: np.ndarray = coordinates[:, 1]
         ax.scatter(x, y, color=visual_parameters.color_atoms, label='Points')
 
-        # Optionally draw lines between consecutive points or any logic you need
-        # if to_build_lines and len(coordinates) > 1:
-        #     # For example, connect points in order they appear
-        #     ax.plot(x, y, color=visual_parameters.color_bonds, label='Connections')
+        # If requested, show coordinates near each point
+        if show_coordinates:
+            for xx, yy in zip(x, y):
+                ax.annotate(
+                    f"({xx:.2f}, {yy:.2f})",
+                    (xx, yy),
+                    textcoords="offset points",
+                    xytext=(5, 5),  # Offset from the point
+                    fontsize=6,
+                )
 
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
