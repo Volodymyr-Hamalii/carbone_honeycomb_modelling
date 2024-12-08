@@ -24,12 +24,13 @@ class StructureVisualizer:
             set_equal_scale: bool | None = None,
             title: str | None = None,
     ) -> None:
+        """ Show 3D plot with 1 structure. """
 
         # Prepare to visualize
         fig: Figure = plt.figure()
         ax: Axes = fig.add_subplot(111, projection='3d')
 
-        cls._plot_atoms(
+        cls._plot_atoms_3d(
             ax=ax,
             coordinates=coordinates,
             visual_parameters=visual_parameters,
@@ -65,14 +66,14 @@ class StructureVisualizer:
         ax: Axes = fig.add_subplot(111, projection='3d')
 
         # Plot first structure atoms (carbon by default)
-        cls._plot_atoms(
+        cls._plot_atoms_3d(
             ax=ax,
             coordinates=coordinates_first,
             visual_parameters=visual_parameters_first,
             to_build_bonds=to_build_bonds)
 
         # Plot second structure atoms (al by default)
-        cls._plot_atoms(
+        cls._plot_atoms_3d(
             ax=ax,
             coordinates=coordinates_second,
             visual_parameters=visual_parameters_second,
@@ -91,7 +92,39 @@ class StructureVisualizer:
         plt.show()
 
     @classmethod
-    def _plot_atoms(
+    def show_2d_graph(
+            cls,
+            coordinates: np.ndarray,
+            # to_build_lines: bool = True,
+            title: str | None = None,
+            visual_parameters: StructureVisualParameters = VisualizationParameters.carbon,
+    ) -> None:
+        # Prepare to visualize in 2D
+        fig: Figure = plt.figure()
+        ax: Axes = fig.add_subplot(111)  # No 3D projection here, just 2D
+
+        # Plot points
+        x: np.ndarray = coordinates[:, 0]
+        y: np.ndarray = coordinates[:, 1]
+        ax.scatter(x, y, color=visual_parameters.color_atoms, label='Points')
+
+        # Optionally draw lines between consecutive points or any logic you need
+        # if to_build_lines and len(coordinates) > 1:
+        #     # For example, connect points in order they appear
+        #     ax.plot(x, y, color=visual_parameters.color_bonds, label='Connections')
+
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+
+        if title is not None:
+            ax.set_title(title)
+
+        ax.legend()
+        plt.grid(True)
+        plt.show()
+
+    @classmethod
+    def _plot_atoms_3d(
             cls,
             ax: Axes,
             coordinates: ndarray,
@@ -99,7 +132,8 @@ class StructureVisualizer:
             set_equal_scale: bool | None = None,
             to_build_bonds: bool = True,
             num_of_min_distances: int = 3,
-            skip_first_distances: int = 0) -> None:
+            skip_first_distances: int = 0,
+    ) -> None:
 
         if coordinates.size == 0:
             logger.warning(f"No points to plot for {visual_parameters.label}.")
