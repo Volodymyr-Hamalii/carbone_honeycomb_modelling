@@ -7,6 +7,9 @@ from src.data_preparation import StructureSettings, StructureSettingsManager, Ch
 from src.projects.intercalation_and_sorption import IntercalatedChannelBuilder
 from src.base_structure_classes import AlLatticeType
 
+from src.projects import CarbonHoneycombActions, CarbonHoneycombChannel
+
+
 logger = Logger("Actions")
 
 
@@ -17,11 +20,11 @@ class AppActionsShowInitData:
         """ Show 3D model of result_data/{structure_folder}/ljout-from-init-dat.pdb """
 
         path_to_init_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_folder)
-        coordinates: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
+        carbon_coordinates: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
 
         to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
         StructureVisualizer.show_structure(
-            coordinates, to_build_bonds=to_build_bonds, set_equal_scale=False, title=structure_folder)
+            carbon_coordinates, to_build_bonds=to_build_bonds, set_equal_scale=False, title=structure_folder)
 
     @staticmethod
     def show_init_al_structure(structure_folder: str, to_set: bool) -> None:
@@ -80,13 +83,13 @@ class AppActionsShowInitData:
 
         path_to_init_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_folder)
 
-        structure_settings: None | StructureSettings = StructureSettingsManager.get_structure_settings(
-            structure_folder=structure_folder)
+        carbon_coordinates: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
 
-        channel_limits: ChannelLimits | None = structure_settings.channel_limits if structure_settings else None
-
-        coordinates: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(
-            path_to_init_pdb_file, channel_limits)
+        honeycomb_channels: list[CarbonHoneycombChannel] = CarbonHoneycombActions.split_init_structure_into_separate_channels(
+            carbon_coordinates=carbon_coordinates)
 
         to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
-        StructureVisualizer.show_structure(coordinates, to_build_bonds=to_build_bonds, title=structure_folder)
+        StructureVisualizer.show_structure(
+            coordinates=honeycomb_channels[0].points,
+            to_build_bonds=to_build_bonds,
+            title=structure_folder)

@@ -5,7 +5,6 @@ import numpy as np
 
 from src.coordinate_operations import PointsOrganizer, DistanceMeasure
 from src.structure_visualizer import StructureVisualizer
-from .find_the_shortest_cycle import find_all_shortest_cycles
 
 from .channel import CarbonHoneycombChannel
 
@@ -197,6 +196,39 @@ class CarbonHoneycombActions:
 
         return result
 
+    @staticmethod
+    def _build_honeycomb_channels(
+        honeycomb_planes_groups: list[dict[tuple[np.float32, np.float32], np.ndarray]],
+        plane_groups_indexes: list[list[int]]
+    ) -> list[CarbonHoneycombChannel]:
+
+        channels: list[CarbonHoneycombChannel] = []
+        for plane_group_indexes in plane_groups_indexes:
+            unique_points_set = set()
+            is_main_channel = False  # With (0,0) point
+
+            for i in plane_group_indexes:
+                for point_array in honeycomb_planes_groups[i].values():
+                    # point_array is something like a 2D array of shape (n,3)
+                    for point in point_array:
+                        # Convert to tuple to store in a set
+                        point_tuple = tuple(point)
+                        unique_points_set.add(point_tuple)
+
+                        if point[0] == 0. and point[1] == 0.:
+                            is_main_channel = True
+
+            # Convert the set of tuples back to a numpy array
+            honeycomb_points: np.ndarray = np.array(list(unique_points_set))
+            honeycomb_channel = CarbonHoneycombChannel(points=honeycomb_points)
+
+            if is_main_channel:
+                channels.insert(0, honeycomb_channel)
+            else:
+                channels.append(honeycomb_channel)
+
+        return channels
+
     @classmethod
     def split_init_structure_into_separate_channels(
             cls, carbon_coordinates: np.ndarray
@@ -227,12 +259,11 @@ class CarbonHoneycombActions:
         ] = cls._split_groups_by_max_distances(groups_by_the_xy_lines, max_distance_between_xy_groups)
 
         honeycomb_planes_groups = cls._filter_honeycomb_planes_groups(honeycomb_planes_groups)
-        # channel_groups: list[list[int]] = cls._get_channel_groups(honeycomb_planes_groups)
 
         end_points_of_groups: list[
             tuple[tuple[np.float32, np.float32], tuple[np.float32, np.float32]]
         ] = cls._find_end_points_of_groups(honeycomb_planes_groups)
 
-        plane_group_indexes: list[list[int]] = cls._found_hexagone_node_indexes(end_points_of_groups)
+        plane_groups_indexes: list[list[int]] = cls._found_hexagone_node_indexes(end_points_of_groups)
 
-        StructureVisualizer.show_2d_graph(x_y_points, show_coordinates=True)
+        return cls._build_honeycomb_channels(honeycomb_planes_groups, plane_groups_indexes)

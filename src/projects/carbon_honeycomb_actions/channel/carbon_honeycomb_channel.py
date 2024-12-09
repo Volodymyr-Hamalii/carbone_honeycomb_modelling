@@ -6,7 +6,7 @@ from .planes import CarbonHoneycombPlane
 
 @dataclass
 class CarbonHoneycombChannel:
-    coordinates: np.ndarray
+    points: np.ndarray
 
     @property
     def planes(self) -> list[CarbonHoneycombPlane]:
