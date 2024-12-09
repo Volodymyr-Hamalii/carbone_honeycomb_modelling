@@ -1,10 +1,15 @@
 import numpy as np
 from itertools import combinations
 
+from src.utils import Logger
+
+
+logger = Logger(__name__)
+
 
 class PointsOrganizer:
     @staticmethod
-    def _group_by_unique_xy(
+    def group_by_unique_xy(
         coordinates: np.ndarray
     ) -> dict[tuple[np.float32, np.float32], np.ndarray]:
         """
@@ -27,9 +32,11 @@ class PointsOrganizer:
         # Convert each group back to NumPy arrays
         return {key: np.array(value) for key, value in groups.items()}
 
-    @staticmethod
-    def _group_by_the_xy_lines(
-        groups_by_xy: dict[tuple[np.float32, np.float32], np.ndarray],
+    @classmethod
+    def group_by_the_xy_lines(
+        cls,
+        groups_by_xy: dict[tuple[np.float32, np.float32], np.ndarray] = {},
+        coordinates_to_group: np.ndarray = np.array([]),
         epsilon: float = 1e-4,
         min_points_in_line: int = 2,
     ) -> list[dict[tuple[np.float32, np.float32], np.ndarray]]:
@@ -40,6 +47,16 @@ class PointsOrganizer:
         groups_by_xy - result of the PointsOrganizer._group_by_unique_xy(coordinates)
         epsilon - precision of the rounding to group points.
         """
+
+        if not groups_by_xy and not coordinates_to_group.any():
+            raise ValueError(
+                "Provide groups_by_xy or coordinates_to_group for PointsOrganizer.group_by_the_xy_lines method.")
+
+        if not groups_by_xy:
+            groups_by_xy = cls.group_by_unique_xy(coordinates_to_group)
+        elif coordinates_to_group:
+            logger.warning("Provided both groups_by_xy and coordinates_to_group; coordinates_to_group are ignored.")
+
         points = list(groups_by_xy.keys())
         grouped_lines: list[dict[tuple[np.float32, np.float32], np.ndarray]] = []
 
