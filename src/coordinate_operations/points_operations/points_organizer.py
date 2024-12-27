@@ -43,9 +43,11 @@ class PointsOrganizer:
         """
         Groups the coordinates into sets of points that lie on lines in the xOy plane.
 
-        Takes 2 params:
-        groups_by_xy - result of the PointsOrganizer._group_by_unique_xy(coordinates)
-        epsilon - precision of the rounding to group points.
+        Params:
+        groups_by_xy - result of the PointsOrganizer._group_by_unique_xy(coordinates),
+        epsilon - distance threshold to consider collinearity.
+
+        Returns a list of dicts from groups_by_xy, each dict contains the points of one xOy line.
         """
 
         if not groups_by_xy and not coordinates_to_group.any():
@@ -59,6 +61,8 @@ class PointsOrganizer:
 
         points = list(groups_by_xy.keys())
         grouped_lines: list[dict[tuple[np.float32, np.float32], np.ndarray]] = []
+
+        # TODO: concider replace the logic below with using cls.group_by_lines method
 
         # Check all combinations of 2 points to define candidate lines
         for p1, p2 in combinations(points, 2):
@@ -83,3 +87,73 @@ class PointsOrganizer:
                     grouped_lines.append(line_group)
 
         return grouped_lines
+
+    @staticmethod
+    def group_by_lines(
+        points: np.ndarray | list[np.ndarray],
+        epsilon: float = 1e-4,
+        min_points_in_line: int = 2
+    ) -> list[np.ndarray]:
+        """
+        Groups the given 2D points (or points already projected onto a plane)
+        into lines, returning a list of arrays where each array holds
+        the points that lie on the same line.
+
+        Params:
+        points - 2D points (shape (N,2)) or a list of such points,
+        epsilon - distance threshold to consider collinearity,
+        min_points_in_line - minimum number of points required to form a line.
+
+        Returns a list of NumPy arrays, each array contains the points of one line.
+        """
+
+        # Ensure points is a NumPy array
+        if isinstance(points, list):
+            points = np.array(points, dtype=float)  # or float32 as needed
+
+        # If we have fewer points than needed to form any line, return empty list
+        if len(points) < min_points_in_line:
+            return []
+
+        # Convert each point to a tuple so we can easily use them in sets and comparisons
+        point_tuples = [tuple(p) for p in points]
+
+        # Prepare the result list of lines
+        lines = []
+
+        # Check all combinations of 2 distinct points to define candidate lines
+        for (p1, p2) in combinations(point_tuples, 2):
+            if p1 == p2:
+                # Same point, skip
+                continue
+
+            # Start a line set with these two points
+            line_points = {p1, p2}
+
+            # Convert them to np arrays for vector operations
+            v1 = np.array(p1)
+            v2 = np.array(p2)
+            direction = v2 - v1  # direction vector for the candidate line
+
+            # Check remaining points to see if they are collinear with p1 & p2
+            for p3 in point_tuples:
+                if p3 == p1 or p3 == p2:
+                    continue
+                v3 = np.array(p3)
+                # Cross product of (v2-v1) and (v3-v1)
+                cross_prod = np.cross(direction, (v3 - v1))
+                # If the norm of the cross product is near zero, they are collinear
+                if np.linalg.norm(cross_prod) < epsilon:
+                    line_points.add(p3)
+
+            # Only add lines if they have enough points
+            if len(line_points) >= min_points_in_line:
+                # Convert to a NumPy array for final storage
+                line_array = np.array(list(line_points), dtype=points.dtype)
+
+                # Check if this set of points is already a subset of an existing line
+                # (We don't want duplicates)
+                if not any(set(map(tuple, existing_line)) >= line_points for existing_line in lines):
+                    lines.append(line_array)
+
+        return lines
