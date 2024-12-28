@@ -1,14 +1,35 @@
+from typing import Type, Sequence, overload
 import numpy as np
 
 from src.coordinate_operations import PointsOrganizer, DistanceMeasure
 
 from ...carbon_honeycomb_utils import CarbonHoneycombUtils
-from .carbon_honeycomb_plane_hexagon import CarbonHoneycombHexagon
+from .plane_polygons import CarbonHoneycombPolygon, CarbonHoneycombPentagon, CarbonHoneycombHexagon
 
 
 class CarbonHoneycombPlaneActions:
     @classmethod
-    def define_plane_hexagons(cls, points: np.ndarray) -> list[CarbonHoneycombHexagon]:
+    def define_plane_pentagons(cls, points: np.ndarray) -> Sequence[CarbonHoneycombPentagon]:
+        points_grouped_by_lines, plane_polygon_indexes = cls._define_point_for_plane_polygon(
+            points, num_of_sides=5)
+
+        return cls._build_plane_polygon(
+            points_grouped_by_lines, plane_polygon_indexes, polygon_class=CarbonHoneycombPentagon)
+
+    @classmethod
+    def define_plane_hexagons(cls, points: np.ndarray) -> Sequence[CarbonHoneycombHexagon]:
+        points_grouped_by_lines, plane_polygon_indexes = cls._define_point_for_plane_polygon(
+            points, num_of_sides=6)
+
+        return cls._build_plane_polygon(
+            points_grouped_by_lines, plane_polygon_indexes, polygon_class=CarbonHoneycombHexagon)
+
+    @classmethod
+    def _define_point_for_plane_polygon(
+            cls,
+            points: np.ndarray,
+            num_of_sides: int,
+    ):
         points_grouped_by_lines: list[np.ndarray] = PointsOrganizer.group_by_lines(points)
 
         distances_between_points: np.ndarray = DistanceMeasure.calculate_min_distances_between_points(points)
@@ -21,11 +42,10 @@ class CarbonHoneycombPlaneActions:
 
         end_points: list[tuple[tuple, tuple]] = cls._find_end_points(points_grouped_by_lines)
 
-        plane_hexagons_indexes: list[list[int]] = CarbonHoneycombUtils.found_hexagone_node_indexes(end_points)
+        plane_polygon_indexes: list[list[int]] = CarbonHoneycombUtils.found_polygon_node_indexes(
+            end_points, num_of_sides)
 
-        plane_hexagons: list[CarbonHoneycombHexagon] = cls._build_plane_hexagons(
-            points_grouped_by_lines, plane_hexagons_indexes)
-        return plane_hexagons
+        return points_grouped_by_lines, plane_polygon_indexes
 
     @staticmethod
     def _find_end_points(points_grouped_by_lines: list[np.ndarray]) -> list[tuple[tuple, tuple]]:
@@ -50,12 +70,43 @@ class CarbonHoneycombPlaneActions:
         # return sorted(end_points_of_groups, key=lambda p: p[0][0])
         return end_points_of_groups
 
+    # Overload 1: Hexagon
+    @overload
     @staticmethod
-    def _build_plane_hexagons(
+    def _build_plane_polygon(
         points_grouped_by_lines: list[np.ndarray],
         plane_hexagons_indexes: list[list[int]],
-    ) -> list[CarbonHoneycombHexagon]:
-        plane_hexagons: list[CarbonHoneycombHexagon] = []
+        polygon_class: Type[CarbonHoneycombHexagon],
+    ) -> Sequence[CarbonHoneycombHexagon]:
+        ...
+
+    # Overload 2: Pentagon
+    @overload
+    @staticmethod
+    def _build_plane_polygon(
+        points_grouped_by_lines: list[np.ndarray],
+        plane_hexagons_indexes: list[list[int]],
+        polygon_class: Type[CarbonHoneycombPentagon],
+    ) -> Sequence[CarbonHoneycombPentagon]:
+        ...
+
+    # # Fallback: Generic polygon
+    # @overload
+    # @staticmethod
+    # def _build_plane_polygon(
+    #     points_grouped_by_lines: list[np.ndarray],
+    #     plane_hexagons_indexes: list[list[int]],
+    #     polygon_class: Type[CarbonHoneycombPolygon],
+    # ) -> Sequence[CarbonHoneycombPolygon]:
+    #     ...
+
+    @staticmethod
+    def _build_plane_polygon(
+            points_grouped_by_lines: list[np.ndarray],
+            plane_hexagons_indexes: list[list[int]],
+            polygon_class: Type[CarbonHoneycombPolygon],
+    ) -> Sequence[CarbonHoneycombPolygon]:
+        plane_hexagons: list[CarbonHoneycombPolygon] = []
 
         for plane_group_indexes in plane_hexagons_indexes:
             unique_points_set = set()
@@ -68,7 +119,7 @@ class CarbonHoneycombPlaneActions:
 
             # Convert the set of tuples back to a numpy array
             honeycomb_points: np.ndarray = np.array(list(unique_points_set))
-            honeycomb_channel = CarbonHoneycombHexagon(points=honeycomb_points)
+            honeycomb_channel = polygon_class(points=honeycomb_points)
             plane_hexagons.append(honeycomb_channel)
 
         return plane_hexagons

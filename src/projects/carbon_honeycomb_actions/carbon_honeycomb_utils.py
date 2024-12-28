@@ -65,10 +65,11 @@ class CarbonHoneycombUtils:
         return end_points_of_groups
 
     @staticmethod
-    def found_hexagone_node_indexes(
-        extreme_points_of_groups: list[tuple[tuple, tuple]]
+    def found_polygon_node_indexes(
+        extreme_points_of_groups: list[tuple[tuple, tuple]],
+        num_of_nodes: int = 6,  # hexagon
     ) -> list[list[int]]:
-        """ Fount the lines that form hexagones and returns the list of indexes of such groups. """
+        """ Fount the lines that form polygons and returns the list of indexes of such groups. """
 
         # Step 1: Extract all unique nodes (points) and map them to integer indices
         # Collect all points
@@ -88,39 +89,41 @@ class CarbonHoneycombUtils:
             adjacency[u].append((v, i))  # store (node, edge_index)
             adjacency[v].append((u, i))  # undirected
 
-        # Step 3: Find all 6-cycles
+        # Step 3: Find all num_of_nodes-cycles
         # A brute force backtracking approach:
-        hexagons = set()  # use a set to avoid duplicates, will store tuple of sorted edges
+        polygons = set()  # use a set to avoid duplicates, will store tuple of sorted edges
+
+        num_of_edges: int = num_of_nodes + 1
 
         def backtrack(start_node, current_node, visited_nodes, visited_edges):
-            # If we have a path of length 6 (6 edges means 7 nodes), check if it forms a cycle back to start_node
-            if len(visited_nodes) == 7:
+            # If we have a path of length num_of_nodes, check if it forms a cycle back to start_node
+            if len(visited_nodes) == num_of_edges:
                 # Check if last node connects to start_node
                 if visited_nodes[-1] == start_node:
-                    # We found a 6-cycle
+                    # We found a num_of_nodes-cycle
                     # visited_edges has the edge indices in the order they were visited
                     cycle_edges = tuple(sorted(visited_edges))
-                    hexagons.add(cycle_edges)
+                    polygons.add(cycle_edges)
                 return
 
-            if len(visited_nodes) > 7:
+            if len(visited_nodes) > num_of_edges:
                 return  # longer than needed
 
             # Explore neighbors
             for (nxt, eidx) in adjacency[current_node]:
                 # We must not revisit nodes to ensure a simple cycle, except possibly to close the cycle
-                if nxt == start_node and len(visited_nodes) == 6:
+                if nxt == start_node and len(visited_nodes) == num_of_nodes:
                     # Can we close the cycle with start_node?
-                    # This adds one more edge, completing a 6-cycle
+                    # This adds one more edge, completing a num_of_nodes-cycle
                     new_visited_edges = visited_edges + [eidx]
                     cycle_edges = tuple(sorted(new_visited_edges))
-                    hexagons.add(cycle_edges)
+                    polygons.add(cycle_edges)
                 elif nxt not in visited_nodes:
                     # Continue path
                     # Add node and edge
                     backtrack(start_node, nxt, visited_nodes + [nxt], visited_edges + [eidx])
 
-        # Try starting from each node and find 6-cycles
+        # Try starting from each node and find num_of_nodes-cycles
         # To avoid recounting the same cycle multiple times starting from different nodes,
         # we can impose an order: start from a specific node and only proceed to neighbors with greater index, etc.
         # However, using the set of sorted edges as a key will eliminate duplicates anyway.
@@ -128,9 +131,9 @@ class CarbonHoneycombUtils:
             backtrack(start, start, [start], [])
 
         # Step 4: Convert the set of cycles back into lists of edges
-        # Each element in hexagons is a tuple of edge indices sorted.
+        # Each element in polygons is a tuple of edge indices sorted.
         # If needed, we can return them as lists in sorted order.
-        result: list[list[int]] = [list(cycle) for cycle in hexagons]
+        result: list[list[int]] = [list(cycle) for cycle in polygons]
 
        # Remove duplicates by converting each list to a frozenset
         unique_cycles = {frozenset(cycle) for cycle in result}
