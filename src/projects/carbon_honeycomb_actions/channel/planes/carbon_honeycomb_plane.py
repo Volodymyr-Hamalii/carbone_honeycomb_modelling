@@ -1,14 +1,18 @@
 import numpy as np
 from dataclasses import dataclass
 
-from .interfaces import CarbonHoneycombPlaneProtocol
+from src.base_structure_classes import Points
+
 from .carbon_honeycomb_plane_actions import CarbonHoneycombPlaneActions
+from .carbon_honeycomb_plane_hexagon import CarbonHoneycombHexagon
 
 
 @dataclass
-class CarbonHoneycombPlane(CarbonHoneycombPlaneProtocol):
-    points: np.ndarray
-    direction: bool  # To define direction related honeycomb volume
+class CarbonHoneycombPlane(Points):
+    # Define direction related plane for honeycomb volume:
+    # inside - True
+    # outside - False
+    direction: bool
 
     @property
     def hexagons(self) -> np.ndarray:
