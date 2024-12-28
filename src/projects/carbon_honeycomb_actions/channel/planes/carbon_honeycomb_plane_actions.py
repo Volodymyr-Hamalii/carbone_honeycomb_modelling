@@ -59,12 +59,10 @@ class CarbonHoneycombPlaneActions:
             unique_points_set = set()
 
             for i in plane_group_indexes:
-                for point_array in points_grouped_by_lines[i]:
-                    # point_array is something like a 2D array of shape (n,3)
-                    for point in point_array:
-                        # Convert to tuple to store in a set
-                        point_tuple = tuple(point)
-                        unique_points_set.add(point_tuple)
+                for point in points_grouped_by_lines[i]:
+                    # Convert to tuple to store in a set
+                    point_tuple = tuple(point)
+                    unique_points_set.add(point_tuple)
 
             # Convert the set of tuples back to a numpy array
             honeycomb_points: np.ndarray = np.array(list(unique_points_set))
