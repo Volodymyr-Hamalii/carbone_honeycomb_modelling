@@ -1,4 +1,3 @@
-import numpy as np
 from dataclasses import dataclass
 
 from src.base_structure_classes import Points
@@ -15,6 +14,6 @@ class CarbonHoneycombPlane(Points):
     direction: bool
 
     @property
-    def hexagons(self) -> np.ndarray:
+    def hexagons(self) -> list[CarbonHoneycombHexagon]:
         """ List of the plane hexagons. """
-        return CarbonHoneycombPlaneActions.define_plane_hexagons(self)
+        return CarbonHoneycombPlaneActions.define_plane_hexagons(self.points)

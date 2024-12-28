@@ -1,6 +1,6 @@
 import numpy as np
 # from collections import defaultdict
-# from scipy.spatial.distance import cdist
+from scipy.spatial.distance import cdist
 
 
 from src.utils import Constants
@@ -22,7 +22,7 @@ class CarbonHoneycombUtils:
 
         index_0: int = Constants.math.COORDINATE_INDEX_MAP[coordinates_to_check[0]]
         index_1: int = Constants.math.COORDINATE_INDEX_MAP[coordinates_to_check[1]]
-        
+
         start: np.ndarray = first_point
         end: np.ndarray = start
 
@@ -66,7 +66,7 @@ class CarbonHoneycombUtils:
 
     @staticmethod
     def found_hexagone_node_indexes(
-        extreme_points_of_groups: list[tuple[tuple[np.float32, np.float32], tuple[np.float32, np.float32]]]
+        extreme_points_of_groups: list[tuple[tuple, tuple]]
     ) -> list[list[int]]:
         """ Fount the lines that form hexagones and returns the list of indexes of such groups. """
 
@@ -185,8 +185,81 @@ class CarbonHoneycombUtils:
         return result
 
     @staticmethod
-    def split_xy_groups_by_max_distances(
+    def split_groups_by_max_distances(
         points_grouped_by_lines: list[np.ndarray],
         max_distance_between_xy_groups: np.floating | float,
     ) -> list[np.ndarray]:
-        ...
+        """
+        Takes a list of np.ndarray (each representing a set of points that lie on a line),
+        and splits each set into smaller clusters if the distance between consecutive points
+        exceeds max_distance_between_xy_groups.
+
+        Params:
+        points_grouped_by_lines - A list of np.ndarrays. Each ndarray is assumed
+                                  to be shape (N, D) (commonly (N,2) or (N,3)).
+        max_distance_between_xy_groups - The maximum allowed distance between consecutive points in a cluster.
+
+        Returns a list of np.ndarrays, each containing a cluster of points.
+        """
+        result: list[np.ndarray] = []
+
+        for line_points in points_grouped_by_lines:
+            # Ensure line_points is a NumPy array
+            line_points = np.array(line_points, dtype=float)
+            n = line_points.shape[0]
+            if n == 0:
+                continue
+
+            # Calculate pairwise distance matrix
+            dist_matrix = cdist(line_points, line_points)
+
+            # Keep track of whether a point is already clustered
+            used = np.zeros(n, dtype=bool)
+
+            clusters = []
+            for i in range(n):
+                if used[i]:
+                    # Point i is already assigned to a cluster
+                    continue
+
+                # Check if point i has any neighbor within the threshold
+                # (excluding itself, obviously)
+                close_points_idx = np.where(dist_matrix[i] <= max_distance_between_xy_groups)[0]
+                # Exclude self
+                close_points_idx = close_points_idx[close_points_idx != i]
+
+                if len(close_points_idx) == 0:
+                    # No neighbor within threshold => make a new cluster for i alone
+                    cluster_array = line_points[[i], :]
+                    used[i] = True
+                    clusters.append(cluster_array)
+                else:
+                    # There's at least one neighbor => Start a cluster with i and its neighbors
+                    # We then expand to include neighbors-of-neighbors if they are also close
+                    # (depending on desired logic—here let's do a BFS/DFS approach to gather
+                    # all connected points under the threshold).
+                    cluster_indices = set()
+                    queue = [i]
+                    while queue:
+                        current = queue.pop()
+                        if current in cluster_indices:
+                            continue
+                        cluster_indices.add(current)
+                        used[current] = True
+                        # Check all points that are within threshold of current
+                        neighbors = np.where(dist_matrix[current] <= max_distance_between_xy_groups)[0]
+                        # Exclude self
+                        neighbors = neighbors[neighbors != current]
+                        for neigh in neighbors:
+                            if not used[neigh]:
+                                queue.append(neigh)
+
+                    # Build cluster from those indices
+                    cluster_array = line_points[list(cluster_indices), :]
+                    clusters.append(cluster_array)
+
+            clusters = [c for c in clusters if c.shape[0] > 1]
+
+            result.extend(clusters)
+
+        return result
