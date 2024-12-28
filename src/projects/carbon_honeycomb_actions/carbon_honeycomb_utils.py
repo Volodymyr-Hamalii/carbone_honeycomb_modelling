@@ -3,6 +3,7 @@ import numpy as np
 # from scipy.spatial.distance import cdist
 
 
+from src.utils import Constants
 from src.coordinate_operations import PointsOrganizer, DistanceMeasure
 from src.structure_visualizer import StructureVisualizer
 
@@ -13,31 +14,34 @@ class CarbonHoneycombUtils:
     def find_end_points(
         points_on_line: np.ndarray,
         coordinates_to_check: tuple[str, str] = ("x", "y"),
-    ) -> tuple[tuple[np.float32, np.float32], tuple[np.float32, np.float32]]:
+    ) -> tuple[tuple, tuple]:
+        if len(points_on_line) == 0:
+            raise ValueError("No points provided to CarbonHoneycombUtils.find_end_points")
+
         first_point: np.ndarray = points_on_line[0]
 
         index_0: int = Constants.math.COORDINATE_INDEX_MAP[coordinates_to_check[0]]
         index_1: int = Constants.math.COORDINATE_INDEX_MAP[coordinates_to_check[1]]
         
-        start: tuple[np.float32, np.float32] = first_point[index_0], first_point[index_1]
-        end: tuple[np.float32, np.float32] = start
+        start: np.ndarray = first_point
+        end: np.ndarray = start
 
-        for point in points_on_line[1:]:
-            c1, c2 = point[index_0], point[index_1]
-            s_c1, s_c2 = start
-            e_c1, e_c2 = end
+        for point in points_on_line[1:]:  # skip the first point
+            c1, c2 = point[index_0], point[index_1]  # first and second coordinates
+            s_c1, s_c2 = start[index_0], start[index_1]  # first and second coordinates of the start
+            e_c1, e_c2 = end[index_0], end[index_1]  # first and second coordinates of the end
 
             if c1 == s_c1 and c1 == e_c1:
                 if c2 < s_c2:
-                    start = (c1, c2)
+                    start = point
                 elif c2 > e_c2:
-                    end = (c1, c2)
+                    end = point
             elif c1 < s_c1:
-                start = (c1, c2)
+                start = point
             elif c1 > e_c1:
-                end = (c1, c2)
+                end = point
 
-        return start, end
+        return tuple(start), tuple(end)
 
     @classmethod
     def find_end_points_of_honeycomb_planes_groups(
