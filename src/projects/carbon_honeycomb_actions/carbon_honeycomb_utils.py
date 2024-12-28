@@ -11,27 +11,31 @@ class CarbonHoneycombUtils:
 
     @staticmethod
     def find_end_points(
-        points_on_line: np.ndarray
+        points_on_line: np.ndarray,
+        coordinates_to_check: tuple[str, str] = ("x", "y"),
     ) -> tuple[tuple[np.float32, np.float32], tuple[np.float32, np.float32]]:
         first_point: np.ndarray = points_on_line[0]
+
+        index_0: int = Constants.math.COORDINATE_INDEX_MAP[coordinates_to_check[0]]
+        index_1: int = Constants.math.COORDINATE_INDEX_MAP[coordinates_to_check[1]]
         
-        start: tuple[np.float32, np.float32] = first_point[0], first_point[1]
+        start: tuple[np.float32, np.float32] = first_point[index_0], first_point[index_1]
         end: tuple[np.float32, np.float32] = start
 
-        for xy_points in points_on_line[1:]:
-                x, y = xy_points
-                sx, sy = start
-                ex, ey = end
+        for point in points_on_line[1:]:
+            c1, c2 = point[index_0], point[index_1]
+            s_c1, s_c2 = start
+            e_c1, e_c2 = end
 
-                if x == sx and x == ex:
-                    if y < sy:
-                        start = (x, y)
-                    elif y > ey:
-                        end = (x, y)
-                elif x < sx:
-                    start = (x, y)
-                elif x > ex:
-                    end = (x, y)
+            if c1 == s_c1 and c1 == e_c1:
+                if c2 < s_c2:
+                    start = (c1, c2)
+                elif c2 > e_c2:
+                    end = (c1, c2)
+            elif c1 < s_c1:
+                start = (c1, c2)
+            elif c1 > e_c1:
+                end = (c1, c2)
 
         return start, end
 
