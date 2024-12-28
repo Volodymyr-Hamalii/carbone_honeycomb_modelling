@@ -12,7 +12,9 @@ class CarbonHoneycombPlaneActions:
         points_grouped_by_lines: list[np.ndarray] = PointsOrganizer.group_by_lines(points)
 
         distances_between_points: np.ndarray = DistanceMeasure.calculate_min_distances_between_points(points)
-        max_distance_between_points: np.floating = np.max(distances_between_points) * 1.25
+
+        clearance_dist_coefficient = 1.25
+        max_distance_between_points: np.floating = np.max(distances_between_points) * clearance_dist_coefficient
 
         points_grouped_by_lines = CarbonHoneycombUtils.split_groups_by_max_distances(
             points_grouped_by_lines, max_distance_between_points)

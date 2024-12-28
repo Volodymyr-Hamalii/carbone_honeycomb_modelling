@@ -1,7 +1,4 @@
 import numpy as np
-# from collections import defaultdict
-# from scipy.spatial.distance import cdist
-
 
 from src.coordinate_operations import PointsOrganizer, DistanceMeasure
 from src.structure_visualizer import StructureVisualizer
@@ -95,7 +92,9 @@ class CarbonHoneycombActions:
 
         # Split by the max distance between groups (to define separate channel planes)
         distances_between_xy_groups: np.ndarray = DistanceMeasure.calculate_min_distances_between_points(x_y_points)
-        max_distance_between_xy_groups: np.floating = np.max(distances_between_xy_groups) * 1.5
+
+        clearance_dist_coefficient = 1.5
+        max_distance_between_xy_groups: np.floating = np.max(distances_between_xy_groups) * clearance_dist_coefficient
 
         honeycomb_planes_groups: list[
             dict[tuple[np.float32, np.float32], np.ndarray]
