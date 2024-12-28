@@ -10,25 +10,15 @@ from src.structure_visualizer import StructureVisualizer
 class CarbonHoneycombUtils:
 
     @staticmethod
-    def find_end_points_of_groups(
-        honeycomb_planes_groups: list[dict[tuple[np.float32, np.float32], np.ndarray]]
-    ) -> list[tuple[tuple[np.float32, np.float32], tuple[np.float32, np.float32]]]:
-        """
-        Returns the coordinates of the ends of the segments
-        on the xOy plane that form the channel planes.
+    def find_end_points(
+        points_on_line: np.ndarray
+    ) -> tuple[tuple[np.float32, np.float32], tuple[np.float32, np.float32]]:
+        first_point: np.ndarray = points_on_line[0]
+        
+        start: tuple[np.float32, np.float32] = first_point[0], first_point[1]
+        end: tuple[np.float32, np.float32] = start
 
-        Keep the same index order as in honeycomb_planes_groups.
-        """
-
-        end_points_of_groups: list[tuple[tuple[np.float32, np.float32], tuple[np.float32, np.float32]]] = []
-
-        for group in honeycomb_planes_groups:
-            keys = list(group.keys())
-
-            start: tuple[np.float32, np.float32] = keys[0]
-            end: tuple[np.float32, np.float32] = keys[0]
-
-            for xy_points in keys[1:]:
+        for xy_points in points_on_line[1:]:
                 x, y = xy_points
                 sx, sy = start
                 ex, ey = end
@@ -43,6 +33,24 @@ class CarbonHoneycombUtils:
                 elif x > ex:
                     end = (x, y)
 
+        return start, end
+
+    @classmethod
+    def find_end_points_of_honeycomb_planes_groups(
+        cls, honeycomb_planes_groups: list[dict[tuple[np.float32, np.float32], np.ndarray]]
+    ) -> list[tuple[tuple[np.float32, np.float32], tuple[np.float32, np.float32]]]:
+        """
+        Returns the coordinates of the ends of the segments
+        on the xOy plane that form the channel planes.
+
+        Keep the same index order as in honeycomb_planes_groups.
+        """
+
+        end_points_of_groups: list[tuple[tuple[np.float32, np.float32], tuple[np.float32, np.float32]]] = []
+
+        for group in honeycomb_planes_groups:
+            keys: np.ndarray = np.array(list(group.keys()))
+            start, end = cls.find_end_points(points_on_line=keys)
             end_points_of_groups.append((start, end))
 
         # return sorted(end_points_of_groups, key=lambda p: p[0][0])

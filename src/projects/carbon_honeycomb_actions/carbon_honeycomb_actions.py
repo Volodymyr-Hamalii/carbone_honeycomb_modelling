@@ -106,7 +106,8 @@ class CarbonHoneycombActions:
 
         end_points_of_groups: list[
             tuple[tuple[np.float32, np.float32], tuple[np.float32, np.float32]]
-        ] = CarbonHoneycombUtils.find_end_points_of_groups(honeycomb_planes_groups)
+        ] = CarbonHoneycombUtils.find_end_points_of_honeycomb_planes_groups(
+            honeycomb_planes_groups)
 
         plane_groups_indexes: list[list[int]] = CarbonHoneycombUtils.found_hexagone_node_indexes(end_points_of_groups)
 
