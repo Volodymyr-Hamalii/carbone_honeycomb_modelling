@@ -108,7 +108,7 @@ class CarbonHoneycombActions:
         ] = CarbonHoneycombUtils.find_end_points_of_honeycomb_planes_groups(
             honeycomb_planes_groups)
 
-        plane_groups_indexes: list[list[int]] = CarbonHoneycombUtils.found_hexagone_node_indexes(end_points_of_groups)
+        plane_groups_indexes: list[list[int]] = CarbonHoneycombUtils.found_polygon_node_indexes(end_points_of_groups)
 
         honeycomb_channels: list[CarbonHoneycombChannel] = cls._build_honeycomb_channels(
             honeycomb_planes_groups, plane_groups_indexes)
