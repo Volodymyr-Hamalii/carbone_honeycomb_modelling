@@ -1,9 +1,10 @@
 import numpy as np
 from numpy import ndarray
 
+
 class PlanesBuilder:
     @staticmethod
-    def build_plane_parameters(
+    def build_plane_params(
             p1: ndarray | list[float],
             p2: ndarray | list[float],
             p3: ndarray | list[float],

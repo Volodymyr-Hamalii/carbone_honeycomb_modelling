@@ -249,7 +249,7 @@ class AlAtomsFilter:
 
         for plane_data in points_to_set_channel_planes:
             # Build plane parameters
-            A, B, C, D = PlanesBuilder.build_plane_parameters(
+            A, B, C, D = PlanesBuilder.build_plane_params(
                 p1=plane_data.points[0],
                 p2=plane_data.points[1],
                 p3=plane_data.points[2])

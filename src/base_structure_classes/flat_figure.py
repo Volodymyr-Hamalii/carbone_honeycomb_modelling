@@ -49,5 +49,5 @@ class FlatFigure(Points):
         if len(plane_points) < 3:
             raise ValueError("Not enough distinct points to define a plane.")
 
-        return PlanesBuilder.build_plane_parameters(
+        return PlanesBuilder.build_plane_params(
             plane_points[0], plane_points[1], plane_points[2])

@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.pyplot import Figure, Axes  # type: ignore
 
 from .lines_builder import LinesBuilder
-from .visualization_parameters import VisualizationParameters, StructureVisualParameters
+from .visualization_params import VisualizationParams, StructureVisualParameters
 from ..utils import Logger
 
 
@@ -18,7 +18,7 @@ class StructureVisualizer:
             cls,
             coordinates: ndarray,
             to_build_bonds: bool = True,
-            visual_parameters: StructureVisualParameters = VisualizationParameters.carbon,
+            visual_params: StructureVisualParameters = VisualizationParams.carbon,
             num_of_min_distances: int = 3,
             skip_first_distances: int = 0,
             set_equal_scale: bool | None = None,
@@ -33,7 +33,7 @@ class StructureVisualizer:
         cls._plot_atoms_3d(
             ax=ax,
             coordinates=coordinates,
-            visual_parameters=visual_parameters,
+            visual_params=visual_params,
             to_build_bonds=to_build_bonds,
             num_of_min_distances=num_of_min_distances,
             skip_first_distances=skip_first_distances,
@@ -55,8 +55,8 @@ class StructureVisualizer:
         coordinates_first: ndarray,
         coordinates_second: ndarray,
         to_build_bonds: bool = False,
-        visual_parameters_first: StructureVisualParameters = VisualizationParameters.carbon,
-        visual_parameters_second: StructureVisualParameters = VisualizationParameters.al,
+        visual_params_first: StructureVisualParameters = VisualizationParams.carbon,
+        visual_params_second: StructureVisualParameters = VisualizationParams.al,
         title: str | None = None,
     ) -> None:
         """ Show 3D plot with 2 structures (by default there are carbon and aluminium) """
@@ -69,14 +69,14 @@ class StructureVisualizer:
         cls._plot_atoms_3d(
             ax=ax,
             coordinates=coordinates_first,
-            visual_parameters=visual_parameters_first,
+            visual_params=visual_params_first,
             to_build_bonds=to_build_bonds)
 
         # Plot second structure atoms (al by default)
         cls._plot_atoms_3d(
             ax=ax,
             coordinates=coordinates_second,
-            visual_parameters=visual_parameters_second,
+            visual_params=visual_params_second,
             to_build_bonds=to_build_bonds,
             num_of_min_distances=1,
             skip_first_distances=0)
@@ -91,13 +91,12 @@ class StructureVisualizer:
 
         plt.show()
 
-
     @classmethod
     def show_2d_graph(
         cls,
         coordinates: np.ndarray,
         title: str | None = None,
-        visual_parameters: StructureVisualParameters = VisualizationParameters.carbon,
+        visual_params: StructureVisualParameters = VisualizationParams.carbon,
         show_coordinates: bool = False,
     ) -> None:
         # Prepare to visualize in 2D
@@ -107,7 +106,7 @@ class StructureVisualizer:
         # Plot points
         x: np.ndarray = coordinates[:, 0]
         y: np.ndarray = coordinates[:, 1]
-        ax.scatter(x, y, color=visual_parameters.color_atoms, label='Points')
+        ax.scatter(x, y, color=visual_params.color_atoms, label='Points')
 
         # If requested, show coordinates near each point
         if show_coordinates:
@@ -135,7 +134,7 @@ class StructureVisualizer:
             cls,
             ax: Axes,
             coordinates: ndarray,
-            visual_parameters: StructureVisualParameters,
+            visual_params: StructureVisualParameters,
             set_equal_scale: bool | None = None,
             to_build_bonds: bool = True,
             num_of_min_distances: int = 3,
@@ -143,7 +142,7 @@ class StructureVisualizer:
     ) -> None:
 
         if coordinates.size == 0:
-            logger.warning(f"No points to plot for {visual_parameters.label}.")
+            logger.warning(f"No points to plot for {visual_params.label}.")
             return
 
         x_first: ndarray = coordinates[:, 0]
@@ -152,13 +151,13 @@ class StructureVisualizer:
 
         ax.scatter(
             x_first, y_first, z_first,
-            c=visual_parameters.color_atoms,
-            label=visual_parameters.label,
-            s=visual_parameters.size,  # type: ignore
-            alpha=visual_parameters.transparency)
+            c=visual_params.color_atoms,
+            label=visual_params.label,
+            s=visual_params.size,  # type: ignore
+            alpha=visual_params.transparency)
 
         if set_equal_scale is None:
-            set_equal_scale = visual_parameters.set_equal_scale
+            set_equal_scale = visual_params.set_equal_scale
 
         if set_equal_scale:
             cls._set_equal_scale(ax, x_first, y_first, z_first)
@@ -167,7 +166,7 @@ class StructureVisualizer:
             # Carbon
             LinesBuilder.add_lines(
                 coordinates=coordinates, ax=ax,
-                color_bonds=visual_parameters.color_bonds,
+                color_bonds=visual_params.color_bonds,
                 num_of_min_distances=num_of_min_distances,
                 skip_first_distances=skip_first_distances)
 

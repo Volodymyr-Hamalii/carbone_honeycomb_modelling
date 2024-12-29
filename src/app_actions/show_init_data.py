@@ -2,7 +2,7 @@ from pathlib import Path
 from numpy import ndarray
 
 from src.utils import Constants, PathBuilder, Logger, Inputs
-from src.structure_visualizer import StructureVisualizer, AtomsUniverseBuilder, VisualizationParameters
+from src.structure_visualizer import StructureVisualizer, AtomsUniverseBuilder, VisualizationParams
 from src.data_preparation import StructureSettings, StructureSettingsManager, ChannelLimits
 from src.projects.intercalation_and_sorption import IntercalatedChannelBuilder
 from src.base_structure_classes import AlLatticeType
@@ -67,7 +67,7 @@ class AppActionsShowInitData:
         StructureVisualizer.show_structure(
             coordinates=coordinates_al,
             to_build_bonds=to_build_bonds,
-            visual_parameters=VisualizationParameters.al,
+            visual_params=VisualizationParams.al,
             num_of_min_distances=num_of_min_distances,
             skip_first_distances=skip_first_distances,
             title="Aluminium")
