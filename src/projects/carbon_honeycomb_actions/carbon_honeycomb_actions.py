@@ -90,6 +90,8 @@ class CarbonHoneycombActions:
             [i[0], i[1]] for i in groups_by_xy.keys()
         ])
 
+        # StructureVisualizer.show_2d_graph(x_y_points)
+
         # Split by the max distance between groups (to define separate channel planes)
         distances_between_xy_groups: np.ndarray = DistanceMeasure.calculate_min_distances_between_points(x_y_points)
 
@@ -112,6 +114,20 @@ class CarbonHoneycombActions:
 
         honeycomb_channels: list[CarbonHoneycombChannel] = cls._build_honeycomb_channels(
             honeycomb_planes_groups, plane_groups_indexes)
-        # honeycomb_channels[0].planes[0].hexagons
 
-        return cls._build_honeycomb_channels(honeycomb_planes_groups, plane_groups_indexes)
+        # honeycomb_channel = honeycomb_channels[0]
+        # plane = honeycomb_channel.planes[0]
+
+        # StructureVisualizer.show_structure(plane.points)
+
+        # hexagon = plane.hexagons[1]
+        # points = []
+
+        # # for plane in honeycomb_channels[0].planes:
+        # for hexagon in plane.pentagons:
+        #     for point in hexagon.points:
+        #         points.append(point)
+        #     points.append(hexagon.center)
+
+        # StructureVisualizer.show_structure(np.array(points), to_build_bonds=True, num_of_min_distances=2)
+        return honeycomb_channels
