@@ -4,7 +4,9 @@ from numpy import ndarray
 class PlanesBuilder:
     @staticmethod
     def build_plane_parameters(
-            p1: list[float], p2: list[float], p3: list[float],
+            p1: ndarray | list[float],
+            p2: ndarray | list[float],
+            p3: ndarray | list[float],
     ) -> tuple[float, float, float, float]:
         """
         Define the plane like Ax + By + Cz + D = 0

@@ -1,6 +1,7 @@
 import numpy as np
 from dataclasses import dataclass
 
+from src.coordinate_operations import PlanesBuilder
 from .points import Points
 
 
@@ -19,3 +20,34 @@ class FlatFigure(Points):
         # Compute the centroid as the mean of the coordinates
         return self.points.mean(axis=0)
 
+    def build_figure_plane_params(self) -> tuple[float, float, float, float]:
+        """
+        Define the plane like Ax + By + Cz + D = 0
+        using the three provided points.
+
+        Takes 3 points as a parameters as lists with 3 coordinates.
+        Returns A, B, C, D parameters from the equation above.
+        """
+
+        plane_points: list[np.ndarray] = []
+        used_x = set()
+        used_y = set()
+        used_z = set()
+
+        for point in self.points:
+            x, y, z = point
+
+            if (x not in used_x) and (y not in used_y) and (z not in used_z):
+                plane_points.append(point)
+                used_x.add(x)
+                used_y.add(y)
+                used_z.add(z)
+
+                if len(plane_points) == 3:
+                    break
+
+        if len(plane_points) < 3:
+            raise ValueError("Not enough distinct points to define a plane.")
+
+        return PlanesBuilder.build_plane_parameters(
+            plane_points[0], plane_points[1], plane_points[2])
