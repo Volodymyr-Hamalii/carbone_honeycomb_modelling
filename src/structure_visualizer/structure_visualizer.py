@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.pyplot import Figure, Axes  # type: ignore
 
 from .lines_builder import LinesBuilder
-from .visualization_params import VisualizationParams, StructureVisualParameters
+from .visualization_params import VisualizationParams, StructureVisualParams
 from ..utils import Logger
 
 
@@ -18,7 +18,7 @@ class StructureVisualizer:
             cls,
             coordinates: ndarray,
             to_build_bonds: bool = True,
-            visual_params: StructureVisualParameters = VisualizationParams.carbon,
+            visual_params: StructureVisualParams = VisualizationParams.carbon,
             num_of_min_distances: int = 3,
             skip_first_distances: int = 0,
             set_equal_scale: bool | None = None,
@@ -55,8 +55,8 @@ class StructureVisualizer:
         coordinates_first: ndarray,
         coordinates_second: ndarray,
         to_build_bonds: bool = False,
-        visual_params_first: StructureVisualParameters = VisualizationParams.carbon,
-        visual_params_second: StructureVisualParameters = VisualizationParams.al,
+        visual_params_first: StructureVisualParams = VisualizationParams.carbon,
+        visual_params_second: StructureVisualParams = VisualizationParams.al,
         title: str | None = None,
     ) -> None:
         """ Show 3D plot with 2 structures (by default there are carbon and aluminium) """
@@ -96,7 +96,7 @@ class StructureVisualizer:
         cls,
         coordinates: np.ndarray,
         title: str | None = None,
-        visual_params: StructureVisualParameters = VisualizationParams.carbon,
+        visual_params: StructureVisualParams = VisualizationParams.carbon,
         show_coordinates: bool = False,
     ) -> None:
         # Prepare to visualize in 2D
@@ -134,7 +134,7 @@ class StructureVisualizer:
             cls,
             ax: Axes,
             coordinates: ndarray,
-            visual_params: StructureVisualParameters,
+            visual_params: StructureVisualParams,
             set_equal_scale: bool | None = None,
             to_build_bonds: bool = True,
             num_of_min_distances: int = 3,
