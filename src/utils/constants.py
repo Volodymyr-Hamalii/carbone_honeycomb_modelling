@@ -82,7 +82,7 @@ class Constants:
     path = _ConstantsPath
     logger = _ConstantsLogger
     filenames = _ConstantsFilenames
-    physics = _ConstantsPhysics
+    phys = _ConstantsPhysics
     math = _ConstantsMath
     settings = _ConstantsSettings
 
