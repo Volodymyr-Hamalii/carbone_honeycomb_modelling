@@ -20,7 +20,7 @@ class FlatFigure(Points):
         # Compute the centroid as the mean of the coordinates
         return self.points.mean(axis=0)
 
-    def plane_params(self) -> tuple[float, float, float, float]:
+    def get_plane_params(self) -> tuple[float, float, float, float]:
         """
         Define the plane like Ax + By + Cz + D = 0
         using the three provided points.
