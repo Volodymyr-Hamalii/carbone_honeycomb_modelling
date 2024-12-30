@@ -1,7 +1,8 @@
+from functools import cached_property
 import numpy as np
 from dataclasses import dataclass
 
-from src.coordinate_operations import PlanesBuilder
+from src.coordinate_operations import PlanesBuilder, LinesOperations
 from .points import Points
 
 
@@ -20,6 +21,14 @@ class FlatFigure(Points):
         # Compute the centroid as the mean of the coordinates
         return self.points.mean(axis=0)
 
+    @cached_property
+    def plane_params(self) -> tuple[float, float, float, float]:
+        """
+        Compute and cache plane parameters once. Further accesses
+        will use the cached value.
+        """
+        return self.get_plane_params()
+
     def get_plane_params(self) -> tuple[float, float, float, float]:
         """
         Define the plane like Ax + By + Cz + D = 0
@@ -29,25 +38,33 @@ class FlatFigure(Points):
         Returns A, B, C, D parameters from the equation above.
         """
 
-        plane_points: list[np.ndarray] = []
-        used_x = set()
-        used_y = set()
-        used_z = set()
+        points = np.array(self.points, dtype=float)
 
-        for point in self.points:
-            x, y, z = point
+        if points.shape[0] < 3:
+            raise ValueError("At least 3 points are required to define a plane.")
 
-            if (x not in used_x) and (y not in used_y) and (z not in used_z):
-                plane_points.append(point)
-                used_x.add(x)
-                used_y.add(y)
-                used_z.add(z)
+        # 1) Pick first point p1
+        p1 = points[0]
 
-                if len(plane_points) == 3:
-                    break
+        # 2) Find a second point p2 that is not identical to p1
+        p2 = None
+        for i in range(1, len(points)):
+            if not np.allclose(points[i], p1):
+                p2 = points[i]
+                break
+        if p2 is None:
+            raise ValueError("All points are identical. Cannot define a plane.")
 
-        if len(plane_points) < 3:
-            raise ValueError("Not enough distinct points to define a plane.")
+        p3 = None
+        for j in range(1, len(points)):
+            c = points[j]
+            # We already used p1, p2, but we might revisit them in the loop;
+            # that's okay if they help us find a non-collinear point.
+            if not LinesOperations.points_are_collinear(p1, p2, c):
+                p3 = c
+                break
 
-        return PlanesBuilder.build_plane_params(
-            plane_points[0], plane_points[1], plane_points[2])
+        if p3 is None:
+            raise ValueError("All points are collinear. Cannot define a plane.")
+
+        return PlanesBuilder.build_plane_params(p1, p2, p3)
