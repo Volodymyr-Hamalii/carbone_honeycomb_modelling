@@ -4,11 +4,9 @@ import MDAnalysis as mda
 import numpy as np
 from numpy import ndarray
 
-from ..utils import Logger, Constants
-from ..data_preparation import ChannelLimits
-from ..base_structure_classes import LatticeType
+from src.utils import Logger
+from src.base_structure_classes import Points, CoordinateLimits
 
-from .structure_utils import StructureUtils
 
 import warnings
 # suppress some MDAnalysis warnings about PSF files
@@ -22,11 +20,10 @@ class AtomsUniverseBuilder:
     @staticmethod
     def builds_atoms_coordinates(
         path_to_pdb_file: Path,
-        channel_coordinate_limits: ChannelLimits | None = None,
-    ) -> ndarray:
+    ) -> Points:
         """ 
         Builds atom's Universe based on the {path_to_pdb_file}.pdb file.
-        If channel_coordinate_limits is not None -- also filters atoms by provided limits.
+        If coordinate_limits is not None -- also filters atoms by provided limits.
         """
 
         # Load a structure from a file
@@ -34,48 +31,21 @@ class AtomsUniverseBuilder:
 
         # Access atoms and coordinates
         atoms = u.atoms
-        coordinates: ndarray = atoms.positions  # type: ignore
+        points: ndarray = atoms.positions  # type: ignore
 
-        if channel_coordinate_limits is not None:
-            x_min: float = channel_coordinate_limits.x_min
-            x_max: float = channel_coordinate_limits.x_max
-            y_min: float = channel_coordinate_limits.y_min
-            y_max: float = channel_coordinate_limits.y_max
-
-            # Filter coordinates based on the criteria
-            filtered_indices = np.where(
-                (coordinates[:, 0] >= x_min) & (coordinates[:, 0] <= x_max) &
-                (coordinates[:, 1] >= y_min) & (coordinates[:, 1] <= y_max)
-            )[0]
-
-            # Select atoms based on the filtered indices
-            single_channel_atoms = atoms[filtered_indices]  # type: ignore
-
-            # Build a path to result file
-            one_channel_pdb_file_path: Path = Path(
-                str(path_to_pdb_file).replace(
-                    Constants.filenames.INIT_PDB_FILE, Constants.filenames.PDB_FILE_ONE_CHANNEL))
-
-            # Create result-data/{structure_folder}/ljout-result-one-channel.pdb file if it didn't exist
-            if not one_channel_pdb_file_path.exists():
-                logger.info("Created", one_channel_pdb_file_path)
-                StructureUtils.write_pdb_from_mda(one_channel_pdb_file_path, single_channel_atoms)
-
-            return single_channel_atoms.positions
-
-        return coordinates
+        return Points(points=points)
 
     @classmethod
     def build_hcp_lattice_type(
         cls,
         lattice_parameter: float,
-        channel_coordinate_limits: ChannelLimits
-    ) -> ndarray:
+        coordinate_limits: CoordinateLimits,
+    ) -> Points:
         """ Generate coordinates for planes with a 'ABAB' close-packed stacking sequence (Hexagonal close-packed) """
 
         # Extract limits
         x_min, x_max, y_min, y_max, z_min, z_max = cls._get_extended_limits(
-            channel_coordinate_limits)
+            coordinate_limits)
 
         a: float = lattice_parameter
 
@@ -128,21 +98,21 @@ class AtomsUniverseBuilder:
             (full_structure[:, 2] >= z_min) & (full_structure[:, 2] <= z_max)
         )
 
-        return full_structure[within_limits]
+        return Points(points=full_structure[within_limits])
 
     @classmethod
     def build_fcc_lattice_type(
         cls,
         lattice_parameter: float,
-        channel_coordinate_limits: ChannelLimits,
-    ) -> ndarray:
+        coordinate_limits: CoordinateLimits,
+    ) -> Points:
         """
         Generate coordinates for planes with a 'ABCABC' close-packed stacking sequence (Face-centered cubic).
         """
 
         # Extract limits
         x_min, x_max, y_min, y_max, z_min, z_max = cls._get_extended_limits(
-            channel_coordinate_limits)
+            coordinate_limits)
 
         a: float = lattice_parameter
 
@@ -206,26 +176,26 @@ class AtomsUniverseBuilder:
             (full_structure[:, 2] >= z_min) & (full_structure[:, 2] <= z_max)
         )
 
-        return full_structure[within_limits]
+        return Points(points=full_structure[within_limits])
 
     @classmethod
     def _get_extended_limits(
-        cls, channel_coordinate_limits: ChannelLimits
+        cls, coordinate_limits: CoordinateLimits
     ) -> tuple[float, float, float, float, float, float]:
 
         x_min, x_max = cls._get_extended_limits_for_coordinate(
-            min_coord=channel_coordinate_limits.x_min,
-            max_coord=channel_coordinate_limits.x_max,
+            min_coord=coordinate_limits.x_min,
+            max_coord=coordinate_limits.x_max,
         )
 
         y_min, y_max = cls._get_extended_limits_for_coordinate(
-            min_coord=channel_coordinate_limits.y_min,
-            max_coord=channel_coordinate_limits.y_max,
+            min_coord=coordinate_limits.y_min,
+            max_coord=coordinate_limits.y_max,
         )
 
         z_min, z_max = cls._get_extended_limits_for_coordinate(
-            min_coord=channel_coordinate_limits.z_min,
-            max_coord=channel_coordinate_limits.z_max,
+            min_coord=coordinate_limits.z_min,
+            max_coord=coordinate_limits.z_max,
         )
 
         return x_min, x_max, y_min, y_max, z_min, z_max
