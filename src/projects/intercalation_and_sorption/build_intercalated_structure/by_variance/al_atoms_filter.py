@@ -5,13 +5,14 @@ from scipy.spatial.distance import cdist
 from scipy.optimize import minimize
 
 from src.utils import Logger, execution_time_logger
-from src.data_preparation import StructureSettings, ChannelPoints
+from src.base_structure_classes import Points, CoordinateLimits
+from src.data_preparation import StructureSettings
 from src.coordinate_operations import (
-    PlanesBuilder,
-    PointsRotator,
     DistanceMeasure,
     PointsFilter,
 )
+
+from src.projects.carbon_honeycomb_actions import CarbonHoneycombChannel, CarbonHoneycombPlane
 from .variance_calculator import VarianceCalculator
 
 
@@ -22,23 +23,23 @@ class AlAtomsFilter:
     @classmethod
     def get_filtered_al_atoms(
             cls,
-            coordinates_carbon: ndarray,
-            coordinates_al: ndarray,
+            carbon_channel: CarbonHoneycombChannel,
+            coordinates_al: Points,
+            coordinates_al_prev: Points,
             structure_settings: StructureSettings,
-            coordinates_al_prev: ndarray,
             max_atoms: int,
             min_dist_between_al_sum_prev: float,
             dist_and_rotation_variance_prev: float | floating,
-    ) -> tuple[ndarray, float, float | floating, int]:
+    ) -> tuple[Points, float, float | floating, int]:
 
         # Prev values by default
-        coordinates_al_result: ndarray = coordinates_al_prev
+        coordinates_al_result: Points = coordinates_al_prev
         min_dist_between_al_sum_result: float = min_dist_between_al_sum_prev
         dist_and_rotation_variance_result: float | floating = dist_and_rotation_variance_prev
         max_atoms_result: int = max_atoms
 
-        coordinates_al_filtered: ndarray = cls.filter_al_atoms_related_carbon(
-            coordinates_al, coordinates_carbon, structure_settings)
+        coordinates_al_filtered: Points = cls.filter_al_atoms_related_carbon(
+            coordinates_al, carbon_channel, structure_settings)
 
         num_of_atoms: int = len(coordinates_al_filtered)
 
@@ -82,9 +83,9 @@ class AlAtomsFilter:
             else:
                 # Check variance
                 current_min_dist_sum: floating = DistanceMeasure.calculate_min_distance_sum(
-                    coordinates_al_filtered, coordinates_carbon)
+                    coordinates_al_filtered.points, carbon_channel.points)
                 variance_related_channel: floating = VarianceCalculator.calculate_variance_related_channel(
-                    coordinates_al_filtered, coordinates_carbon)
+                    coordinates_al_filtered, carbon_channel)
 
                 current_dist_and_rotation_variance: floating = current_min_dist_sum - variance_related_channel
 
@@ -101,9 +102,9 @@ class AlAtomsFilter:
         )
 
     @staticmethod
-    def _calculate_min_dist_between_al_sum(coordinates_al: ndarray) -> float:
+    def _calculate_min_dist_between_al_sum(coordinates_al: Points) -> float:
         min_dist_between_al: ndarray = DistanceMeasure.calculate_min_distances_between_points(
-            coordinates_al)
+            coordinates_al.points)
         return round(np.sum(min_dist_between_al), 4)
 
     # @classmethod
@@ -264,10 +265,10 @@ class AlAtomsFilter:
 
     @staticmethod
     def _filter_atoms_relates_carbon_atoms(
-        coordinates_al: ndarray,
-        coordinates_carbon: ndarray,
+        coordinates_al: Points,
+        coordinates_carbon: Points,
         max_distance_to_carbon_atoms: float,
-    ) -> ndarray:
+    ) -> Points:
         """
         Filter points from the coordinates_al array
         by the max distance (max_distance_to_carbon_atoms param)
@@ -275,12 +276,14 @@ class AlAtomsFilter:
         """
 
         # Calculate the distance matrix
-        distances_matrix: ndarray = cdist(coordinates_al, coordinates_carbon)
+        distances_matrix: ndarray = cdist(coordinates_al.points, coordinates_carbon.points)
 
         # Find the minimum distance for each atom in coordinates_al to any atom in coordinates_carbon
         min_distances: ndarray = np.min(distances_matrix, axis=1)
 
-        # Filter the atoms in coordinates_al based on the max distance to carbon atoms
-        filtered_coordinates: ndarray = coordinates_al[min_distances >= max_distance_to_carbon_atoms]
+        filtered_al_coordinates: Points = coordinates_al.copy()
 
-        return filtered_coordinates
+        # Filter the atoms in coordinates_al based on the max distance to carbon atoms
+        filtered_al_coordinates.points = coordinates_al.points[min_distances >= max_distance_to_carbon_atoms]
+
+        return filtered_al_coordinates

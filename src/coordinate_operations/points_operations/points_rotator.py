@@ -1,22 +1,23 @@
 import numpy as np
 from numpy import ndarray
 
+from src.base_structure_classes import Points
+
 
 class PointsRotator:
     @classmethod
     def rotate_on_angle_related_center(
             cls,
-            points: ndarray,
+            points: Points,
             angle_x: float = 0,
             angle_y: float = 0,
             angle_z: float = 0,
-    ) -> ndarray:
-
+    ) -> Points:
         # Calculate the centroid (center) of the points
-        centroid = np.mean(points, axis=0)
+        centroid = np.mean(points.points, axis=0)
 
         # Move the points to the origin (centroid becomes the origin)
-        centered_points = points - centroid
+        centered_points: ndarray = points.points - centroid
 
         # Define rotation matrices for X, Y, and Z axis
         rotation_matrix_x: ndarray = cls._get_rotation_matrix_x(angle_x)
@@ -29,8 +30,10 @@ class PointsRotator:
         # Apply the rotation to the points
         rotated_points = centered_points @ rotation_matrix.T
 
+        final_points: Points = points.copy()
+
         # Move the points back to the original position (reverse translation)
-        final_points = rotated_points + centroid
+        final_points.points = rotated_points + centroid
 
         return final_points
 
