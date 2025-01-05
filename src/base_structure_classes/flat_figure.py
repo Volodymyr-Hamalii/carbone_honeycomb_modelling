@@ -23,10 +23,7 @@ class FlatFigure(Points):
 
     @cached_property
     def plane_params(self) -> tuple[float, float, float, float]:
-        """
-        Compute and cache plane parameters once. Further accesses
-        will use the cached value.
-        """
+        """ Compute and cache result of get_plane_params() method. """
         return self.get_plane_params()
 
     def get_plane_params(self) -> tuple[float, float, float, float]:
