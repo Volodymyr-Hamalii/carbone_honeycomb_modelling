@@ -1,13 +1,14 @@
 from pathlib import Path
-from numpy import ndarray
 
 from src.utils import Constants, PathBuilder, Logger, Inputs
 from src.base_structure_classes import AlLatticeType, Points, CoordinateLimits
 from src.structure_visualizer import StructureVisualizer, AtomsUniverseBuilder, VisualizationParams
-from src.data_preparation import StructureSettings, StructureSettingsManager
-from src.projects.intercalation_and_sorption import IntercalatedChannelBuilder
-
-from src.projects import CarbonHoneycombActions, CarbonHoneycombChannel, CarbonHoneycombActions
+from src.projects import (
+    IntercalatedChannelBuilder,
+    CarbonHoneycombActions,
+    CarbonHoneycombChannel,
+    CarbonHoneycombActions,
+)
 
 
 logger = Logger("Actions")
@@ -89,7 +90,7 @@ class AppActionsShowInitData:
         path_to_init_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_folder)
 
         coordinates_carbon: Points = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
-        
+
         carbon_channels: list[CarbonHoneycombChannel] = CarbonHoneycombActions.split_init_structure_into_separate_channels(
             coordinates_carbon=coordinates_carbon)
         carbon_channel: CarbonHoneycombChannel = carbon_channels[0]
