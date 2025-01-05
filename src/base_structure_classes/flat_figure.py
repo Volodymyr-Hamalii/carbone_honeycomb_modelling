@@ -8,7 +8,7 @@ from .points import Points
 
 @dataclass
 class FlatFigure(Points):
-    @property
+    @cached_property
     def center(self) -> np.ndarray:
         """
         Given a set of points (N, 3) that form a flat figure in 3D space,
