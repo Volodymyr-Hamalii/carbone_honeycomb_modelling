@@ -95,7 +95,7 @@ class CarbonHoneycombUtils:
 
         num_of_edges: int = num_of_nodes + 1
 
-        def backtrack(start_node, current_node, visited_nodes, visited_edges):
+        def backtrack(start_node, current_node, visited_nodes, visited_edges) -> None:
             # If we have a path of length num_of_nodes, check if it forms a cycle back to start_node
             if len(visited_nodes) == num_of_edges:
                 # Check if last node connects to start_node

@@ -15,7 +15,7 @@ class CarbonHoneycombChannel(Points):
     @property
     def planes(self) -> list[CarbonHoneycombPlane]:
         """
-        Returns a list of CarbonHoneycombPlane objects
+        A list of CarbonHoneycombPlane objects
         representing planes in the honeycomb channel.
         """
         return CarbonHoneycombChannelActions.build_planes(self.points)

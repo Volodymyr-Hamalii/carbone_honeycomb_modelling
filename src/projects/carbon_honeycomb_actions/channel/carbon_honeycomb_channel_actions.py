@@ -69,7 +69,8 @@ class CarbonHoneycombChannelActions:
     @classmethod
     def _find_first_and_second_plane(
         cls,
-        xy_sets: list[set[tuple[np.float32, np.float32]]]
+        xy_sets: list[set[tuple[np.float32, np.float32]]],
+        base_point: tuple[float | np.float32, float | np.float32] = (0., 0.),
     ) -> tuple[int, int]:
         """
         Identify two special planes:
@@ -81,20 +82,34 @@ class CarbonHoneycombChannelActions:
 
         for i, group in enumerate(xy_sets):
             # If a group contains (0,0), it might be our base or second plane
-            if (0., 0.) in group:
+            if base_point in group:
                 # If we haven't found the base yet, verify the group has another point with y=0
                 if prev_plane_index == -1:
-                    for pt in group:
+                    # for pt in group:
                         # e.g., at least one more point with x != 0 and y == 0
-                        if pt[0] != 0. and pt[1] == 0.:
-                            prev_plane_index = i
-                            break
+                        # if pt[0] != 0. and pt[1] == 0.:
+                    if all(y == 0 for _, y in group):
+                        prev_plane_index = i
+                        break
                     # If we still haven't assigned prev_plane_index, then assign next_plane_index
                     if prev_plane_index == -1 and next_plane_index == -1:
                         next_plane_index = i
                 else:
                     # If base is found, the next group containing (0,0) is second plane
                     next_plane_index = i
+
+        if (prev_plane_index == -1 and next_plane_index == -1) and (base_point == (0., 0.)):
+            # Take other base_point with x == 0
+            for group in xy_sets:
+                # Find the line on Ox
+                if all(y == 0 for _, y in group):
+                    # Sort by x coordinate
+                    sorted_group: list[tuple[np.float32, np.float32]] = sorted(list(group), key=lambda x: x[0])
+                    # point_index: int = round(len(sorted_group) / 2)
+
+                    # Take the point with the lowest X
+                    point: tuple[np.float32, np.float32] = sorted_group[0]
+                    return cls._find_first_and_second_plane(xy_sets, base_point=point)
 
         # if prev_plane_index == -1:
         #     raise ValueError("Base plane (first plane) not found.")

@@ -62,6 +62,14 @@ class CarbonHoneycombActions:
             honeycomb_points: np.ndarray = np.array(list(unique_points_set))
             honeycomb_channel = CarbonHoneycombChannel(points=honeycomb_points)
 
+            if is_main_channel is False:
+                x_coords: np.ndarray = honeycomb_points[:, 0]
+                y_coords: np.ndarray = honeycomb_points[:, 1]
+
+                # TODO: set better logic to find main channel
+                if np.all(x_coords >= 0) or np.all(y_coords >= 0):
+                    is_main_channel = True
+
             if is_main_channel:
                 channels.insert(0, honeycomb_channel)
             else:
@@ -95,7 +103,7 @@ class CarbonHoneycombActions:
         # Split by the max distance between groups (to define separate channel planes)
         distances_between_xy_groups: np.ndarray = DistanceMeasure.calculate_min_distances_between_points(x_y_points)
 
-        clearance_dist_coefficient = 1.5
+        clearance_dist_coefficient = 2
         max_distance_between_xy_groups: np.floating = np.max(distances_between_xy_groups) * clearance_dist_coefficient
 
         honeycomb_planes_groups: list[
