@@ -1,5 +1,6 @@
 import numpy as np
 
+from src.base_structure_classes import Points
 from src.coordinate_operations import PointsOrganizer, DistanceMeasure
 from src.structure_visualizer import StructureVisualizer
 
@@ -41,6 +42,8 @@ class CarbonHoneycombActions:
         honeycomb_planes_groups: list[dict[tuple[np.float32, np.float32], np.ndarray]],
         plane_groups_indexes: list[list[int]]
     ) -> list[CarbonHoneycombChannel]:
+        
+        main_channel_is_found: bool = False
 
         channels: list[CarbonHoneycombChannel] = []
         for plane_group_indexes in plane_groups_indexes:
@@ -57,12 +60,13 @@ class CarbonHoneycombActions:
 
                         if point[0] == 0. and point[1] == 0.:
                             is_main_channel = True
+                            main_channel_is_found = True
 
             # Convert the set of tuples back to a numpy array
             honeycomb_points: np.ndarray = np.array(list(unique_points_set))
             honeycomb_channel = CarbonHoneycombChannel(points=honeycomb_points)
 
-            if is_main_channel is False:
+            if is_main_channel is False and main_channel_is_found is False:
                 x_coords: np.ndarray = honeycomb_points[:, 0]
                 y_coords: np.ndarray = honeycomb_points[:, 1]
 
@@ -79,14 +83,15 @@ class CarbonHoneycombActions:
 
     @classmethod
     def split_init_structure_into_separate_channels(
-            cls, carbon_coordinates: np.ndarray
+            cls, coordinates_carbon: Points,
+            clearance_dist_coefficient: float = 1.25
     ) -> list[CarbonHoneycombChannel]:
 
         # Create groups with the same X and Y coordinate
         # (like, to split all points into columns)
         groups_by_xy: dict[
             tuple[np.float32, np.float32], np.ndarray
-        ] = PointsOrganizer.group_by_unique_xy(carbon_coordinates)
+        ] = PointsOrganizer.group_by_unique_xy(coordinates_carbon.points)
 
         # Define groups that lie on the same line
         groups_by_the_xy_lines: list[
@@ -98,12 +103,11 @@ class CarbonHoneycombActions:
             [i[0], i[1]] for i in groups_by_xy.keys()
         ])
 
-        # StructureVisualizer.show_2d_graph(x_y_points)
+        # StructureVisualizer.show_2d_graph(x_y_points, show_coordinates=True)
 
         # Split by the max distance between groups (to define separate channel planes)
         distances_between_xy_groups: np.ndarray = DistanceMeasure.calculate_min_distances_between_points(x_y_points)
 
-        clearance_dist_coefficient = 2
         max_distance_between_xy_groups: np.floating = np.max(distances_between_xy_groups) * clearance_dist_coefficient
 
         honeycomb_planes_groups: list[
@@ -122,8 +126,18 @@ class CarbonHoneycombActions:
 
         honeycomb_channels: list[CarbonHoneycombChannel] = cls._build_honeycomb_channels(
             honeycomb_planes_groups, plane_groups_indexes)
+        
+        if not honeycomb_channels:
+            # Try to split with more clearance_dist_coefficient
+            # to concider bigger max distance between the points
+            clearance_dist_coefficient += 0.25
+            if clearance_dist_coefficient <= 2.5:
+                return cls.split_init_structure_into_separate_channels(
+                    coordinates_carbon, clearance_dist_coefficient)
 
         # honeycomb_channel = honeycomb_channels[0]
+        # StructureVisualizer.show_structure(honeycomb_channel.points)
+
         # plane = honeycomb_channel.planes[0]
 
         # StructureVisualizer.show_structure(plane.points)

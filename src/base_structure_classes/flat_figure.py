@@ -1,6 +1,6 @@
 from functools import cached_property
-import numpy as np
 from dataclasses import dataclass
+import numpy as np
 
 from src.coordinate_operations import PlanesBuilder, LinesOperations
 from .points import Points
