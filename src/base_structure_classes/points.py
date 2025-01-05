@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from functools import cached_property
 import numpy as np
 
 from .coordinate_limits import CoordinateLimits
@@ -12,8 +13,12 @@ class Points:
     def __len__(self) -> int:
         return len(self.points)
 
-    def get_coordinate_limits(self) -> CoordinateLimits:
+    @cached_property
+    def coordinate_limits(self) -> CoordinateLimits:
         """ Returns CoordinateLimits of self.points. """
+
+        if len(self.points) == 0:
+            return CoordinateLimits()
 
         x_coords: np.ndarray = self.points[:, 0]
         y_coords: np.ndarray = self.points[:, 1]
