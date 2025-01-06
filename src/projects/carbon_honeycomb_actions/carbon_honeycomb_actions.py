@@ -135,12 +135,10 @@ class CarbonHoneycombActions:
                 return cls.split_init_structure_into_separate_channels(
                     coordinates_carbon, clearance_dist_coefficient)
 
-        # honeycomb_channel = honeycomb_channels[0]
-        # StructureVisualizer.show_structure(honeycomb_channel.points)
-
+        # honeycomb_channel: CarbonHoneycombChannel = honeycomb_channels[0]
         # plane = honeycomb_channel.planes[0]
 
-        # StructureVisualizer.show_structure(plane.points)
+        # StructureVisualizer.show_structure(plane.points, num_of_min_distances=3)
 
         # hexagon = plane.hexagons[1]
         # points = []

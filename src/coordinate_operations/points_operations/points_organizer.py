@@ -2,6 +2,7 @@ import numpy as np
 from itertools import combinations
 
 from src.utils import Logger
+# from src.base_structure_classes import Points
 
 
 logger = Logger(__name__)
@@ -34,11 +35,11 @@ class PointsOrganizer:
 
     @classmethod
     def group_by_the_xy_lines(
-        cls,
-        groups_by_xy: dict[tuple[np.float32, np.float32], np.ndarray] = {},
-        coordinates_to_group: np.ndarray = np.array([]),
-        epsilon: float = 1e-4,
-        min_points_in_line: int = 2,
+            cls,
+            groups_by_xy: dict[tuple[np.float32, np.float32], np.ndarray] = {},
+            coordinates_to_group: np.ndarray = np.array([]),
+            epsilon: float = 1e-4,
+            min_points_in_line: int = 2,
     ) -> list[dict[tuple[np.float32, np.float32], np.ndarray]]:
         """
         Groups the coordinates into sets of points that lie on lines in the xOy plane.

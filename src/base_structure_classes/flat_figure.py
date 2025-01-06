@@ -2,6 +2,7 @@ from functools import cached_property
 from dataclasses import dataclass
 import numpy as np
 
+from src.base_structure_classes import CoordinateLimits
 from src.coordinate_operations import PlanesBuilder, LinesOperations
 from .points import Points
 
@@ -35,7 +36,8 @@ class FlatFigure(Points):
         Returns A, B, C, D parameters from the equation above.
         """
 
-        points = np.array(self.points, dtype=float)
+        points: np.ndarray = self.points
+        coordinate_limits: CoordinateLimits = self.coordinate_limits
 
         if points.shape[0] < 3:
             raise ValueError("At least 3 points are required to define a plane.")
@@ -53,7 +55,7 @@ class FlatFigure(Points):
             raise ValueError("All points are identical. Cannot define a plane.")
 
         p3 = None
-        for j in range(1, len(points)):
+        for j in reversed(range(1, len(points))):
             c = points[j]
             # We already used p1, p2, but we might revisit them in the loop;
             # that's okay if they help us find a non-collinear point.
@@ -63,5 +65,40 @@ class FlatFigure(Points):
 
         if p3 is None:
             raise ValueError("All points are collinear. Cannot define a plane.")
+
+        # p1: np.ndarray = points[0]
+        # p2: np.ndarray = points[1]
+
+        # if coordinate_limits.x_min == coordinate_limits.x_max:
+        #     # All point have the same X
+        #     for point in reversed(points[2:]):
+        #         x: float = point[0]
+        #         y: float = point[1]
+        #         z: float = point[2]
+
+        #         if (y != p1[1] and y != p2[1]) and (z != p1[2] and z != p2[2]):
+        #             p3: np.ndarray = point
+        #             break
+        # elif coordinate_limits.y_min == coordinate_limits.y_max:
+        #     # All point have the same Y
+        #     for point in reversed(points[2:]):
+        #         x: float = point[0]
+        #         y: float = point[1]
+        #         z: float = point[2]
+
+        #         if (x != p1[0] and x != p2[0]) and (z != p1[2] and z != p2[2]):
+        #             p3: np.ndarray = point
+        #             break
+        # else:
+        #     for point in reversed(points[2:]):
+        #         x: float = point[0]
+        #         y: float = point[1]
+        #         z: float = point[2]
+
+        #         if (x != p1[0] and x != p2[0]) and (
+        #                 y != p1[1] and y != p2[1]) and (
+        #                 z != p1[2] and z != p2[2]):
+        #             p3: np.ndarray = point
+        #             break
 
         return PlanesBuilder.build_plane_params(p1, p2, p3)

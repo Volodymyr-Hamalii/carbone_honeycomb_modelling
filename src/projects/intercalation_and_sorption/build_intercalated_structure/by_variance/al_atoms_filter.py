@@ -2,7 +2,7 @@ import math
 import numpy as np
 from numpy import ndarray, floating
 from scipy.spatial.distance import cdist
-from scipy.optimize import minimize
+# from scipy.optimize import minimize
 
 from src.utils import Logger, execution_time_logger
 from src.base_structure_classes import Points, CoordinateLimits
@@ -215,51 +215,55 @@ class AlAtomsFilter:
     @classmethod
     def filter_al_atoms_related_carbon(
             cls,
-            coordinates_al: ndarray,
-            coordinates_carbon: ndarray,
-            structure_settings: StructureSettings
-    ) -> ndarray:
+            coordinates_al: Points,
+            carbon_channel: CarbonHoneycombChannel,
+            structure_settings: StructureSettings,
+    ) -> Points:
         """Filter Al atoms related planes and then related carbon atoms."""
 
-        coordinates_al_filtered: ndarray = cls._filter_atoms_related_clannel_planes(
-            coordinates=coordinates_al,
-            points_to_set_channel_planes=structure_settings.points_to_set_channel_planes)
+        coordinates_al_filtered: Points = cls._filter_atoms_related_clannel_planes(
+            coordinates_al=coordinates_al,
+            carbon_channel_planes=carbon_channel.planes)
+
+        limits: CoordinateLimits = coordinates_al_filtered.coordinate_limits
 
         coordinates_al_filtered = PointsFilter.filter_by_min_max_z(
-            coordinates_to_filter=coordinates_al_filtered,
-            coordinates_with_min_max_z=coordinates_carbon,
+            points_to_filter=coordinates_al_filtered,
+            z_min=limits.z_min,
+            z_max=limits.z_max,
             move_align_z=True)
 
         return cls._filter_atoms_relates_carbon_atoms(
             coordinates_al=coordinates_al_filtered,
-            coordinates_carbon=coordinates_carbon,
+            coordinates_carbon=carbon_channel,
             max_distance_to_carbon_atoms=structure_settings.max_distance_to_carbon_atoms)
 
     @staticmethod
     def _filter_atoms_related_clannel_planes(
-            coordinates: ndarray,
-            points_to_set_channel_planes: list[ChannelPoints],
+            coordinates_al: Points,
+            # carbon_channel: CarbonHoneycombChannel,
+            carbon_channel_planes: list[CarbonHoneycombPlane],
             distance_from_plane: float = 0,
-    ) -> ndarray:
+    ) -> Points:
         """
         Filter points from coordinates array by planes
         (remove atoms that are outside channel and atoms inside that are closer than distance_from_plane param).
         """
 
-        filtered_coordinates: ndarray = coordinates
+        filtered_coordinates: Points = coordinates_al.copy()
 
-        for plane_data in points_to_set_channel_planes:
+        for plane in carbon_channel_planes:
             # Build plane parameters
-            A, B, C, D = PlanesBuilder.build_plane_params(
-                p1=plane_data.points[0],
-                p2=plane_data.points[1],
-                p3=plane_data.points[2])
+            A, B, C, D = plane.plane_params
 
             filtered_coordinates = PointsFilter.filter_coordinates_related_to_plane(
                 filtered_coordinates,
                 A, B, C, D,
-                min_distance=distance_from_plane,
-                direction=plane_data.direction)
+                direction=plane.direction,
+                min_distance=distance_from_plane)
+
+            if len(filtered_coordinates) == 0:
+                return filtered_coordinates
 
         return filtered_coordinates
 
