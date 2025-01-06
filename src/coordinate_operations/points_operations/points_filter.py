@@ -10,8 +10,8 @@ class PointsFilter:
             cls,
             points: Points,
             A: float, B: float, C: float, D: float,
+            direction: bool,
             min_distance: float = 0,
-            direction: bool = True,
     ) -> Points:
         """
         A, B, C, D are the parameters from the
@@ -22,7 +22,7 @@ class PointsFilter:
 
         signed_distances: float = DistanceMeasure.calculate_signed_distance_from_plane(
             filtered_points.points, A, B, C, D)
-
+        
         if direction is True:
             # Keep points above the plane at the minimum distance
             filtered_points.points = filtered_points.points[signed_distances >= min_distance]

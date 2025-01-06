@@ -225,7 +225,7 @@ class AlAtomsFilter:
             coordinates_al=coordinates_al,
             carbon_channel_planes=carbon_channel.planes)
 
-        limits: CoordinateLimits = coordinates_al_filtered.coordinate_limits
+        limits: CoordinateLimits = carbon_channel.coordinate_limits
 
         coordinates_al_filtered = PointsFilter.filter_by_min_max_z(
             points_to_filter=coordinates_al_filtered,
@@ -241,7 +241,6 @@ class AlAtomsFilter:
     @staticmethod
     def _filter_atoms_related_clannel_planes(
             coordinates_al: Points,
-            # carbon_channel: CarbonHoneycombChannel,
             carbon_channel_planes: list[CarbonHoneycombPlane],
             distance_from_plane: float = 0,
     ) -> Points:
@@ -261,7 +260,7 @@ class AlAtomsFilter:
                 A, B, C, D,
                 direction=plane.direction,
                 min_distance=distance_from_plane)
-
+            
             if len(filtered_coordinates) == 0:
                 return filtered_coordinates
 

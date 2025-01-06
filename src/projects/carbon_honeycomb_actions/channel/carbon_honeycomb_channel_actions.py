@@ -32,7 +32,7 @@ class CarbonHoneycombChannelActions:
         planes: list[CarbonHoneycombPlane] = []
         for i in range(len(point_group_neighbors)):
             # For illustration: alternate direction every other plane
-            direction: bool = (i % 2 == 0)
+            direction: bool = (2 <= i <= 4)
 
             # If no planes are built yet, pick the "base" plane; otherwise pick the "next"
             if not planes:
