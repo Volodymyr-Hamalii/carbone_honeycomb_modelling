@@ -31,9 +31,6 @@ class CarbonHoneycombChannelActions:
         # 4. Build the planes by traversing neighbor relationships
         planes: list[CarbonHoneycombPlane] = []
         for i in range(len(point_group_neighbors)):
-            # For illustration: alternate direction every other plane
-            direction: bool = (2 <= i <= 4)
-
             # If no planes are built yet, pick the "base" plane; otherwise pick the "next"
             if not planes:
                 index: int = prev_plane_index
@@ -49,7 +46,7 @@ class CarbonHoneycombChannelActions:
             # 5. Concatenate all arrays in the chosen group to build one plane's coordinates
             plane_points: np.ndarray = np.concatenate(list(groups_by_xy_lines[index].values()), axis=0)
 
-            planes.append(CarbonHoneycombPlane(points=plane_points, direction=direction))
+            planes.append(CarbonHoneycombPlane(points=plane_points))
 
         return planes
 

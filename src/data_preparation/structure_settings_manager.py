@@ -18,12 +18,19 @@ class StructureSettingsManager:
         if structure_settings:
             distance_from_plane: float = structure_settings.get("distance_from_plane", 0)
             max_distance_to_carbon_atoms: float = structure_settings.get("max_distance_to_carbon_atoms", 0)
+
+            # TODO[25.01.07]: set this logic and remove this
+            direction_related_center: bool = structure_settings.get("direction_related_center", False)
         else:
             logger.warning(f"structure_settings.json file not found for {structure_folder} structure.")
             distance_from_plane: float = 0
             max_distance_to_carbon_atoms: float = 0
 
+            # TODO[25.01.07]: set this logic and remove this
+            direction_related_center: bool = False
+
         return StructureSettings(
             distance_from_plane=distance_from_plane,
             max_distance_to_carbon_atoms=max_distance_to_carbon_atoms,
+            direction_related_center=direction_related_center,  # TODO[25.01.07]: set this logic and remove this
         )

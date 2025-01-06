@@ -223,7 +223,9 @@ class AlAtomsFilter:
 
         coordinates_al_filtered: Points = cls._filter_atoms_related_clannel_planes(
             coordinates_al=coordinates_al,
-            carbon_channel_planes=carbon_channel.planes)
+            carbon_channel=carbon_channel,
+            structure_settings=structure_settings,
+        )
 
         limits: CoordinateLimits = carbon_channel.coordinate_limits
 
@@ -241,8 +243,8 @@ class AlAtomsFilter:
     @staticmethod
     def _filter_atoms_related_clannel_planes(
             coordinates_al: Points,
-            carbon_channel_planes: list[CarbonHoneycombPlane],
-            distance_from_plane: float = 0,
+            carbon_channel: CarbonHoneycombChannel,
+            structure_settings: StructureSettings,
     ) -> Points:
         """
         Filter points from coordinates array by planes
@@ -250,17 +252,27 @@ class AlAtomsFilter:
         """
 
         filtered_coordinates: Points = coordinates_al.copy()
+        carbon_channel_center: np.ndarray = carbon_channel.channel_center
 
-        for plane in carbon_channel_planes:
+        for plane in carbon_channel.planes:
             # Build plane parameters
             A, B, C, D = plane.plane_params
+
+            # TODO[25.01.07]: set this logic and refactor this
+            if structure_settings.direction_related_center is True:
+                direction = bool(carbon_channel_center[1] > plane.center[1])
+            else:
+                direction = bool(carbon_channel_center[1] < plane.center[1])
 
             filtered_coordinates = PointsFilter.filter_coordinates_related_to_plane(
                 filtered_coordinates,
                 A, B, C, D,
-                direction=plane.direction,
-                min_distance=distance_from_plane)
-            
+                direction=direction,
+                min_distance=structure_settings.distance_from_plane)
+
+            # from src.structure_visualizer import StructureVisualizer
+            # StructureVisualizer.show_two_structures(carbon_channel.points, filtered_coordinates.points)
+
             if len(filtered_coordinates) == 0:
                 return filtered_coordinates
 

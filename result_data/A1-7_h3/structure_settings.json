@@ -1,4 +1,5 @@
 {
   "distance_from_plane": 0,
-  "max_distance_to_carbon_atoms": 2.856
+  "max_distance_to_carbon_atoms": 2.856,
+  "direction_related_center": true
 }
