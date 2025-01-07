@@ -2,7 +2,7 @@ import numpy as np
 from numpy import ndarray
 
 from src.utils import Logger
-from src.data_preparation import ChannelLimits
+from src.base_structure_classes import CoordinateLimits, Points
 
 
 logger = Logger("StructureTranslator")
@@ -12,12 +12,12 @@ class StructureTranslator:
     @classmethod
     def translate_cell(
             cls,
-            cell_coordinates: ndarray,
-            translation_limits: ChannelLimits,
+            cell_coordinates: Points,
+            translation_limits: CoordinateLimits,
             translation_step_x: float = 0,
             translation_step_y: float = 0,
             translation_step_z: float = 0,
-    ) -> ndarray:
+    ) -> Points:
         """
         Translate (copy) elemental cell along x, y and z axis.
         If translation_steps are not provided -- they will be calculated
@@ -29,9 +29,14 @@ class StructureTranslator:
         #     return cell_coordinates
 
         # Determine the translation steps based on the provided coordinates
-        translation_step_x = cls._find_translation_step("x", translation_step_x, cell_coordinates[:, 0])
-        translation_step_y = cls._find_translation_step("y", translation_step_y, cell_coordinates[:, 1])
-        translation_step_z = cls._find_translation_step("z", translation_step_z, cell_coordinates[:, 2])
+        translation_step_x = cls._find_translation_step(
+            "x", translation_step_x, cell_coordinates.points[:, 0])
+
+        translation_step_y = cls._find_translation_step(
+            "y", translation_step_y, cell_coordinates.points[:, 1])
+
+        translation_step_z = cls._find_translation_step(
+            "z", translation_step_z, cell_coordinates.points[:, 2])
 
         translated_coordinates_list: list[ndarray] = []
 
@@ -42,6 +47,8 @@ class StructureTranslator:
         z_min: float = translation_limits.z_min
         z_max: float = translation_limits.z_max
 
+        size_limit = 99999
+
         # Translate the structure in x, y, and z directions
         for x_translation in np.arange(x_min, x_max, translation_step_x):
             for y_translation in np.arange(y_min, y_max, translation_step_y):
@@ -50,6 +57,10 @@ class StructureTranslator:
                     translated_structure: ndarray = cell_coordinates + translation_vector
                     translated_coordinates_list.append(translated_structure)
 
+                    if len(translated_coordinates_list) >= size_limit:
+                        raise ValueError(
+                            f"translated_coordinates_list size limit exceeded ({size_limit} items).")
+
         # Concatenate all translated coordinates
         translated_coordinates: ndarray = np.vstack(translated_coordinates_list)
 
@@ -57,11 +68,12 @@ class StructureTranslator:
         translated_coordinates: ndarray = np.unique(translated_coordinates, axis=0)
 
         # Filter by min and max z coordinate
-        return translated_coordinates[
+        filtered_points: np.ndarray = translated_coordinates[
             (translated_coordinates[:, 2] >= z_min) &
             (translated_coordinates[:, 2] <= z_max)
         ]
 
+        return Points(points=filtered_points)
 
     @staticmethod
     def _find_translation_step(axis: str, default_step: float, axis_coordinates: ndarray) -> float:

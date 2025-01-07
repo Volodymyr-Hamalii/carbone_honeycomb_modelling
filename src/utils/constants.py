@@ -62,6 +62,18 @@ class _ConstantsLogger:
     LEVEL: int = int(os.environ.get("LEVEL", 0)) or LEVELS[DEFAULT_LEVEL]
 
 
+class _ConstantsMath:
+    COORDINATE_INDEX_MAP: dict[str, int] = {
+        "x": 0,
+        "y": 1,
+        "z": 2,
+    }
+
+    INDEX_COORDINATE_MAP: dict[int, str] = {
+        i: c for c, i in COORDINATE_INDEX_MAP.items()
+    }
+
+
 class _ConstantsPhysics:
     AL_LATTICE_PARAM = 4.0414
 
@@ -70,7 +82,8 @@ class Constants:
     path = _ConstantsPath
     logger = _ConstantsLogger
     filenames = _ConstantsFilenames
-    physics = _ConstantsPhysics
+    phys = _ConstantsPhysics
+    math = _ConstantsMath
     settings = _ConstantsSettings
 
     DEFAULT_ACTION: str = os.environ.get("DEFAULT_ACTION") or "full_flow"

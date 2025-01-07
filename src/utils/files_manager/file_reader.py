@@ -1,5 +1,7 @@
 import json
+from typing import Any
 from pathlib import Path
+
 import numpy as np
 from numpy import ndarray
 
@@ -13,8 +15,10 @@ logger = Logger("FileReader")
 class FileReader:
     @staticmethod
     def read_json_file(
-            structure_folder: str, folder_path: Path | str | None = None, file_name: str = "structure_settings.json"
-    ) -> dict | list | None:
+            structure_folder: str,
+            folder_path: Path | str | None = None,
+            file_name: str = "structure_settings.json",
+    ) -> Any:
         """
         Read JSON file (by default 'structure_settings.json').
         If folder_path=None -- uses path to 'result_data' folder.

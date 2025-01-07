@@ -2,10 +2,15 @@ from pathlib import Path
 from numpy import ndarray
 
 from src.utils import Constants, PathBuilder, FileReader, FileWriter, Logger, Inputs
+from src.base_structure_classes import AlLatticeType, Points, CoordinateLimits
 from src.structure_visualizer import StructureVisualizer
 from src.data_preparation import StructureSettings, StructureSettingsManager
-from src.projects.intercalation_and_sorption import IntercalatedChannelBuilder, AlAtomsFilter
-from src.base_structure_classes import AlLatticeType
+from src.projects import (
+    IntercalatedChannelBuilder,
+    AlAtomsFilter,
+    CarbonHoneycombChannel,
+    CarbonHoneycombActions,
+)
 
 from .init_data_parsing import AppActionsInitDataParsing
 from .show_init_data import AppActionsShowInitData
@@ -22,14 +27,18 @@ class AppActionsIntercalationAndSorption:
         filled with translated Al structure
         """
 
-        structure_settings: None | StructureSettings = StructureSettingsManager.get_structure_settings(
+        structure_settings: StructureSettings = StructureSettingsManager.get_structure_settings(
             structure_folder=structure_folder)
 
         # Collect data to process
 
         # Carbon
-        coordinates_carbon: ndarray = IntercalatedChannelBuilder.build_carbon_coordinates(
-            structure_folder=structure_folder, structure_settings=structure_settings)
+        coordinates_carbon: Points = IntercalatedChannelBuilder.build_carbon_coordinates(
+            structure_folder=structure_folder)
+
+        carbon_channels: list[CarbonHoneycombChannel] = CarbonHoneycombActions.split_init_structure_into_separate_channels(
+            coordinates_carbon=coordinates_carbon)
+        carbon_channel: CarbonHoneycombChannel = carbon_channels[0]
 
         # Aluminium
         to_open_calculated_atoms: bool = Inputs.bool_input(
@@ -40,27 +49,29 @@ class AppActionsIntercalationAndSorption:
             # Try to load previously calculated points from the file
             folder_path: Path = PathBuilder.build_path_to_result_data_dir()
             try:
-                processed_coordinates_al: ndarray = FileReader.read_dat_file(
+                al_points_data: ndarray = FileReader.read_dat_file(
                     structure_folder=structure_folder, folder_path=folder_path)
+
+                al_points = Points(points=al_points_data)
 
             except FileNotFoundError:
                 logger.warning(f"Calculated Al points for {structure_folder} not found.")
-                processed_coordinates_al: ndarray = cls._calculate_al_points(
-                    to_set, structure_settings, coordinates_carbon)
+                al_points: Points = cls._calculate_al_points(
+                    to_set, structure_settings, carbon_channel)
 
         else:
-            processed_coordinates_al: ndarray = cls._calculate_al_points(
-                to_set, structure_settings, coordinates_carbon)
+            al_points: Points = cls._calculate_al_points(
+                to_set, structure_settings, carbon_channel)
 
-        logger.info("Number of carbon atoms:", len(coordinates_carbon))
-        logger.info("Number of al atoms:", len(processed_coordinates_al))
+        logger.info("Number of carbon atoms:", len(carbon_channel))
+        logger.info("Number of al atoms:", len(al_points))
 
-        FileWriter.write_dat_file(processed_coordinates_al, structure_folder=structure_folder)
+        FileWriter.write_dat_file(al_points.points, structure_folder=structure_folder)
         to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
 
         StructureVisualizer.show_two_structures(
-            coordinates_first=coordinates_carbon,
-            coordinates_second=processed_coordinates_al,
+            coordinates_first=carbon_channel.points,
+            coordinates_second=al_points.points,
             to_build_bonds=to_build_bonds,
             title=structure_folder)
 
@@ -72,33 +83,34 @@ class AppActionsIntercalationAndSorption:
         filled with Al structure
         """
 
-        structure_settings: None | StructureSettings = StructureSettingsManager.get_structure_settings(
+        structure_settings: StructureSettings = StructureSettingsManager.get_structure_settings(
             structure_folder=structure_folder)
 
-        if structure_settings is None:
-            logger.error("Please, provide structure_settings.")
-            return
-
         # Carbon
-        coordinates_carbon: ndarray = IntercalatedChannelBuilder.build_carbon_coordinates(
-            structure_folder=structure_folder, structure_settings=structure_settings)
+        coordinates_carbon: Points = IntercalatedChannelBuilder.build_carbon_coordinates(
+            structure_folder=structure_folder)
+
+        carbon_channels: list[CarbonHoneycombChannel] = CarbonHoneycombActions.split_init_structure_into_separate_channels(
+            coordinates_carbon=coordinates_carbon)
+        carbon_channel: CarbonHoneycombChannel = carbon_channels[0]
 
         # Aluminium
-        coordinates_al: ndarray = cls._build_al_atoms(to_set, structure_settings, coordinates_carbon)
+        coordinates_al: Points = cls._build_al_atoms(to_set, coordinate_limits=carbon_channel.coordinate_limits)
+
         coordinates_al = AlAtomsFilter.filter_al_atoms_related_carbon(
-            coordinates_al, coordinates_carbon, structure_settings)
+            coordinates_al, carbon_channel, structure_settings)
 
         to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
         StructureVisualizer.show_two_structures(
-            coordinates_first=coordinates_carbon,
-            coordinates_second=coordinates_al,
+            coordinates_first=carbon_channel.points,
+            coordinates_second=coordinates_al.points,
             to_build_bonds=to_build_bonds,
             title=structure_folder)
 
     @staticmethod
     def _build_al_atoms(
-            to_set: bool, structure_settings: None | StructureSettings, coordinates_carbon: ndarray
-    ) -> ndarray:
+            to_set: bool, coordinate_limits: CoordinateLimits
+    ) -> Points:
         to_translate_al: bool = Inputs.bool_input(
             to_set, default_value=True, text="To translate AL atomes to fill full volume")
 
@@ -115,24 +127,23 @@ class AppActionsIntercalationAndSorption:
             return IntercalatedChannelBuilder.build_al_coordinates_for_cell(
                 to_translate_al=to_translate_al,
                 al_file=al_file,
-                structure_settings=structure_settings)
+                coordinate_limits=coordinate_limits,
+            )
 
         else:
             # Fill the volume with aluminium for close-packed lattice
             return IntercalatedChannelBuilder.build_al_coordinates_for_close_packed(
                 al_lattice_type=al_lattice_type,
-                structure_settings=structure_settings,
-                to_translate_al=to_translate_al)
+                coordinate_limits=coordinate_limits,
+            )
 
     @classmethod
     def _calculate_al_points(
-            cls, to_set: bool, structure_settings: None | StructureSettings, coordinates_carbon: ndarray
-    ) -> ndarray:
+            cls, to_set: bool, structure_settings: StructureSettings, carbon_channel: CarbonHoneycombChannel
+    ) -> Points:
         """ Calculate Al points inside channel from coordinates_carbon. """
 
-        coordinates_al: ndarray = cls._build_al_atoms(to_set, structure_settings, coordinates_carbon)
-
-        # Process data
+        coordinates_al: Points = cls._build_al_atoms(to_set, carbon_channel.coordinate_limits)
 
         to_filter_al_atoms: bool = Inputs.bool_input(
             to_set, default_value=True, text="To filter AL atomes relative honeycomd bondaries")
@@ -142,7 +153,7 @@ class AppActionsIntercalationAndSorption:
             env_id="set_equidistant")
 
         return IntercalatedChannelBuilder.build_al_in_carbon(
-            coordinates_carbon=coordinates_carbon,
+            carbon_channel=carbon_channel,
             coordinates_al=coordinates_al,
             structure_settings=structure_settings,
             to_filter_al_atoms=to_filter_al_atoms,

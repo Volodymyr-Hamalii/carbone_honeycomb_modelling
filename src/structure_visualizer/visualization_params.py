@@ -2,7 +2,7 @@ from dataclasses import dataclass
 
 
 @dataclass
-class StructureVisualParameters:
+class StructureVisualParams:
     color_atoms: str
     color_bonds: str
     size: int
@@ -11,8 +11,8 @@ class StructureVisualParameters:
     label: str
 
 
-class VisualizationParameters:
-    carbon = StructureVisualParameters(
+class VisualizationParams:
+    carbon = StructureVisualParams(
         label="Carbon",
         color_atoms="#0500a4",
         color_bonds="#00065f",
@@ -21,7 +21,7 @@ class VisualizationParameters:
         size=200,
     )
 
-    al = StructureVisualParameters(
+    al = StructureVisualParams(
         label="Aluminum",
         color_atoms="#e00000",
         color_bonds="#500000",

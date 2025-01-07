@@ -1,11 +1,15 @@
 from pathlib import Path
-from numpy import ndarray
 
 from src.utils import Constants, PathBuilder, Logger, Inputs
-from src.structure_visualizer import StructureVisualizer, AtomsUniverseBuilder, VisualizationParameters
-from src.data_preparation import StructureSettings, StructureSettingsManager, ChannelLimits
-from src.projects.intercalation_and_sorption import IntercalatedChannelBuilder
-from src.base_structure_classes import AlLatticeType
+from src.base_structure_classes import AlLatticeType, Points, CoordinateLimits
+from src.structure_visualizer import StructureVisualizer, AtomsUniverseBuilder, VisualizationParams
+from src.projects import (
+    IntercalatedChannelBuilder,
+    CarbonHoneycombActions,
+    CarbonHoneycombChannel,
+    CarbonHoneycombActions,
+)
+
 
 logger = Logger("Actions")
 
@@ -17,11 +21,11 @@ class AppActionsShowInitData:
         """ Show 3D model of result_data/{structure_folder}/ljout-from-init-dat.pdb """
 
         path_to_init_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_folder)
-        coordinates: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
+        carbon_points: Points = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
 
         to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
         StructureVisualizer.show_structure(
-            coordinates, to_build_bonds=to_build_bonds, set_equal_scale=False, title=structure_folder)
+            carbon_points.points, to_build_bonds=to_build_bonds, set_equal_scale=False, title=structure_folder)
 
     @staticmethod
     def show_init_al_structure(structure_folder: str, to_set: bool) -> None:
@@ -37,34 +41,39 @@ class AppActionsShowInitData:
             available_values=AlLatticeType.get_available_types())
         al_lattice_type = AlLatticeType(al_lattice_type_str)
 
-        structure_settings: None | StructureSettings = StructureSettingsManager.get_structure_settings(
-            structure_folder=structure_folder)
+        # structure_settings: None | StructureSettings = StructureSettingsManager.get_structure_settings(
+        #     structure_folder=structure_folder)
 
         if al_lattice_type.is_cell:
             al_file: str = Inputs.text_input(to_set, default_value=Constants.filenames.AL_FILE, text="Init AL file")
 
-            coordinates_al: ndarray = IntercalatedChannelBuilder.build_al_coordinates_for_cell(
+            coordinates_al: Points = IntercalatedChannelBuilder.build_al_coordinates_for_cell(
                 to_translate_al=to_translate_al,
-                al_file=al_file,
-                structure_settings=structure_settings)
+                al_file=al_file)
 
             num_of_min_distances = 1
             skip_first_distances = 1
         else:
             # Fill the volume with aluminium for close-packed lattice
-            coordinates_al: ndarray = IntercalatedChannelBuilder.build_al_coordinates_for_close_packed(
+            coordinates_al: Points = IntercalatedChannelBuilder.build_al_coordinates_for_close_packed(
                 al_lattice_type=al_lattice_type,
-                structure_settings=structure_settings,
-                to_translate_al=to_translate_al)
+                coordinate_limits=CoordinateLimits(
+                    x_min=0,
+                    x_max=5,
+                    y_min=0,
+                    y_max=5,
+                    z_min=0,
+                    z_max=5,
+                ))  # TODO: set normal limits
 
             num_of_min_distances = 1
             skip_first_distances = 0
 
         to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
         StructureVisualizer.show_structure(
-            coordinates=coordinates_al,
+            coordinates=coordinates_al.points,
             to_build_bonds=to_build_bonds,
-            visual_parameters=VisualizationParameters.al,
+            visual_params=VisualizationParams.al,
             num_of_min_distances=num_of_min_distances,
             skip_first_distances=skip_first_distances,
             title="Aluminium")
@@ -80,13 +89,14 @@ class AppActionsShowInitData:
 
         path_to_init_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_folder)
 
-        structure_settings: None | StructureSettings = StructureSettingsManager.get_structure_settings(
-            structure_folder=structure_folder)
+        coordinates_carbon: Points = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
 
-        channel_limits: ChannelLimits | None = structure_settings.channel_limits if structure_settings else None
-
-        coordinates: ndarray = AtomsUniverseBuilder.builds_atoms_coordinates(
-            path_to_init_pdb_file, channel_limits)
+        carbon_channels: list[CarbonHoneycombChannel] = CarbonHoneycombActions.split_init_structure_into_separate_channels(
+            coordinates_carbon=coordinates_carbon)
+        carbon_channel: CarbonHoneycombChannel = carbon_channels[0]
 
         to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
-        StructureVisualizer.show_structure(coordinates, to_build_bonds=to_build_bonds, title=structure_folder)
+        StructureVisualizer.show_structure(
+            coordinates=carbon_channel.points,
+            to_build_bonds=to_build_bonds,
+            title=structure_folder)

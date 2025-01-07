@@ -1,5 +1,4 @@
 from src.utils import FileConverter, Logger
-from src.data_preparation import StructureSettingsManager
 
 logger = Logger("Actions")
 
@@ -13,6 +12,3 @@ class AppActionsInitDataParsing:
         """
 
         FileConverter.dat_to_pdb(structure_folder=structure_folder)
-
-        # Create template for coordinates if it doesn't exists
-        StructureSettingsManager.create_structure_settings_template(structure_folder=structure_folder)
