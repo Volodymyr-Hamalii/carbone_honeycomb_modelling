@@ -113,10 +113,10 @@ class IntercalatedChannelBuilder:
         coordinates_al_result: Points = coordinates_al.copy()
 
         al_param: float = Constants.phys.AL_LATTICE_PARAM
-        step_to_move: float = al_param / 2
+        step_to_move: float = al_param / 25
         range_to_move: np.ndarray = np.arange(0, al_param, step_to_move)
 
-        step_to_rotate: float = math.pi / 6
+        step_to_rotate: float = math.pi / 45
         angle_range_to_rotate: np.ndarray = np.arange(0, math.pi / 3, step_to_rotate)
 
         for step_x in range_to_move:
