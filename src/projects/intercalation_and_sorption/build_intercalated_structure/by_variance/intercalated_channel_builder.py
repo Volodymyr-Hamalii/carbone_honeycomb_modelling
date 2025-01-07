@@ -110,7 +110,7 @@ class IntercalatedChannelBuilder:
         min_dist_between_al_sum: float = np.inf
         dist_and_rotation_variance: float | np.floating = 0
 
-        coordinates_al_result: Points = coordinates_al.copy()
+        coordinates_al_result: Points = Points(points=np.array([]))
 
         al_param: float = Constants.phys.AL_LATTICE_PARAM
         step_to_move: float = al_param / 25

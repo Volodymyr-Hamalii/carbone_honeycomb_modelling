@@ -66,39 +66,4 @@ class FlatFigure(Points):
         if p3 is None:
             raise ValueError("All points are collinear. Cannot define a plane.")
 
-        # p1: np.ndarray = points[0]
-        # p2: np.ndarray = points[1]
-
-        # if coordinate_limits.x_min == coordinate_limits.x_max:
-        #     # All point have the same X
-        #     for point in reversed(points[2:]):
-        #         x: float = point[0]
-        #         y: float = point[1]
-        #         z: float = point[2]
-
-        #         if (y != p1[1] and y != p2[1]) and (z != p1[2] and z != p2[2]):
-        #             p3: np.ndarray = point
-        #             break
-        # elif coordinate_limits.y_min == coordinate_limits.y_max:
-        #     # All point have the same Y
-        #     for point in reversed(points[2:]):
-        #         x: float = point[0]
-        #         y: float = point[1]
-        #         z: float = point[2]
-
-        #         if (x != p1[0] and x != p2[0]) and (z != p1[2] and z != p2[2]):
-        #             p3: np.ndarray = point
-        #             break
-        # else:
-        #     for point in reversed(points[2:]):
-        #         x: float = point[0]
-        #         y: float = point[1]
-        #         z: float = point[2]
-
-        #         if (x != p1[0] and x != p2[0]) and (
-        #                 y != p1[1] and y != p2[1]) and (
-        #                 z != p1[2] and z != p2[2]):
-        #             p3: np.ndarray = point
-        #             break
-
         return PlanesBuilder.build_plane_params(p1, p2, p3)

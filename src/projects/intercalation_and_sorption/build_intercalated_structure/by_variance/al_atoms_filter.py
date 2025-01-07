@@ -258,12 +258,7 @@ class AlAtomsFilter:
             # Build plane parameters
             A, B, C, D = plane.plane_params
 
-            # TODO[25.01.07]: set this logic and refactor this
-            if structure_settings.direction_related_center is True:
-                direction = bool(carbon_channel_center[1] > plane.center[1])
-            else:
-                direction = bool(carbon_channel_center[1] < plane.center[1])
-
+            direction = bool(carbon_channel_center[1] > plane.center[1])
             filtered_coordinates = PointsFilter.filter_coordinates_related_to_plane(
                 filtered_coordinates,
                 A, B, C, D,
