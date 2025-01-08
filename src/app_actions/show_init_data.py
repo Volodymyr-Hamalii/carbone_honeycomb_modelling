@@ -23,7 +23,12 @@ class AppActionsShowInitData:
         path_to_init_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_folder)
         carbon_points: Points = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
 
-        to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
+        to_build_bonds: bool = Inputs.bool_input(
+            to_set,
+            default_value=True,
+            text="To build bonds between atoms",
+            env_id="to_build_bonds",
+        )
         StructureVisualizer.show_structure(
             carbon_points.points, to_build_bonds=to_build_bonds, set_equal_scale=False, title=structure_folder)
 
@@ -69,7 +74,12 @@ class AppActionsShowInitData:
             num_of_min_distances = 1
             skip_first_distances = 0
 
-        to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
+            to_build_bonds: bool = Inputs.bool_input(
+                to_set,
+                default_value=True,
+                text="To build bonds between atoms",
+                env_id="to_build_bonds",
+            )
         StructureVisualizer.show_structure(
             coordinates=coordinates_al.points,
             to_build_bonds=to_build_bonds,
@@ -95,7 +105,12 @@ class AppActionsShowInitData:
             coordinates_carbon=coordinates_carbon)
         carbon_channel: CarbonHoneycombChannel = carbon_channels[0]
 
-        to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
+        to_build_bonds: bool = Inputs.bool_input(
+            to_set,
+            default_value=True,
+            text="To build bonds between atoms",
+            env_id="to_build_bonds",
+        )
         StructureVisualizer.show_structure(
             coordinates=carbon_channel.points,
             to_build_bonds=to_build_bonds,

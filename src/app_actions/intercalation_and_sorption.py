@@ -67,7 +67,12 @@ class AppActionsIntercalationAndSorption:
         logger.info("Number of al atoms:", len(al_points))
 
         FileWriter.write_dat_file(al_points.points, structure_folder=structure_folder)
-        to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
+        to_build_bonds: bool = Inputs.bool_input(
+            to_set,
+            default_value=True,
+            text="To build bonds between atoms",
+            env_id="to_build_bonds",
+        )
 
         StructureVisualizer.show_two_structures(
             coordinates_first=carbon_channel.points,
@@ -100,7 +105,12 @@ class AppActionsIntercalationAndSorption:
         coordinates_al = AlAtomsFilter.filter_al_atoms_related_carbon(
             coordinates_al, carbon_channel, structure_settings)
 
-        to_build_bonds: bool = Inputs.bool_input(to_set, default_value=True, text="To build bonds between atoms")
+        to_build_bonds: bool = Inputs.bool_input(
+            to_set,
+            default_value=True,
+            text="To build bonds between atoms",
+            env_id="to_build_bonds",
+        )
         StructureVisualizer.show_two_structures(
             coordinates_first=carbon_channel.points,
             coordinates_second=coordinates_al.points,
