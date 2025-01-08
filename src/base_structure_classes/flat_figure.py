@@ -37,7 +37,6 @@ class FlatFigure(Points):
         """
 
         points: np.ndarray = self.points
-        coordinate_limits: CoordinateLimits = self.coordinate_limits
 
         if points.shape[0] < 3:
             raise ValueError("At least 3 points are required to define a plane.")
