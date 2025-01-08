@@ -11,6 +11,7 @@ from src.projects.carbon_honeycomb_actions import CarbonHoneycombChannel
 
 from ..structure_operations import StructureTranslator
 from .by_variance import IntercalatedChannelBuilderByVariance
+from .based_on_planes_configs import IntercalatedChannelBuilderBasedOnPlaneConfigs
 
 
 logger = Logger("IntercalatedChannelBuilder")
@@ -75,5 +76,27 @@ class IntercalatedChannelBuilder:
             coordinates_al,
             structure_settings,
             to_filter_al_atoms,
+            equidistant_al_points,
+        )
+
+    @classmethod
+    def build_al_in_carbon(
+        cls,
+        carbon_channel: CarbonHoneycombChannel,
+        coordinates_al: Points,
+        structure_settings: StructureSettings,
+        to_filter_al_atoms: bool = True,
+        equidistant_al_points: bool = True
+    ) -> Points:
+        # return IntercalatedChannelBuilderByVariance.build_al_in_carbon(
+        #     carbon_channel,
+        #     coordinates_al,
+        #     structure_settings,
+        #     to_filter_al_atoms,
+        #     equidistant_al_points,
+        # )
+        return IntercalatedChannelBuilderBasedOnPlaneConfigs.build_al_in_carbon(
+            carbon_channel,
+            structure_settings,
             equidistant_al_points,
         )
