@@ -8,7 +8,7 @@ from .carbon_honeycomb_plane_actions import CarbonHoneycombPlaneActions
 from .plane_polygons import CarbonHoneycombPentagon, CarbonHoneycombHexagon
 
 
-@dataclass
+@dataclass(frozen=True)
 class CarbonHoneycombPlane(FlatFigure):
     @cached_property
     def pentagons(self) -> list[CarbonHoneycombPentagon]:

@@ -5,8 +5,7 @@ import numpy as np
 from .coordinate_limits import CoordinateLimits
 
 
-# TODO: set frozen dataclass
-@dataclass
+@dataclass(frozen=True)
 class Points:
     """ Template for any class with points array as a property. """
     points: np.ndarray

@@ -291,9 +291,8 @@ class AlAtomsFilter:
         # Find the minimum distance for each atom in coordinates_al to any atom in coordinates_carbon
         min_distances: ndarray = np.min(distances_matrix, axis=1)
 
-        filtered_al_coordinates: Points = coordinates_al.copy()
-
-        # Filter the atoms in coordinates_al based on the max distance to carbon atoms
-        filtered_al_coordinates.points = coordinates_al.points[min_distances >= max_distance_to_carbon_atoms]
+        filtered_al_coordinates: Points = Points(
+            points=coordinates_al.points[min_distances >= max_distance_to_carbon_atoms]
+        )
 
         return filtered_al_coordinates

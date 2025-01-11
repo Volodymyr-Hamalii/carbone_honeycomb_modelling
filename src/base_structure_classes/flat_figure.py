@@ -7,7 +7,7 @@ from src.coordinate_operations import PlanesBuilder, LinesOperations
 from .points import Points
 
 
-@dataclass
+@dataclass(frozen=True)
 class FlatFigure(Points):
     @cached_property
     def center(self) -> np.ndarray:

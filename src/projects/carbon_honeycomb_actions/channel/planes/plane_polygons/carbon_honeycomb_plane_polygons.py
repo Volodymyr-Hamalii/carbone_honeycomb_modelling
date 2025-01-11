@@ -6,16 +6,16 @@ from src.base_structure_classes import FlatFigure
 from .carbon_honeycomb_plane_polygon_actions import CarbonHoneycombPolygonActions
 
 
-@dataclass
+@dataclass(frozen=True)
 class CarbonHoneycombPolygon(FlatFigure):
     pass
 
 
-@dataclass
+@dataclass(frozen=True)
 class CarbonHoneycombHexagon(CarbonHoneycombPolygon):
     pass
 
 
-@dataclass
+@dataclass(frozen=True)
 class CarbonHoneycombPentagon(CarbonHoneycombPolygon):
     pass

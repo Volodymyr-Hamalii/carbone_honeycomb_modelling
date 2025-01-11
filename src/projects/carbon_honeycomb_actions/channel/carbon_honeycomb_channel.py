@@ -8,7 +8,7 @@ from .planes import CarbonHoneycombPlane
 from .carbon_honeycomb_channel_actions import CarbonHoneycombChannelActions
 
 
-@dataclass
+@dataclass(frozen=True)
 class CarbonHoneycombChannel(Points):
     @cached_property
     def planes(self) -> list[CarbonHoneycombPlane]:
