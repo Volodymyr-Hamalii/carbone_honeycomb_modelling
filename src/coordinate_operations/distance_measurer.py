@@ -36,6 +36,14 @@ class DistanceMeasure:
         return numerator / denominator
 
     @staticmethod
+    def calculate_dist_matrix(points: ndarray) -> ndarray:
+        """ Calculate distance matrix between provided points (with inf in diagonal). """
+        inf_diag_matrix: ndarray = np.diag([np.inf] * len(points))
+
+        # Add inf_diag_matrix to distances tp remove zeros
+        return cdist(points, points) + inf_diag_matrix
+
+    @staticmethod
     def calculate_min_distance(points_set_1: ndarray, points_set_2: ndarray) -> floating:
         """ Returns min distance between 2 provided point sets. """
         distances: ndarray = cdist(points_set_1, points_set_2)
@@ -48,11 +56,7 @@ class DistanceMeasure:
         min_distances: ndarray = np.min(distances, axis=1)
         return np.sum(min_distances)
 
-    @staticmethod
-    def calculate_min_distances_between_points(points: ndarray) -> ndarray:
-        inf_diag_matrix: ndarray = np.diag([np.inf] * len(points))
-
-        # Add inf_diag_matrix to distances tp remove zeros
-        distances: ndarray = cdist(points, points) + inf_diag_matrix
-
+    @classmethod
+    def calculate_min_distances_between_points(cls, points: ndarray) -> ndarray:
+        distances: ndarray = cls.calculate_dist_matrix(points)
         return np.min(distances, axis=1)
