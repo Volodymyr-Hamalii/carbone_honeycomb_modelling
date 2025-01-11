@@ -1,10 +1,8 @@
 import math
 import numpy as np
 from numpy import ndarray, floating
-from scipy.spatial.distance import cdist
-# from scipy.optimize import minimize
 
-from src.utils import Logger, execution_time_logger
+from src.utils import Logger
 from src.base_structure_classes import Points, CoordinateLimits
 from src.data_preparation import StructureSettings
 from src.coordinate_operations import (
@@ -12,7 +10,7 @@ from src.coordinate_operations import (
     PointsFilter,
 )
 
-from src.projects.carbon_honeycomb_actions import CarbonHoneycombChannel, CarbonHoneycombPlane
+from src.projects.carbon_honeycomb_actions import CarbonHoneycombChannel
 from .variance_calculator import VarianceCalculator
 
 
@@ -285,11 +283,10 @@ class AlAtomsFilter:
         to the points in the coordinates_carbon array.
         """
 
-        # Calculate the distance matrix
-        distances_matrix: ndarray = cdist(coordinates_al.points, coordinates_carbon.points)
-
         # Find the minimum distance for each atom in coordinates_al to any atom in coordinates_carbon
-        min_distances: ndarray = np.min(distances_matrix, axis=1)
+        min_distances: np.floating = DistanceMeasure.calculate_min_distance(
+            coordinates_al.points, coordinates_carbon.points
+        )
 
         filtered_al_coordinates: Points = Points(
             points=coordinates_al.points[min_distances >= max_distance_to_carbon_atoms]
