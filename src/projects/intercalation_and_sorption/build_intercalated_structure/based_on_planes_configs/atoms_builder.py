@@ -24,9 +24,8 @@ class AtomsBuilder:
         carbon_channel_center: np.ndarray = carbon_channel.channel_center
 
         # Calculate the average distance between Al and C atoms
-        dist_between_carbon_atoms: np.floating = carbon_channel.ave_dist_between_closest_atoms
-        a_al: float = Constants.phys.AL_LATTICE_PARAM
-        distance_from_carbon_atoms: float = (a_al / np.sqrt(2) + dist_between_carbon_atoms) / 2
+        dist_between_carbon_atoms: float = float(carbon_channel.ave_dist_between_closest_atoms)
+        distance_from_carbon_atoms: float = (Constants.phys.AL_DIST_BETWEEN_ATOMS + dist_between_carbon_atoms) / 2
 
         for i, plane in enumerate(carbon_channel.planes):  # To build only part of the planes
             # for plane in carbon_channel.planes:

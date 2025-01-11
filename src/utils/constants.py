@@ -1,6 +1,7 @@
-import logging
 import os
 from pathlib import Path
+from math import sqrt
+import logging
 import dotenv
 
 
@@ -77,15 +78,16 @@ class _ConstantsMath:
     }
 
 
-class _ConstantsPhysics:
-    AL_LATTICE_PARAM = 4.049
+class _ConstantsPhys:
+    AL_LATTICE_PARAM: float = 4.049
+    AL_DIST_BETWEEN_ATOMS: float = AL_LATTICE_PARAM / sqrt(2)
 
 
 class Constants:
     path = _ConstantsPath
     logger = _ConstantsLogger
     filenames = _ConstantsFilenames
-    phys = _ConstantsPhysics
+    phys = _ConstantsPhys
     math = _ConstantsMath
     settings = _ConstantsSettings
 
