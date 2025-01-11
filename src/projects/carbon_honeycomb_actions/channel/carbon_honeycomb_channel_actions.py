@@ -2,7 +2,7 @@ import numpy as np
 from collections import defaultdict
 
 from src.utils import Logger
-from src.coordinate_operations import PointsOrganizer
+from src.coordinate_operations import PointsOrganizer, DistanceMeasure
 from .planes import CarbonHoneycombPlane
 
 
@@ -83,8 +83,8 @@ class CarbonHoneycombChannelActions:
                 # If we haven't found the base yet, verify the group has another point with y=0
                 if prev_plane_index == -1:
                     # for pt in group:
-                        # e.g., at least one more point with x != 0 and y == 0
-                        # if pt[0] != 0. and pt[1] == 0.:
+                    # e.g., at least one more point with x != 0 and y == 0
+                    # if pt[0] != 0. and pt[1] == 0.:
                     if all(y == 0 for _, y in group):
                         prev_plane_index = i
                         break
@@ -115,3 +115,36 @@ class CarbonHoneycombChannelActions:
         #     raise ValueError("Second plane not found.")
 
         return prev_plane_index, next_plane_index
+
+    @staticmethod
+    def calculate_ave_dist_between_closest_atoms(points: np.ndarray) -> np.floating:
+        dists: np.ndarray = DistanceMeasure.calculate_min_distances_between_points(points=np.array(points))
+        average: np.floating = np.average(dists)
+
+        max_deviation = 2  # percents
+        lower_bound: np.floating = average * (1 - max_deviation / 100)
+        upper_bound: np.floating = average * (1 + max_deviation / 100)
+
+        # Filter all fluctuations (that have deviation from the average by more than max_deviation)
+        dists_filtered: np.ndarray = dists[(dists >= lower_bound) & (dists <= upper_bound)]
+
+        # Check if only wrong distances were filtered (there shouldn't be many of them)
+        num_of_init: int = len(points)
+        num_of_filtered: int = num_of_init - len(dists_filtered)
+        if num_of_filtered > num_of_init / 4:
+            logger.warning("Filtered more than 25% of points.")
+
+        return np.average(dists_filtered)
+
+    @staticmethod
+    def calculate_ave_dist_between_closest_hexagon_centers(planes: list[CarbonHoneycombPlane]) -> np.floating:
+        hexagon_centers: list[np.ndarray] = [
+            hexagon.center
+            for plane in planes
+            for hexagon in plane.hexagons
+        ]
+
+        dists_between_centers: np.ndarray = DistanceMeasure.calculate_min_distances_between_points(
+            points=np.array(hexagon_centers))
+
+        return np.average(dists_between_centers)

@@ -22,3 +22,15 @@ class CarbonHoneycombChannel(Points):
     def channel_center(self) -> np.ndarray:
         """ Coordinates of the channel center. """
         return self.points.mean(axis=0)
+
+
+    @cached_property
+    def ave_dist_between_closest_atoms(self) -> np.floating:
+        """ Calculate the average distance between hexagon centers in all planes. """
+        return CarbonHoneycombChannelActions.calculate_ave_dist_between_closest_atoms(self.points)
+
+
+    @cached_property
+    def ave_dist_between_closest_hexagon_centers(self) -> np.floating:
+        """ Calculate the average distance between hexagon centers in all planes. """
+        return CarbonHoneycombChannelActions.calculate_ave_dist_between_closest_hexagon_centers(self.planes)
