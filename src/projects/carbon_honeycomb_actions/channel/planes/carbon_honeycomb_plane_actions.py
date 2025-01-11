@@ -2,6 +2,7 @@ from typing import Type, Sequence, overload
 import numpy as np
 
 from src.coordinate_operations import PointsOrganizer, DistanceMeasure
+from src.base_structure_classes import CoordinateLimits
 
 from ...carbon_honeycomb_utils import CarbonHoneycombUtils
 from .plane_polygons import CarbonHoneycombPolygon, CarbonHoneycombPentagon, CarbonHoneycombHexagon
@@ -29,7 +30,7 @@ class CarbonHoneycombPlaneActions:
             cls,
             points: np.ndarray,
             num_of_sides: int,
-    ):
+    ) -> tuple[list[np.ndarray], list[list[int]]]:
         points_grouped_by_lines: list[np.ndarray] = PointsOrganizer.group_by_lines(points)
 
         distances_between_points: np.ndarray = DistanceMeasure.calculate_min_distances_between_points(points)
@@ -90,16 +91,6 @@ class CarbonHoneycombPlaneActions:
     ) -> Sequence[CarbonHoneycombPentagon]:
         ...
 
-    # # Fallback: Generic polygon
-    # @overload
-    # @staticmethod
-    # def _build_plane_polygon(
-    #     points_grouped_by_lines: list[np.ndarray],
-    #     plane_hexagons_indexes: list[list[int]],
-    #     polygon_class: Type[CarbonHoneycombPolygon],
-    # ) -> Sequence[CarbonHoneycombPolygon]:
-    #     ...
-
     @staticmethod
     def _build_plane_polygon(
             points_grouped_by_lines: list[np.ndarray],
@@ -123,3 +114,49 @@ class CarbonHoneycombPlaneActions:
             plane_hexagons.append(honeycomb_channel)
 
         return plane_hexagons
+
+    @classmethod
+    def calculate_edge_holes(
+        cls,
+        points: np.ndarray,
+        coordinate_limits: CoordinateLimits,
+    ) -> np.ndarray:
+
+        # Take the extreme points from the both sides
+        left_edge: np.ndarray = points[(points[:, 0] == coordinate_limits.x_min)]
+        if len(left_edge) == len(points):
+            # Filter by Y
+            left_edge: np.ndarray = points[(points[:, 1] == coordinate_limits.y_min)]
+            right_edge: np.ndarray = points[(points[:, 1] == coordinate_limits.y_max)]
+        else:
+            right_edge: np.ndarray = points[(points[:, 0] == coordinate_limits.x_max)]
+        
+        
+        left_edge_holes: list[np.ndarray] = cls._calc_holes_for_edge(left_edge)
+        right_edge_holes: list[np.ndarray] = cls._calc_holes_for_edge(right_edge)
+
+        return np.array(left_edge_holes + right_edge_holes)
+
+    @staticmethod
+    def _calc_holes_for_edge(edge_points: np.ndarray) -> list[np.ndarray]:
+        # Sort the edge points (by the z-coordinate)
+        edge_points.sort(axis=0)
+
+        # Get the min distance (or the approx length of the polygon edge)
+        edge_dists: np.ndarray = DistanceMeasure.calculate_dist_matrix(edge_points)
+        min_dist: np.floating = edge_dists.min()
+
+        # Distances to the next neighbor
+        conseq_dists: np.ndarray = np.diag(edge_dists, k=1)
+
+        holes: list[np.ndarray] = []
+
+        for i, point in enumerate(edge_points[:-1]):
+            dist: np.floating = conseq_dists[i]
+            if dist.round(2) > min_dist.round(2):
+                # The distance is more than minimal (or than polygon edge)
+                # so, between this and the next point is edge hole
+                hole: np.ndarray = (point + edge_points[i+1]) / 2
+                holes.append(hole)
+
+        return holes
