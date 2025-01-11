@@ -8,7 +8,7 @@ class PathBuilder:
 
     @staticmethod
     def build_path_to_init_data_dir(
-            path_to_script: Path | str = Constants.path.path_to_root_script_dir,
+            path_to_script: Path | str = Constants.path.ROOT_DIR_PATH,
             init_dir: Path | str = Constants.filenames.INIT_DATA_DIR) -> Path:
 
         return Path(path_to_script) / init_dir
@@ -17,7 +17,7 @@ class PathBuilder:
     def build_path_to_init_data_file(
             cls,
             structure_folder: str | None = None,
-            path_to_script: Path = Constants.path.path_to_root_script_dir,
+            path_to_script: Path = Constants.path.ROOT_DIR_PATH,
             init_dir: Path | str = Constants.filenames.INIT_DATA_DIR,
             file: Path | str = Constants.filenames.INIT_DAT_FILE) -> Path:
 
@@ -32,7 +32,7 @@ class PathBuilder:
 
     @staticmethod
     def build_path_to_result_data_dir(
-            path_to_script: Path | str = Constants.path.path_to_root_script_dir,
+            path_to_script: Path | str = Constants.path.ROOT_DIR_PATH,
             result_dir: Path | str = Constants.filenames.RESULT_DATA_DIR) -> Path:
 
         path_to_result_dir: Path = Path(path_to_script) / result_dir
@@ -46,7 +46,7 @@ class PathBuilder:
     def build_path_to_result_data_file(
             cls,
             structure_folder: str,
-            path_to_script: Path | str = Constants.path.path_to_root_script_dir,
+            path_to_script: Path | str = Constants.path.ROOT_DIR_PATH,
             result_dir: Path | str = Constants.filenames.RESULT_DATA_DIR,
             file: Path | str = Constants.filenames.INIT_PDB_FILE) -> Path:
 

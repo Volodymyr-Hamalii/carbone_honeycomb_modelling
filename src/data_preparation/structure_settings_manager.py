@@ -13,7 +13,12 @@ class StructureSettingsManager:
         """ Read structure_settings file, parse it and calculate some fields. """
 
         structure_settings: dict | None = FileReader.read_json_file(
-            structure_folder=structure_folder, file_name=cls.file_name)
+            folder_path=Constants.path.RESULT_DATA_PATH / structure_folder, file_name=cls.file_name)
+
+        if structure_settings is None:
+            # Read default structure settings
+            structure_settings: dict | None = FileReader.read_json_file(
+                folder_path=Constants.path.RESULT_DATA_PATH, file_name=cls.file_name)
 
         if structure_settings:
             distance_from_plane: float = structure_settings.get("distance_from_plane", 0)
