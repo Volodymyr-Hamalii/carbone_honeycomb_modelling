@@ -28,13 +28,6 @@ class _ConstantsSettings:
     DEV_MODE: bool = os.environ.get("DEV_MODE", "false") == "true"  # False by default
 
 
-class _ConstantsPath:
-    # path_to_root_script = os.path.join()
-
-    path_to_utils_dir: Path = Path(__file__).resolve().parent
-    path_to_root_script_dir: Path = path_to_utils_dir.parent.parent
-
-
 class _ConstantsFilenames:
     # filenames
     INIT_DATA_DIR: str = "init_data"
@@ -47,6 +40,16 @@ class _ConstantsFilenames:
     STRUCTURE_SETTINGS_FILE: str = "structure_settings.json"
 
     AL_FILE: str = "al.pdb"
+
+
+class _ConstantsPath:
+    # path_to_root_script = os.path.join()
+
+    UTILS_DIR_PATH: Path = Path(__file__).resolve().parent
+    ROOT_DIR_PATH: Path = UTILS_DIR_PATH.parent.parent
+
+    INIT_DATA_PATH: Path = ROOT_DIR_PATH / _ConstantsFilenames.INIT_DATA_DIR
+    RESULT_DATA_PATH: Path = ROOT_DIR_PATH / _ConstantsFilenames.RESULT_DATA_DIR
 
 
 class _ConstantsLogger:
@@ -75,7 +78,7 @@ class _ConstantsMath:
 
 
 class _ConstantsPhysics:
-    AL_LATTICE_PARAM = 4.0414
+    AL_LATTICE_PARAM = 4.049
 
 
 class Constants:

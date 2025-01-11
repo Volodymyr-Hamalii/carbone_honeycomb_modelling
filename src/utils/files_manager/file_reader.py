@@ -15,8 +15,7 @@ logger = Logger("FileReader")
 class FileReader:
     @staticmethod
     def read_json_file(
-            structure_folder: str,
-            folder_path: Path | str | None = None,
+            folder_path: Path | str,
             file_name: str = "structure_settings.json",
     ) -> Any:
         """
@@ -24,11 +23,7 @@ class FileReader:
         If folder_path=None -- uses path to 'result_data' folder.
         """
 
-        if folder_path is None:
-            path_to_file: Path = PathBuilder.build_path_to_result_data_file(
-                structure_folder=structure_folder, file=file_name)
-        else:
-            path_to_file: Path = Path(folder_path) / structure_folder / file_name
+        path_to_file: Path = Path(folder_path) / file_name
 
         if not path_to_file.exists():
             logger.warning(f"File {path_to_file} not exists.")
