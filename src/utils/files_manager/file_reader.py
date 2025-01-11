@@ -9,6 +9,7 @@ from ..constants import Constants
 from ..logger import Logger
 from .path_builder import PathBuilder
 
+
 logger = Logger("FileReader")
 
 
@@ -26,7 +27,7 @@ class FileReader:
         path_to_file: Path = Path(folder_path) / file_name
 
         if not path_to_file.exists():
-            logger.warning(f"File {path_to_file} not exists.")
+            # logger.warning(f"File {path_to_file} not exists.")
             return None
 
         data_json: str = Path(path_to_file).read_text(encoding="utf-8")
