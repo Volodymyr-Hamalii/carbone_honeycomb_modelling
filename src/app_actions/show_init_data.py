@@ -113,5 +113,8 @@ class AppActionsShowInitData:
         )
         StructureVisualizer.show_structure(
             coordinates=carbon_channel.points,
+            # coordinates=carbon_channel.planes[0].points,
             to_build_bonds=to_build_bonds,
-            title=structure_folder)
+            title=structure_folder,
+            # show_coordinates=True,
+        )

@@ -23,6 +23,7 @@ class StructureVisualizer:
             skip_first_distances: int = 0,
             set_equal_scale: bool | None = None,
             title: str | None = None,
+            show_coordinates=False,
     ) -> None:
         """ Show 3D plot with 1 structure. """
 
@@ -38,6 +39,7 @@ class StructureVisualizer:
             num_of_min_distances=num_of_min_distances,
             skip_first_distances=skip_first_distances,
             set_equal_scale=set_equal_scale,
+            show_coordinates=show_coordinates,
         )
 
         ax.set_xlabel('X')
@@ -58,6 +60,7 @@ class StructureVisualizer:
         visual_params_first: StructureVisualParams = VisualizationParams.carbon,
         visual_params_second: StructureVisualParams = VisualizationParams.al,
         title: str | None = None,
+        show_coordinates: bool = False,
     ) -> None:
         """ Show 3D plot with 2 structures (by default there are carbon and aluminium) """
 
@@ -70,16 +73,20 @@ class StructureVisualizer:
             ax=ax,
             coordinates=coordinates_first,
             visual_params=visual_params_first,
-            to_build_bonds=to_build_bonds)
+            to_build_bonds=to_build_bonds,
+            show_coordinates=show_coordinates,
+        )
 
         # Plot second structure atoms (al by default)
         cls._plot_atoms_3d(
             ax=ax,
             coordinates=coordinates_second,
             visual_params=visual_params_second,
-            to_build_bonds=to_build_bonds,
+            to_build_bonds=False,
             num_of_min_distances=1,
-            skip_first_distances=0)
+            skip_first_distances=0,
+            show_coordinates=show_coordinates,
+        )
 
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
@@ -108,8 +115,8 @@ class StructureVisualizer:
         y: np.ndarray = coordinates[:, 1]
         ax.scatter(x, y, color=visual_params.color_atoms, label='Points')
 
-        # If requested, show coordinates near each point
         if show_coordinates:
+            # Show coordinates near each point
             for xx, yy in zip(x, y):
                 ax.annotate(
                     f"({xx:.2f}, {yy:.2f})",
@@ -139,18 +146,19 @@ class StructureVisualizer:
             to_build_bonds: bool = True,
             num_of_min_distances: int = 3,
             skip_first_distances: int = 0,
+            show_coordinates: bool = False,
     ) -> None:
 
         if coordinates.size == 0:
             logger.warning(f"No points to plot for {visual_params.label}.")
             return
 
-        x_first: ndarray = coordinates[:, 0]
-        y_first: ndarray = coordinates[:, 1]
-        z_first: ndarray = coordinates[:, 2]
+        x: ndarray = coordinates[:, 0]
+        y: ndarray = coordinates[:, 1]
+        z: ndarray = coordinates[:, 2]
 
         ax.scatter(
-            x_first, y_first, z_first,
+            x, y, z,
             c=visual_params.color_atoms,
             label=visual_params.label,
             s=visual_params.size,  # type: ignore
@@ -160,7 +168,19 @@ class StructureVisualizer:
             set_equal_scale = visual_params.set_equal_scale
 
         if set_equal_scale:
-            cls._set_equal_scale(ax, x_first, y_first, z_first)
+            cls._set_equal_scale(ax, x, y, z)
+
+        if show_coordinates:
+            # Show coordinates near each point
+            for xx, yy, zz in zip(x, y, z):
+                ax.text(
+                    xx, yy, zz,
+                    f"({xx:.2f}, {yy:.2f}, {zz:.2f})",  # type: ignore
+                    fontsize=5,
+                    color="black",
+                    ha="center",
+                    va="center",
+                )
 
         if to_build_bonds:
             # Carbon
