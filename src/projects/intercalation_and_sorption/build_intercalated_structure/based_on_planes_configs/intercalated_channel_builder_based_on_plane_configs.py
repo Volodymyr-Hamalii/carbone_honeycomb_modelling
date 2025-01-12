@@ -24,5 +24,6 @@ class IntercalatedChannelBuilderBasedOnPlaneConfigs:
 
         coordinates_al: Points = AtomsBuilder._build_al_atoms_near_planes(carbon_channel)
         coordinates_al: Points = AtomsFilter.replace_nearby_atoms_with_one_atom(coordinates_al)
+        coordinates_al: Points = AtomsFilter.remove_too_close_atoms(coordinates_al)
 
         return coordinates_al
