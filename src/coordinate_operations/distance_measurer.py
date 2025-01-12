@@ -44,16 +44,15 @@ class DistanceMeasure:
         return cdist(points, points) + inf_diag_matrix
 
     @staticmethod
-    def calculate_min_distance(points_set_1: ndarray, points_set_2: ndarray) -> floating:
+    def calculate_min_distances(points_1: ndarray, points_2: ndarray) -> ndarray:
         """ Returns min distance between 2 provided point sets. """
-        distances: ndarray = cdist(points_set_1, points_set_2)
+        distances: ndarray = cdist(points_1, points_2)
         return np.min(distances, axis=1)
 
-    @staticmethod
-    def calculate_min_distance_sum(points_set_1: ndarray, points_set_2: ndarray) -> floating:
+    @classmethod
+    def calculate_min_distance_sum(cls, points_1: ndarray, points_2: ndarray) -> floating:
         """ Returns sum of min distances between 2 provided point sets. """
-        distances: ndarray = cdist(points_set_1, points_set_2)
-        min_distances: ndarray = np.min(distances, axis=1)
+        min_distances: ndarray = cls.calculate_min_distances(points_1, points_2)
         return np.sum(min_distances)
 
     @classmethod

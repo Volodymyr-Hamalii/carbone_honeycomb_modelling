@@ -284,7 +284,7 @@ class AlAtomsFilter:
         """
 
         # Find the minimum distance for each atom in coordinates_al to any atom in coordinates_carbon
-        min_distances: np.floating = DistanceMeasure.calculate_min_distance(
+        min_distances: np.ndarray = DistanceMeasure.calculate_min_distances(
             coordinates_al.points, coordinates_carbon.points
         )
 
