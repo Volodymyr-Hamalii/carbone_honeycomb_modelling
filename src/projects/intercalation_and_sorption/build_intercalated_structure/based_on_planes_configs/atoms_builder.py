@@ -1,9 +1,10 @@
 
 import numpy as np
-# from scipy.spatial.distance import cdist
+from scipy.spatial.distance import cdist
 from scipy.optimize import minimize_scalar, OptimizeResult
 
 from src.utils import Constants, Logger, execution_time_logger
+# from src.coordinate_operations import DistanceMeasure
 from src.base_structure_classes import Points, FlatFigure
 from src.projects.carbon_honeycomb_actions import CarbonHoneycombChannel, CarbonHoneycombPlane
 
@@ -50,8 +51,8 @@ class AtomsBuilder:
             )
             coordinates_al.extend(al_atoms_near_edges)
 
-            if i == 2:  # To build only part of the planes
-                break
+            # if i == 2:  # To build only part of the planes
+            #     break
 
         return Points(points=np.array(coordinates_al))
 
@@ -84,23 +85,32 @@ class AtomsBuilder:
         # Get polygon properties
         polygon_center: np.ndarray = polygon.center
         plane_params: tuple[float, float, float, float] = polygon.plane_params  # A, B, C, D
+
         normal_vector: np.ndarray = np.array(plane_params[:3])  # The normal vector to the polygon's plane
 
         # Normalize the normal vector
         normal_vector = normal_vector / np.linalg.norm(normal_vector)
 
-        # Calculate two candidate positions for the aluminum atom
-        al_candidate1 = polygon_center + normal_vector * distance_from_carbon_atoms
-        al_candidate2 = polygon_center - normal_vector * distance_from_carbon_atoms
+        # Calculate the average dist from center to vertex
+        dists_from_center_to_vertex: np.ndarray = cdist(polygon.points, [polygon_center])
+        dist_from_center_to_point: np.floating = np.average(dists_from_center_to_vertex)
 
-        # Choose the candidate that is closer to carbon_channel_center
+        # Calculate dist_from_polygon_center by Pythagorean theorem
+        dist_from_polygon_center: float = np.sqrt(distance_from_carbon_atoms**2 - dist_from_center_to_point**2)
+
+        # Calculate two candidate positions for the aluminum atom
+        al_candidate1: np.ndarray = polygon_center + normal_vector * dist_from_polygon_center
+        al_candidate2: np.ndarray = polygon_center - normal_vector * dist_from_polygon_center
+
+        # Choose the candidate that is closer to carbon_channel_center (inside channel)
         if np.sum(np.abs(al_candidate1 - carbon_channel_center)) < np.sum(np.abs(al_candidate2 - carbon_channel_center)):
             return al_candidate1
         else:
             return al_candidate2
 
-    @staticmethod
+    @classmethod
     def _build_al_atoms_near_edges(
+        cls,
         plane: CarbonHoneycombPlane,
         carbon_channel_center: np.ndarray,
         distance_from_carbon_atoms: float,
@@ -117,6 +127,9 @@ class AtomsBuilder:
                 hole_point[2]
             ])
 
+            points_around_hole: np.ndarray = cls._find_the_points_around_hole(
+                plane_points=plane.points, hole_point=hole_point)
+
             # Vector from hole_point to point_for_line
             line_vector: np.ndarray = point_for_line - hole_point
             line_length: np.floating = np.linalg.norm(line_vector)
@@ -127,7 +140,7 @@ class AtomsBuilder:
             # Find the aluminum atom coordinates
             def objective_func(t) -> np.floating:
                 candidate_point: np.ndarray = hole_point + t * line_unit_vector
-                distances: np.ndarray = np.linalg.norm(plane.points - candidate_point, axis=1)
+                distances: np.ndarray = np.linalg.norm(points_around_hole - candidate_point, axis=1)
                 return abs(np.mean(distances) - distance_from_carbon_atoms)
 
             # Optimize t to find the al_atom
@@ -141,6 +154,20 @@ class AtomsBuilder:
             # Compute the optimal aluminum atom position
             al_atom: np.ndarray = hole_point + t_optimal * line_unit_vector
 
+            # matrix = cdist(plane.points, [al_atom])
+            # matrix = matrix[matrix <= 2.5]
+
             al_atoms.append(al_atom)
 
         return al_atoms
+
+    @staticmethod
+    def _find_the_points_around_hole(plane_points: np.ndarray, hole_point: np.ndarray) -> np.ndarray:
+        # Get the points around the hole
+        dists_to_hole: np.ndarray = cdist(plane_points, [hole_point])
+        min_dist: float = np.min(dists_to_hole)
+
+        # Take points that are within a radius x1.5 the distance to the nearest point
+        points_radius: float = min_dist*1.5
+        the_closest_points_indexes: np.ndarray = np.where(dists_to_hole <= points_radius)[0]
+        return plane_points[the_closest_points_indexes]
