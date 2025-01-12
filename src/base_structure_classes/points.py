@@ -35,6 +35,12 @@ class Points:
             z_max=np.max(z_coords),
         )
 
+    @cached_property
+    def sorted_points(self) -> np.ndarray:
+        """ Sorted self.points by coordinates. """
+        points: np.ndarray = self.points
+        return points[np.lexsort((points[:, 2], points[:, 1], points[:, 0]))]
+
     def copy(self) -> "Points":
         """ Returns a new Points instance. """
         return Points(points=self.points.copy())
