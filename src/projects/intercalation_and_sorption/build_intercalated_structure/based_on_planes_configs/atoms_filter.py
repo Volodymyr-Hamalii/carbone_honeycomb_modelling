@@ -48,7 +48,14 @@ class AtomsFilter:
                 # Keep this atom as is if no nearby atoms are found
                 points_upd.append(point)
 
-        return Points(points=np.array(points_upd))
+        coordinates_al_upd = Points(points=np.array(points_upd))
+        dist_matrix_upd: np.ndarray = DistanceMeasure.calculate_dist_matrix(coordinates_al_upd.points)
+
+        if np.any(dist_matrix_upd < min_allowed_dist):
+            # Run replacement one more time
+            return cls.replace_nearby_atoms_with_one_atom(coordinates_al_upd, k)
+
+        return coordinates_al_upd
 
     @staticmethod
     def remove_too_close_atoms(coordinates_al: Points, k: float = 0.7) -> Points:
