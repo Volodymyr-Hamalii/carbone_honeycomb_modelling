@@ -19,10 +19,8 @@ class AtomsFilter:
         """
 
         dist_matrix: np.ndarray = DistanceMeasure.calculate_dist_matrix(coordinates_al.points)
-        # min_dists: np.ndarray = np.min(dist_matrix, axis=1)
 
-        dist_between_al: float = Constants.phys.AL_DIST_BETWEEN_ATOMS
-        min_allowed_dist: float = k * dist_between_al
+        min_allowed_dist: float = Constants.phys.al.DIST_BETWEEN_ATOMS / 3
 
         # Keep track of groups of atoms to merge
         merged_indices = set()
@@ -69,8 +67,7 @@ class AtomsFilter:
         dist_matrix: np.ndarray = DistanceMeasure.calculate_dist_matrix(coordinates_al.points)
         # min_dists: np.ndarray = np.min(dist_matrix, axis=1)
 
-        dist_between_al: float = Constants.phys.AL_DIST_BETWEEN_ATOMS
-        min_allowed_dist: float = k * dist_between_al
+        min_allowed_dist: float = Constants.phys.al.MIN_ALLOWED_DIST_BETWEEN_ATOMS
 
         # Keep track of groups of atoms to merge
         merged_indices = set()

@@ -65,7 +65,7 @@ class IntercalatedChannelBuilderByVariance:
 
         coordinates_al_result: Points = Points(points=np.array([]))
 
-        al_param: float = Constants.phys.AL_LATTICE_PARAM
+        al_param: float = Constants.phys.al.LATTICE_PARAM
         step_to_move: float = al_param / 25
         range_to_move: np.ndarray = np.arange(0, al_param, step_to_move)
 

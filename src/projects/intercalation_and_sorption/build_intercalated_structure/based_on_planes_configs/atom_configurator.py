@@ -15,7 +15,6 @@ class AtomConfigurator:
         cls,
         coordinates_al: Points,
         carbon_channel: CarbonHoneycombChannel,
-        min_dist_between_al_atoms: float = Constants.phys.AL_DIST_BETWEEN_ATOMS,
     ) -> Points:
         """ 
         To space Al atoms equally apart from each other

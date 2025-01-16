@@ -78,9 +78,17 @@ class _ConstantsMath:
     }
 
 
+class _ConstantsAlParams:
+    # Aluminium
+    LATTICE_PARAM: float = 4.049
+    DIST_BETWEEN_ATOMS: float = LATTICE_PARAM / sqrt(2)
+
+    MIN_ALLOWED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.7
+    MIN_RECOMENDED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.92
+
+
 class _ConstantsPhys:
-    AL_LATTICE_PARAM: float = 4.049
-    AL_DIST_BETWEEN_ATOMS: float = AL_LATTICE_PARAM / sqrt(2)
+    al = _ConstantsAlParams
 
 
 class Constants:
