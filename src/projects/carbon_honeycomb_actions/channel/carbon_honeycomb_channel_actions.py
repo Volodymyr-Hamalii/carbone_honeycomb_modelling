@@ -128,13 +128,17 @@ class CarbonHoneycombChannelActions:
         # Filter all fluctuations (that have deviation from the average by more than max_deviation)
         dists_filtered: np.ndarray = dists[(dists >= lower_bound) & (dists <= upper_bound)]
 
+        result: np.floating = np.average(dists_filtered)
+
         # Check if only wrong distances were filtered (there shouldn't be many of them)
         num_of_init: int = len(points)
         num_of_filtered: int = num_of_init - len(dists_filtered)
-        if num_of_filtered > num_of_init / 4:
-            logger.warning("Filtered more than 25% of points.")
+        if num_of_filtered > num_of_init / 3:
+            percentage: float = round(num_of_filtered / num_of_init * 100, 2)
+            logger.warning(f"Filtered {percentage}% of points to calculate "
+                           f"the average distance ({result} A) between hexagon centers in all planes.")
 
-        return np.average(dists_filtered)
+        return result
 
     @staticmethod
     def calculate_ave_dist_between_closest_hexagon_centers(planes: list[CarbonHoneycombPlane]) -> np.floating:
