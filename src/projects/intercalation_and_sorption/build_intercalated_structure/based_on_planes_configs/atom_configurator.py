@@ -84,15 +84,21 @@ class AtomConfigurator:
 
             if al_points_upd is None:
                 break
-            
-            dists_between_al_and_carbon: np.ndarray = DistanceMeasure.calculate_min_distances(al_points_upd, carbon_channel.points)
-            
+
+            dists_between_al_and_carbon: np.ndarray = DistanceMeasure.calculate_min_distances(
+                al_points_upd, carbon_channel.points)
+
             # Filter case when Al atoms are too far from carbon atoms
-            if np.max(dists_between_al_and_carbon) > dist_between_al_atoms * 2:
-                raise NotOptimalStructureError("Max distance between Al and carbon is too big.")
+            k = 1.15  # Max dist from Al to carbon atoms coef related dist_between_al_atoms
+            too_far_indices = np.where(dists_between_al_and_carbon > dist_between_al_atoms * k)[0]
+
+            if len(too_far_indices) > 0:
+                al_points_upd = np.delete(al_points_upd, too_far_indices, axis=0)
+                moved_point_indexes = set()
+            else:
+                moved_point_indexes.add(point_index)
 
             al_points = al_points_upd
-            moved_point_indexes.add(point_index)
 
             if len(moved_point_indexes) >= max_points_to_move_before_reset:
                 # Reset moved_point_indexes
