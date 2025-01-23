@@ -18,6 +18,8 @@ class AtomConfigurator:
         cls,
         coordinates_al: Points,
         carbon_channel: CarbonHoneycombChannel,
+        max_points_to_move_before_reset: int,
+        num_of_points_to_skip: int,
     ) -> Points:
         """ 
         To space Al atoms equally apart from each other
@@ -41,14 +43,13 @@ class AtomConfigurator:
         #     2.4. Move the point in the direction from a plane. If there is no movement -- stop the cycle.
 
         al_points: np.ndarray = coordinates_al.points
-        max_points_to_move_before_reset: int = len(al_points) // 2
 
         dist_between_al_atoms: float = Constants.phys.al.DIST_BETWEEN_ATOMS
         min_dist_between_al_atoms: float = Constants.phys.al.MIN_RECOMENDED_DIST_BETWEEN_ATOMS
         moved_point_indexes: set[np.intp] = set()
 
         counter = 0
-        max_counter: int = len(coordinates_al) * 50
+        max_counter: int = len(coordinates_al) * 15
 
         while True:
             dist_matrix: np.ndarray = DistanceMeasure.calculate_dist_matrix(al_points)
@@ -56,6 +57,7 @@ class AtomConfigurator:
                 dist_matrix,
                 min_dist_between_al_atoms,
                 moved_point_indexes,
+                num_of_points_to_skip,
             )
 
             if point_index is None:
@@ -68,6 +70,7 @@ class AtomConfigurator:
                     dist_matrix,
                     min_dist_between_al_atoms,
                     moved_point_indexes,
+                    num_of_points_to_skip,
                 )
 
                 if point_index is None:
@@ -117,6 +120,7 @@ class AtomConfigurator:
         dist_matrix: np.ndarray,
         min_dist_between_al_atoms: float,
         moved_point_indexes: set[np.intp],
+        num_of_points_to_skip: int = 0,
     ) -> np.intp | None:
         """
         Returns the index of the point with the minimal average distance to the neighbors.
@@ -143,9 +147,23 @@ class AtomConfigurator:
             # Compute the average distance for the filtered rows
             min_ave_dists: np.ndarray = np.nanmean(filtered_matrix[candidate_indexes], axis=1)
 
-            # Find the index of the candidate with the lowest average distance
-            candidate_index: np.intp = np.nanargmin(min_ave_dists)
-            global_index: np.intp = candidate_indexes[candidate_index]
+            if num_of_points_to_skip == 0:
+                # Find the index of the candidate with the lowest average distance
+                candidate_index: np.intp = np.nanargmin(min_ave_dists)
+                global_index: np.intp = candidate_indexes[candidate_index]
+
+            else:
+                # Skip first `num_of_points_to_skip` points
+                # Sort candidates by their average distance
+                sorted_candidates: np.ndarray = np.argsort(min_ave_dists)
+
+                # Ensure we don't try to skip more points than available
+                if num_of_points_to_skip >= len(sorted_candidates):
+                    return None  # No valid points remain after skipping
+
+                # Get the index after skipping
+                candidate_index: np.intp = sorted_candidates[num_of_points_to_skip]
+                global_index: np.intp = candidate_indexes[candidate_index]
 
             # Check if the selected point has already been moved
             if global_index in moved_point_indexes:
@@ -153,11 +171,12 @@ class AtomConfigurator:
                 dist_matrix_copy: np.ndarray = dist_matrix.copy()
                 dist_matrix_copy[global_index] = np.inf  # Effectively exclude this point
                 return cls._find_the_point_with_min_ave_dist(
-                    dist_matrix_copy, min_dist_between_al_atoms, moved_point_indexes
+                    dist_matrix_copy, min_dist_between_al_atoms, moved_point_indexes,
+                    num_of_points_to_skip=0,
                 )
 
             return global_index
-        
+
         except ValueError:
             return
 

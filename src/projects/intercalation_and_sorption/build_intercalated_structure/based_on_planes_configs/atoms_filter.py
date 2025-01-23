@@ -99,6 +99,7 @@ class AtomsFilter:
             coordinates_al: Points,
             min_dist: float,
             max_neighbours: int = -1,
+            num_of_points_to_skip: int = 0,
     ) -> tuple[Points, int]:
         """
         Works recursively:
@@ -136,7 +137,14 @@ class AtomsFilter:
         if len(max_neighbour_indices) == 0:
             return coordinates_al, max_neighbours
 
-        new_points: np.ndarray = np.delete(coordinates_al.points, max_neighbour_indices[0], axis=0)
+        if num_of_points_to_skip >= len(max_neighbour_indices):
+            num_of_points_to_skip = len(max_neighbour_indices) - 1
+
+        # try:
+        new_points: np.ndarray = np.delete(coordinates_al.points, max_neighbour_indices[num_of_points_to_skip], axis=0)
+        # except IndexError:
+        #     pass
+
         new_coordinates_al = Points(points=new_points)
         result, max_neighbours = cls.remove_some_close_atoms(new_coordinates_al, min_dist, max_neighbours)
 
