@@ -58,7 +58,10 @@ class AtomsFilter:
 
     @staticmethod
     @execution_time_logger
-    def remove_too_close_atoms(coordinates_al: Points) -> Points:
+    def remove_too_close_atoms(
+            coordinates_al: Points,
+            min_allowed_dist: float = Constants.phys.al.MIN_ALLOWED_DIST_BETWEEN_ATOMS,
+    ) -> Points:
         """
         If there are 2 or more atoms have the distance between them less allowed
         keep only one atom and remove the rest.
@@ -68,8 +71,6 @@ class AtomsFilter:
 
         dist_matrix: np.ndarray = DistanceMeasure.calculate_dist_matrix(coordinates_al.points)
         # min_dists: np.ndarray = np.min(dist_matrix, axis=1)
-
-        min_allowed_dist: float = Constants.phys.al.MIN_ALLOWED_DIST_BETWEEN_ATOMS
 
         # Keep track of groups of atoms to merge
         merged_indices = set()
@@ -100,6 +101,11 @@ class AtomsFilter:
             min_dist: float,
             max_neighbours: int = -1,
             num_of_points_to_skip: int = 0,
+
+            # inner params
+            percent_to_remove: float = 1,
+            init_amount: int = 0,
+            removed_amount: int = 0,
     ) -> tuple[Points, int]:
         """
         Works recursively:
@@ -113,6 +119,9 @@ class AtomsFilter:
 
         Returnes the updated coordinates_al (with removed atoms).
         """
+
+        if percent_to_remove < 1 and init_amount == 0:
+            init_amount = len(coordinates_al)
 
         dist_matrix: np.ndarray = DistanceMeasure.calculate_dist_matrix(coordinates_al.points)
 
@@ -146,7 +155,19 @@ class AtomsFilter:
         #     pass
 
         new_coordinates_al = Points(points=new_points)
-        result, max_neighbours = cls.remove_some_close_atoms(new_coordinates_al, min_dist, max_neighbours)
+
+        if percent_to_remove < 1:
+            removed_amount += 1
+            if removed_amount > init_amount * percent_to_remove:
+                return new_coordinates_al, max_neighbours
+
+        result, max_neighbours = cls.remove_some_close_atoms(
+            new_coordinates_al, min_dist, max_neighbours,
+
+            percent_to_remove=percent_to_remove,
+            init_amount=init_amount,
+            removed_amount=removed_amount,
+        )
 
         return result, max_neighbours
 

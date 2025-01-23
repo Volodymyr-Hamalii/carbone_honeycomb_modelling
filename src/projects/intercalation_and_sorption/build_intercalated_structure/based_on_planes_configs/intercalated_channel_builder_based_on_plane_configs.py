@@ -33,11 +33,10 @@ class IntercalatedChannelBuilderBasedOnPlaneConfigs:
         coordinates_al = AtomsFilter.remove_too_close_atoms(coordinates_al)
 
         # StructureVisualizer.show_two_structures(
-        #     coordinates_first=carbon_channel.points, coordinates_second=coordinates_al.points)
+        #     coordinates_first=carbon_channel.points, coordinates_second=coordinates_al.points, to_build_bonds=True)
 
-        coordinates_al = cls._reorganize_al_atoms(coordinates_al, carbon_channel)
-
-        DistanceMeasure.calculate_min_distances_between_points(coordinates_al.points)
+        coordinates_al = AtomConfigurator.reorganize_al_atoms(coordinates_al, carbon_channel)
+        cls._print_statistics(coordinates_al, carbon_channel)
 
         return coordinates_al
 
