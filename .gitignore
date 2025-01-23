@@ -3,6 +3,7 @@ result_data/*
 RasMol
 
 .env
+.DS_Store
 venv_carbone_honeycomb_modelling
 __pycache__
 test.py
