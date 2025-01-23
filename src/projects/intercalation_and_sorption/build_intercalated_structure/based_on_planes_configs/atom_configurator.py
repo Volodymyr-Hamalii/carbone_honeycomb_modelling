@@ -20,10 +20,8 @@ class ConfigParams:
     percent_to_remove: float
 
     def __repr__(self) -> str:
-        return f"max_points_to_move_before_reset_coef: {self.max_points_to_move_before_reset_coef}, " \
-            f"num_of_points_to_skip: {self.num_of_points_to_skip}, " \
-            f"percent_to_remove: {self.percent_to_remove}, " \
-
+        params_dict: dict = asdict(self)
+        return ', '.join(f"{key}: {value}" for key, value in params_dict.items())
 
 
 class AtomConfigurator:
