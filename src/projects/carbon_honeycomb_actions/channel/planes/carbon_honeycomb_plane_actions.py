@@ -153,9 +153,15 @@ class CarbonHoneycombPlaneActions:
 
         for i, point in enumerate(edge_points[:-1]):
             dist: np.floating = conseq_dists[i]
-            if dist.round(2) > min_dist.round(2):
+            if dist.round(1) > min_dist.round(1):
                 # The distance is more than minimal (or than polygon edge)
                 # so, between this and the next point is edge hole
+                hole: np.ndarray = (point + edge_points[i+1]) / 2
+                holes.append(hole)
+
+        if not holes:
+            # Take each interval between neighbours as a hole
+            for i, point in enumerate(edge_points[:-1]):
                 hole: np.ndarray = (point + edge_points[i+1]) / 2
                 holes.append(hole)
 
