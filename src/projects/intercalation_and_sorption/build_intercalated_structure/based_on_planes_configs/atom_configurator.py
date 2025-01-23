@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
 from typing import Any, Generator
 import numpy as np
 
@@ -10,13 +10,15 @@ from src.projects.carbon_honeycomb_actions import CarbonHoneycombChannel
 from .intercalation_exceptions import NotOptimalStructureError
 from .atoms_filter import AtomsFilter
 
+
 logger = Logger("AtomConfigurator")
 
 
 @dataclass(frozen=True)
-class ConfigParams:
+class _ConfigParams:
     max_points_to_move_before_reset_coef: float
-    num_of_points_to_skip: int
+    num_of_points_to_skip_to_remove: int
+    num_of_points_to_skip_to_space: int
     percent_to_remove: float
 
     def __repr__(self) -> str:
@@ -26,20 +28,23 @@ class ConfigParams:
 
 class AtomConfigurator:
     @staticmethod
-    def _iterate_params_for_reorganizing_al_atoms() -> Generator[ConfigParams, Any, None]:
+    def _iterate_params_for_reorganizing_al_atoms() -> Generator[_ConfigParams, Any, None]:
         # max_points_to_move_before_reset_coef: list[float] = [1.1, 1.3, 1.5, 1.7, 2]
         max_points_to_move_before_reset_coef_list: list[float] = [1, 0.9, 0.75, 0.5]
-        num_of_points_to_skip_list: list[int] = [0, 1, 2, 3]
+        num_of_points_to_skip_to_remove_list: list[int] = [0, 1, 2, 3]
+        num_of_points_to_skip_to_space_list: list[int] = [0, 1, 2, 3]
         percent_to_remove_params: list[float] = [1, 0.9, 0.8, 0.7]
 
         for max_points_to_move_before_reset_coef in max_points_to_move_before_reset_coef_list:
-            for num_of_points_to_skip in num_of_points_to_skip_list:
-                for percent_to_remove in percent_to_remove_params:
-                    yield ConfigParams(
-                        max_points_to_move_before_reset_coef=max_points_to_move_before_reset_coef,
-                        num_of_points_to_skip=num_of_points_to_skip,
-                        percent_to_remove=percent_to_remove,
-                    )
+            for num_of_points_to_skip_to_remove in num_of_points_to_skip_to_remove_list:
+                for num_of_points_to_skip_to_space in num_of_points_to_skip_to_space_list:
+                    for percent_to_remove in percent_to_remove_params:
+                        yield _ConfigParams(
+                            max_points_to_move_before_reset_coef=max_points_to_move_before_reset_coef,
+                            num_of_points_to_skip_to_remove=num_of_points_to_skip_to_remove,
+                            num_of_points_to_skip_to_space=num_of_points_to_skip_to_space,
+                            percent_to_remove=percent_to_remove,
+                        )
 
     @classmethod
     @execution_time_logger
@@ -87,7 +92,7 @@ class AtomConfigurator:
         min_distances: np.ndarray = np.array([])
 
         for config_params in cls._iterate_params_for_reorganizing_al_atoms():
-            logger.info(f"Max points to move before reset coef: {config_params.max_points_to_move_before_reset_coef}")
+            logger.info(f"config_params: {config_params}")
 
             while True:
                 try:
@@ -143,7 +148,7 @@ class AtomConfigurator:
         carbon_channel: CarbonHoneycombChannel,
         min_dist: float,
         max_neighbours: int,
-        config_params: ConfigParams,
+        config_params: _ConfigParams,
     ) -> tuple[Points, int]:
         """ 
         To space Al atoms equally apart from each other
@@ -167,7 +172,8 @@ class AtomConfigurator:
         #     2.4. Move the point in the direction from a plane. If there is no movement -- stop the cycle.
 
         max_points_to_move_before_reset_coef: float = config_params.max_points_to_move_before_reset_coef
-        num_of_points_to_skip: float = config_params.num_of_points_to_skip
+        num_of_points_to_skip_to_remove: float = config_params.num_of_points_to_skip_to_remove
+        num_of_points_to_skip_to_space: float = config_params.num_of_points_to_skip_to_space
         percent_to_remove: float = config_params.percent_to_remove
 
         al_points: np.ndarray = coordinates_al.points
@@ -182,7 +188,7 @@ class AtomConfigurator:
         logger.info(f"Min dist: {min_dist}; max neighbours: {max_neighbours}")
 
         result: tuple[Points, int] = AtomsFilter.remove_some_close_atoms(
-            coordinates_al, min_dist, max_neighbours, num_of_points_to_skip=0)
+            coordinates_al, min_dist, max_neighbours, num_of_points_to_skip=num_of_points_to_skip_to_remove, percent_to_remove=percent_to_remove)
 
         coordinates_al_upd: Points = result[0]
         max_neighbours = result[1]
@@ -203,7 +209,7 @@ class AtomConfigurator:
                 dist_matrix,
                 min_dist_between_al_atoms,
                 moved_point_indexes,
-                num_of_points_to_skip,
+                num_of_points_to_skip_to_space,
             )
 
             if point_index is None:
@@ -216,7 +222,7 @@ class AtomConfigurator:
                     dist_matrix,
                     min_dist_between_al_atoms,
                     moved_point_indexes,
-                    num_of_points_to_skip,
+                    num_of_points_to_skip_to_space,
                 )
 
                 if point_index is None:
@@ -269,10 +275,17 @@ class AtomConfigurator:
 
         logger.info(f"Number of iterations in space_al_atoms_equidistantly: {counter}/{max_counter}")
 
-        result_al_points: Points = AtomsFilter.remove_too_close_atoms(
+        coordinates_al_processed: Points = AtomsFilter.remove_too_close_atoms(
             Points(points=al_points), min_allowed_dist=min_dist_between_al_atoms)
 
-        return result_al_points, max_neighbours
+        # Try to add some allowed points
+        final_result: Points = cls._add_allowed_init_al_atoms(
+            coordinates_al_init=coordinates_al,
+            coordinates_al_processed=coordinates_al_processed,
+            allowed_min_dist=min_dist_between_al_atoms,
+        )
+
+        return final_result, max_neighbours
 
     @classmethod
     def _find_the_point_with_min_ave_dist(
@@ -419,3 +432,33 @@ class AtomConfigurator:
         # dists_after = DistanceMeasure.calculate_min_distances_between_points(updated_points)
 
         return updated_points
+
+    @staticmethod
+    def _add_allowed_init_al_atoms(
+        coordinates_al_init: Points,
+        coordinates_al_processed: Points,
+        allowed_min_dist: float,
+    ) -> Points:
+        """
+        Add allowed atoms from coordinates_al_init to coordinates_al_processed.
+        'Allowed' means that added only atoms from coordinates_al_init, that are no closer
+        to the closest atom from the coordinates_al_processed on allowed_min_dist dist.
+        """
+
+        min_dists: np.ndarray = DistanceMeasure.calculate_min_distances(
+            coordinates_al_init.points, coordinates_al_processed.points
+        )
+
+        # Filter atoms from `coordinates_al_init` based on `allowed_min_dist`
+        allowed_atom_indexes: np.ndarray = np.where(min_dists >= allowed_min_dist)[0]
+
+        # Get the coordinates of the allowed atoms
+        allowed_atoms: np.ndarray = coordinates_al_init.points[allowed_atom_indexes]
+
+        # Combine allowed atoms with already processed atoms
+        combined_points: Points = Points(
+            points=np.vstack([coordinates_al_processed.points, allowed_atoms])
+        )
+
+        # Return the updated filtered Points object
+        return AtomsFilter.remove_too_close_atoms(combined_points, allowed_min_dist)
