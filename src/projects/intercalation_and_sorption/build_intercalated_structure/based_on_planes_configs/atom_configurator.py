@@ -196,7 +196,7 @@ class AtomConfigurator:
         closest_distance: np.float64 = distances[closest_neighbor_index]
 
         # If the closest neighbor already satisfies the minimum distance, no move is needed
-        if round(closest_distance, 2) >= min_dist_between_al_atoms:
+        if round(closest_distance, 2) >= round(min_dist_between_al_atoms, 2):
             return None
 
         # Project the closest neighbor onto the line formed by point_to_move and point_on_main_axis
@@ -206,7 +206,16 @@ class AtomConfigurator:
         projection_point: np.ndarray = point_to_move + projection_length * direction_unit_vector
 
         # Adjust the position along the line to achieve the desired distance
-        total_distance_to_move: np.float64 = np.sqrt(min_dist_between_al_atoms**2 - closest_distance**2)
+        total_distance_to_move: np.float64 | float = np.sqrt(dist_between_al_atoms**2 - closest_distance**2)
+
+        max_dist_to_move: float = DistanceMeasure.calculate_distance_between_2_points(
+            point_to_move, point_on_main_axis
+        )
+
+        # Move no more than to the center of the channel
+        if total_distance_to_move > max_dist_to_move:
+            total_distance_to_move = max_dist_to_move
+
         moved_point: np.ndarray = projection_point + total_distance_to_move * direction_unit_vector
 
         # if total_distance_to_move < 1:
