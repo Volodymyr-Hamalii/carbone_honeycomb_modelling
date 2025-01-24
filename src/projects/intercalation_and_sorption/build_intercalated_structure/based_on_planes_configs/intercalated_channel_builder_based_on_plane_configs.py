@@ -26,17 +26,13 @@ class IntercalatedChannelBuilderBasedOnPlaneConfigs:
         """ Returns coordinates_al """
 
         coordinates_al: Points = AtomsBuilder._build_al_atoms_near_planes(carbon_channel)
-
-        # StructureVisualizer.show_two_structures(
-        #     coordinates_first=carbon_channel.points, coordinates_second=coordinates_al.points, to_build_bonds=True)
-
         coordinates_al = AtomsFilter.replace_nearby_atoms_with_one_atom(coordinates_al)
         coordinates_al = AtomsFilter.remove_too_close_atoms(coordinates_al)
 
         # StructureVisualizer.show_two_structures(
         #     coordinates_first=carbon_channel.points, coordinates_second=coordinates_al.points, to_build_bonds=True)
 
-        coordinates_al = AtomConfigurator.reorganize_al_atoms(coordinates_al, carbon_channel)
+        # coordinates_al = AtomConfigurator.reorganize_al_atoms(coordinates_al, carbon_channel)
         cls._print_statistics(coordinates_al, carbon_channel)
 
         return coordinates_al

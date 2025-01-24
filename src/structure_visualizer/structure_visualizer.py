@@ -176,7 +176,7 @@ class StructureVisualizer:
                 ax.text(
                     xx, yy, zz,
                     f"({xx:.2f}, {yy:.2f}, {zz:.2f})",  # type: ignore
-                    fontsize=5,
+                    fontsize=6,
                     color="black",
                     ha="center",
                     va="center",

@@ -100,3 +100,24 @@ class IntercalatedChannelBuilder:
             structure_settings,
             equidistant_al_points,
         )
+
+    @staticmethod
+    def translate_al_points_through_channels(al_points: np.ndarray, carbon_channels: list[CarbonHoneycombChannel]) -> np.ndarray:
+        """ Translate the built structure to all channels. """
+
+        if not carbon_channels:
+            raise ValueError("The list of carbon_channels must not be empty.")
+        
+        filled_channel_center: np.ndarray = carbon_channels[0].channel_center
+
+        result_al_points: np.ndarray = al_points.copy()
+
+        for channel in carbon_channels[1:]:
+            channel_center: np.ndarray = channel.channel_center
+            vector: np.ndarray = channel_center - filled_channel_center
+
+            translated_al_points: np.ndarray = al_points + vector
+
+            result_al_points = np.concatenate([result_al_points, translated_al_points])
+
+        return result_al_points

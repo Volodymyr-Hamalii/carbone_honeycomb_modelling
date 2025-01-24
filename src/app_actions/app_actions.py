@@ -54,8 +54,12 @@ class AppActions:
         return AppActionsIntercalationAndSorption.show_al_in_one_channel_structure(structure_folder, to_set)
 
     @staticmethod
-    def show_filtered_al_one_channel_structure(structure_folder: str, to_set: bool) -> None:
-        return AppActionsIntercalationAndSorption.show_filtered_al_one_channel_structure(structure_folder, to_set)
+    def fill_all_channels(structure_folder: str, to_set: bool) -> None:
+        return AppActionsIntercalationAndSorption.fill_all_channels(structure_folder, to_set)
+
+    # @staticmethod
+    # def show_filtered_al_one_channel_structure(structure_folder: str, to_set: bool) -> None:
+    #     return AppActionsIntercalationAndSorption.show_filtered_al_one_channel_structure(structure_folder, to_set)
 
     @staticmethod
     def full_flow(structure_folder: str, to_set: bool) -> None:
