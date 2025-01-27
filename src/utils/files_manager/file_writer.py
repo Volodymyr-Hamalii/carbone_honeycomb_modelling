@@ -1,5 +1,7 @@
 from pathlib import Path
+
 from numpy import ndarray
+import pandas as pd
 
 from ..constants import Constants
 from ..logger import Logger
@@ -107,3 +109,46 @@ class FileWriter:
 
         except Exception as e:
             logger.error(f".pdb file not saved: {e}")
+
+    @staticmethod
+    def write_excel_file(
+            data_frame: pd.DataFrame,
+            structure_folder: str,
+            sheet_name: str,
+            file_name: str,
+            folder_path: Path | str | None = None,
+    ) -> None:
+        """
+        Write a pandas DataFrame to an Excel file.
+
+        Parameters:
+        - data_frame: pd.DataFrame, the data to write to the Excel file.
+        - structure_folder: str, the name of the structure folder.
+        - folder_path: Path | str | None, the base folder path. If None, uses the default logic from PathBuilder.
+        - file_name: str, the Excel file name to write.
+        - sheet_name: str, the name of the sheet where data will be written.
+
+        Returns:
+        - None
+
+        Raises:
+        - ValueError: If data_frame is not a valid pandas DataFrame.
+        - IOError: If the file cannot be written.
+        """
+
+        if folder_path is None:
+            path_to_file: Path = PathBuilder.build_path_to_init_data_file(
+                structure_folder=structure_folder, file=file_name)
+        else:
+            path_to_file: Path = Path(folder_path) / structure_folder / file_name
+
+        # Ensure the directory exists
+        path_to_file.parent.mkdir(parents=True, exist_ok=True)
+
+        try:
+            # Write the DataFrame to an Excel file
+            data_frame.to_excel(path_to_file, sheet_name=sheet_name, index=False, engine="openpyxl")
+            print(f"Data successfully written to {path_to_file}")
+
+        except Exception as e:
+            logger.error(f"Failed to write file {path_to_file}: {e}")

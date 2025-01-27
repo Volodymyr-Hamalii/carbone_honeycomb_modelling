@@ -38,6 +38,8 @@ class _ConstantsFilenames:
     INIT_PDB_FILE: str = "ljout-from-init-dat.pdb"
     PDB_FILE_ONE_CHANNEL: str = "ljout-from-init-dat-one-channel.pdb"
 
+    PLANE_COORDINATS_XLSX_FILE: str = "al-plane-coordinates.xlsx"
+
     STRUCTURE_SETTINGS_FILE: str = "structure_settings.json"
 
     AL_FILE: str = "al.pdb"
