@@ -1,4 +1,5 @@
 import sys
+from typing import Callable
 from src import (
     Constants,
     Logger,
@@ -24,7 +25,7 @@ def run_action() -> None:
         logger.info(f"Run '{action}' for '{structure_folder}' structure.")
 
         # Get the method from the AppActions class
-        method = getattr(AppActions, action)
+        method: Callable = getattr(AppActions, action)
 
         if args:
             # Call the method with the structure_folder and other parameters
