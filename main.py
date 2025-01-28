@@ -28,6 +28,10 @@ def run_action() -> None:
             # Call the method with the structure_folder sparameter
             method(structure_folder, to_set)
 
+    except KeyboardInterrupt:
+        print()
+        logger.info("Keyboard interrupt.")
+
     except AttributeError:
         logger.error(f"Action '{action}' is not available.")
         AppActions.help(structure_folder)
