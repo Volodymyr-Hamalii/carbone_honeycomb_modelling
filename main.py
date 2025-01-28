@@ -1,5 +1,10 @@
 import sys
-from src import AppActions, CommandLineArgsHandler, Constants, Logger
+from src import (
+    Constants,
+    Logger,
+    CommandLineArgsHandler,
+    AppActions,
+)
 
 
 logger = Logger("Main")
