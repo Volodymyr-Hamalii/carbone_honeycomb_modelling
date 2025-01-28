@@ -2,13 +2,10 @@ import numpy as np
 import pandas as pd
 from scipy.spatial.distance import cdist
 
-from src.projects.carbon_honeycomb_actions.channel.planes.carbon_honeycomb_plane import CarbonHoneycombPlane
-from src.utils import Constants, FileReader, FileWriter
+from src.utils import Constants, FileWriter
 from src.base_structure_classes import Points
 from src.projects.carbon_honeycomb_actions import (
     CarbonHoneycombChannel,
-    CarbonHoneycombPlane,
-    CarbonHoneycombActions,
 )
 from .atoms_parser import AtomsParser
 
@@ -54,7 +51,7 @@ class CoordinatesTableManager:
         dists: np.ndarray = cdist(points, points)
 
         # Compute the minimum distance to each point (ignoring the self-distance)
-        min_dist_to_Al: np.float64 = np.min(dists + np.eye(len(points)) * np.inf, axis=1)
+        min_dist_to_Al: np.ndarray = np.min(dists + np.diag([np.inf] * len(points)), axis=1)
 
         # Prepare data for the DataFrame
         data: dict = {
