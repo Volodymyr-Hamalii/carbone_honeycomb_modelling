@@ -97,10 +97,10 @@ class FileReader:
 
         try:
             # Read the Excel file into a pandas DataFrame
-            data_frame: pd.DataFrame = pd.read_excel(
+            df: pd.DataFrame = pd.read_excel(
                 path_to_file, sheet_name=sheet_name, engine='openpyxl'
             )
-            return data_frame
+            return df
 
         except Exception as e:
             logger.error(f"Failed to read file {path_to_file}: {e}")

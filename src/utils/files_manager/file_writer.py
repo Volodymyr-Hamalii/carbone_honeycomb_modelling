@@ -112,7 +112,7 @@ class FileWriter:
 
     @staticmethod
     def write_excel_file(
-            data_frame: pd.DataFrame,
+            df: pd.DataFrame,
             structure_folder: str,
             sheet_name: str,
             file_name: str,
@@ -122,7 +122,7 @@ class FileWriter:
         Write a pandas DataFrame to an Excel file.
 
         Parameters:
-        - data_frame: pd.DataFrame, the data to write to the Excel file.
+        - df: pd.DataFrame, the data to write to the Excel file.
         - structure_folder: str, the name of the structure folder.
         - folder_path: Path | str | None, the base folder path. If None, uses the default logic from PathBuilder.
         - file_name: str, the Excel file name to write.
@@ -132,7 +132,7 @@ class FileWriter:
         - None
 
         Raises:
-        - ValueError: If data_frame is not a valid pandas DataFrame.
+        - ValueError: If df is not a valid pandas DataFrame.
         - IOError: If the file cannot be written.
         """
 
@@ -147,7 +147,7 @@ class FileWriter:
 
         try:
             # Write the DataFrame to an Excel file
-            data_frame.to_excel(path_to_file, sheet_name=sheet_name, index=False, engine="openpyxl")
+            df.to_excel(path_to_file, sheet_name=sheet_name, index=False, engine="openpyxl")
             print(f"Data successfully written to {path_to_file}")
 
         except Exception as e:
