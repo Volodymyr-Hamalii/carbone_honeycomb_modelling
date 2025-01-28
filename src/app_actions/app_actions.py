@@ -62,5 +62,9 @@ class AppActions:
     #     return AppActionsIntercalationAndSorption.show_filtered_al_one_channel_structure(structure_folder, to_set)
 
     @staticmethod
+    def update_al_coordinates_tbl(structure_folder: str, to_set: bool) -> None:
+        AppActionsIntercalationAndSorption.update_al_coordinates_tbl(structure_folder, to_set)
+
+    @staticmethod
     def full_flow(structure_folder: str, to_set: bool) -> None:
         return AppActionsIntercalationAndSorption.full_flow(structure_folder, to_set)

@@ -1,1 +1,6 @@
-from .build_intercalated_structure import IntercalatedChannelBuilder, AlAtomsFilter
+from .build_intercalated_structure import (
+    IntercalatedChannelBuilder,
+    AlAtomsFilter,
+    CoordinatesTableManager,
+    AtomsParser,
+)

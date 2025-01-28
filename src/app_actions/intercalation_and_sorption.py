@@ -7,9 +7,11 @@ from src.structure_visualizer import StructureVisualizer
 from src.data_preparation import StructureSettings, StructureSettingsManager
 from src.projects import (
     IntercalatedChannelBuilder,
-    AlAtomsFilter,
+    # AlAtomsFilter,
     CarbonHoneycombChannel,
     CarbonHoneycombActions,
+    CoordinatesTableManager,
+    AtomsParser,
 )
 
 from .init_data_parsing import AppActionsInitDataParsing
@@ -120,42 +122,42 @@ class AppActionsIntercalationAndSorption:
 
         FileWriter.write_dat_file(upd_al_points, structure_folder=structure_folder, filename="al_in_all_channels.dat")
 
-    # @classmethod
-    # def show_filtered_al_one_channel_structure(cls, structure_folder: str, to_set: bool) -> None:
-    #     """
-    #     Build one channel model from result_data/{structure_folder}/ljout-from-init-dat.pdb atoms
-    #     based on result_data/{structure_folder}/structure_settings.json channel limits,
-    #     filled with Al structure
-    #     """
+    @staticmethod
+    def update_al_coordinates_tbl(structure_folder: str, to_set: bool) -> None:
+        """ 
+        Run in loop:
+        1) read Excel file to get Al atoms;
+        2) filter empty lines (if some lines were removed);
+        3) show current structure based on the coordinates from the file;
+        4) after closing the plot go to 1).
+        """
+        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
+        to_build_bonds: bool = True
 
-    #     structure_settings: StructureSettings = StructureSettingsManager.get_structure_settings(
-    #         structure_folder=structure_folder)
+        while True:
+            al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(structure_folder, carbon_channel)
 
-    #     # Carbon
-    #     coordinates_carbon: Points = IntercalatedChannelBuilder.build_carbon_coordinates(
-    #         structure_folder=structure_folder)
+            StructureVisualizer.show_two_structures(
+                coordinates_first=carbon_channel.planes[0].points,
+                coordinates_second=al_plane_coordinates.points,
+                to_build_bonds=to_build_bonds,
+                title=structure_folder,
+                show_coordinates=True,
+            )
 
-    #     carbon_channels: list[CarbonHoneycombChannel] = CarbonHoneycombActions.split_init_structure_into_separate_channels(
-    #         coordinates_carbon=coordinates_carbon)
-    #     carbon_channel: CarbonHoneycombChannel = carbon_channels[0]
+            try:
+                CoordinatesTableManager.update_tbl_file(structure_folder, carbon_channel)
 
-    #     # Aluminium
-    #     coordinates_al: Points = cls._build_al_atoms(to_set, coordinate_limits=carbon_channel.coordinate_limits)
+            except IOError as e:
+                logger.warning(e)
+                file_is_closed: bool = Inputs.bool_input(
+                    to_set,
+                    default_value=True,
+                    text="Did you save and close Excel file?",
+                )
 
-    #     coordinates_al = AlAtomsFilter.filter_al_atoms_related_carbon(
-    #         coordinates_al, carbon_channel, structure_settings)
-
-    #     to_build_bonds: bool = Inputs.bool_input(
-    #         to_set,
-    #         default_value=True,
-    #         text="To build bonds between atoms",
-    #         env_id="to_build_bonds",
-    #     )
-    #     StructureVisualizer.show_two_structures(
-    #         coordinates_first=carbon_channel.points,
-    #         coordinates_second=coordinates_al.points,
-    #         to_build_bonds=to_build_bonds,
-    #         title=structure_folder)
+                if file_is_closed is False:
+                    raise
 
     @staticmethod
     def _build_al_atoms(

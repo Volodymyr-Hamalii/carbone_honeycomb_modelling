@@ -14,7 +14,11 @@ logger = Logger("AtomsBuilder")
 
 class AtomsBuilder:
     @classmethod
-    def _build_al_atoms_near_planes(cls, carbon_channel: CarbonHoneycombChannel) -> Points:
+    def _build_al_atoms_near_planes(
+            cls,
+            carbon_channel: CarbonHoneycombChannel,
+            planes_limit: int | None = None,
+    ) -> Points:
         """
         Build Al atoms near the carbon honeycomb planes (opposite polygons and holes on the planes).
         There is no any atoms filtering or cheching the distance between Al atoms
@@ -29,6 +33,11 @@ class AtomsBuilder:
         distance_from_carbon_atoms: float = (Constants.phys.al.DIST_BETWEEN_ATOMS + dist_between_carbon_atoms) / 2
 
         for i, plane in enumerate(carbon_channel.planes):  # To build only part of the planes
+
+            if planes_limit is not None and i == planes_limit:
+                # To build only part of the planes
+                break
+
             # for plane in carbon_channel.planes:
             plane_coordinates_al: list[np.ndarray] = cls._build_al_atoms_near_polygons(
                 polygons=plane.hexagons,  # type: ignore
@@ -50,9 +59,6 @@ class AtomsBuilder:
                 distance_from_carbon_atoms=distance_from_carbon_atoms,
             )
             coordinates_al.extend(al_atoms_near_edges)
-
-            # if i == 2:  # To build only part of the planes
-            #     break
 
         return Points(points=np.array(coordinates_al))
 
