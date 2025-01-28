@@ -64,7 +64,7 @@ class CoordinatesTableManager:
 
         # Add columns for distances to other points
         for j in range(dists.shape[1]):
-            data[f"Al_{j + 1}"] = dists[:, j]
+            data[f"Al_{j}"] = dists[:, j]
 
         # Build the DataFrame
         df = pd.DataFrame(data)
