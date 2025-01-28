@@ -9,6 +9,7 @@ class StructureVisualParams:
     transparency: float
     set_equal_scale: bool
     label: str
+    show_coordinates: bool
 
 
 class VisualizationParams:
@@ -19,6 +20,7 @@ class VisualizationParams:
         transparency=0.25,
         set_equal_scale=True,
         size=200,
+        show_coordinates=False,
     )
 
     al = StructureVisualParams(
@@ -28,4 +30,5 @@ class VisualizationParams:
         transparency=0.5,
         set_equal_scale=False,
         size=400,
+        show_coordinates=True,
     )

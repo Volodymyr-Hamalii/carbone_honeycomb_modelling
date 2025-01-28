@@ -60,7 +60,7 @@ class StructureVisualizer:
         visual_params_first: StructureVisualParams = VisualizationParams.carbon,
         visual_params_second: StructureVisualParams = VisualizationParams.al,
         title: str | None = None,
-        show_coordinates: bool = False,
+        show_coordinates: bool | None = None,
     ) -> None:
         """ Show 3D plot with 2 structures (by default there are carbon and aluminium) """
 
@@ -146,7 +146,7 @@ class StructureVisualizer:
             to_build_bonds: bool = True,
             num_of_min_distances: int = 3,
             skip_first_distances: int = 0,
-            show_coordinates: bool = False,
+            show_coordinates: bool | None = None,
     ) -> None:
 
         if coordinates.size == 0:
@@ -170,7 +170,7 @@ class StructureVisualizer:
         if set_equal_scale:
             cls._set_equal_scale(ax, x, y, z)
 
-        if show_coordinates:
+        if show_coordinates is not False and visual_params.show_coordinates:
             # Show coordinates near each point
             for xx, yy, zz in zip(x, y, z):
                 ax.text(
