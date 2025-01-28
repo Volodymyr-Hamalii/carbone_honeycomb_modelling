@@ -7,13 +7,13 @@ import numpy as np
 
 from ..constants import Constants
 from ..logger import Logger
-from .path_builder import PathBuilder
+from .file_manager import FileManager
 
 
 logger = Logger("FileReader")
 
 
-class FileReader:
+class FileReader(FileManager):
     @staticmethod
     def read_json_file(
             folder_path: Path | str,
@@ -33,18 +33,16 @@ class FileReader:
         data_json: str = Path(path_to_file).read_text(encoding="utf-8")
         return json.loads(data_json)
 
-    @staticmethod
+    @classmethod
     def read_dat_file(
+            cls,
             structure_folder: str,
             folder_path: Path | str | None = None,
             file_name: str = Constants.filenames.INIT_DAT_FILE,
+            is_init_data_dir: bool = True,
     ) -> np.ndarray:
 
-        if folder_path is None:
-            path_to_file: Path = PathBuilder.build_path_to_init_data_file(
-                structure_folder=structure_folder, file=file_name)
-        else:
-            path_to_file: Path = Path(folder_path) / structure_folder / file_name
+        path_to_file: Path = cls._get_path_to_file(structure_folder, file_name, folder_path, is_init_data_dir)
 
         atom_data: list[list[float]] = []
 
@@ -61,12 +59,14 @@ class FileReader:
 
         return np.array(atom_data)
 
-    @staticmethod
+    @classmethod
     def read_excel_file(
+            cls,
             structure_folder: str,
             file_name: str,
             folder_path: Path | str | None = None,
             sheet_name: str | int = 0,
+            is_init_data_dir: bool = True,
     ) -> pd.DataFrame | None:
         """
         Read an Excel file (by default defined by Constants.filenames.PLANE_COORDINATES_XLSX_FILE).
@@ -76,20 +76,13 @@ class FileReader:
         - folder_path: Path | str | None, the base folder path. If None, uses default from PathBuilder.
         - file_name: str, the Excel file name to read.
         - sheet_name: str | int, the sheet name or index to read (default is the first sheet).
+        - is_init_data_dir: bool | None: to build path to the specific dir. If it's False - builds path to result data.
 
         Returns:
         - pd.DataFrame: A pandas DataFrame containing the data from the specified Excel file and sheet.
-
-        Raises:
-        - FileNotFoundError: If the file does not exist.
-        - ValueError: If the file cannot be read as an Excel file.
         """
 
-        if folder_path is None:
-            path_to_file: Path = PathBuilder.build_path_to_init_data_file(
-                structure_folder=structure_folder, file=file_name)
-        else:
-            path_to_file: Path = Path(folder_path) / structure_folder / file_name
+        path_to_file: Path = cls._get_path_to_file(structure_folder, file_name, folder_path, is_init_data_dir)
 
         # Check if the file exists
         if not path_to_file.exists():
@@ -101,6 +94,9 @@ class FileReader:
                 path_to_file, sheet_name=sheet_name, engine='openpyxl'
             )
             return df
+
+        except FileNotFoundError:
+            logger.warning(f"File {path_to_file} not exists.")
 
         except Exception as e:
             logger.error(f"Failed to read file {path_to_file}: {e}")
