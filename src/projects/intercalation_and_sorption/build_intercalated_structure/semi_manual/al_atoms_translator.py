@@ -1,15 +1,14 @@
 import numpy as np
 from scipy.optimize import minimize
 
-from src.projects.carbon_honeycomb_actions.channel.planes.carbon_honeycomb_plane import CarbonHoneycombPlane
-from src.utils import Constants, Logger, FileReader
 from src.base_structure_classes import Points
-from src.coordinate_operations import PointsOrganizer, PointsMover, PointsRotator, DistanceMeasure
+from src.coordinate_operations import PointsOrganizer, PointsRotator, DistanceMeasure
 from src.projects.carbon_honeycomb_actions import (
     CarbonHoneycombChannel,
     CarbonHoneycombPlane,
 )
 
+from ..based_on_planes_configs import AtomsFilter
 
 class AlAtomsTranslator:
     @classmethod
@@ -27,7 +26,9 @@ class AlAtomsTranslator:
 
         all_al_points: Points = cls._copy_al_points_to_rest_planes(plane_group_map, carbon_channel)
 
-        return all_al_points
+        al_points_upd: Points = AtomsFilter.replace_nearby_atoms_with_one_atom(all_al_points)
+
+        return al_points_upd
 
     @staticmethod
     def _group_by_lines(al_plane_coordinates: Points) -> list[np.ndarray]:
@@ -95,8 +96,8 @@ class AlAtomsTranslator:
                 target_plane=plane,
             )
 
-            all_al_points.append(al_points_moved.points)
-            continue
+            # all_al_points.append(al_points_moved.points)
+            # continue
 
             angle: int = plane_i * 90  # TODO: check this logic
             al_points_rotated: Points = PointsRotator.rotate_on_angle_related_center(
@@ -157,17 +158,17 @@ class AlAtomsTranslator:
         Rotate a bit to find the min distance variation 
         between Al points and the plane. 
         """
-        init_angle: float = 0
+        init_angle: np.ndarray = np.array([0.0])
 
         result = minimize(
             cls._func_to_minimize,
             init_angle,
             args=(al_points, plane),
-            method="BFGS",
+            method="Powell",
             options={"disp": True},
         )
 
-        result_angle: float = result.x
+        result_angle: float = result.x.item()
 
         rotated_points: Points = PointsRotator.rotate_on_angle_related_center(
             al_points, angle_z=result_angle)
@@ -176,19 +177,19 @@ class AlAtomsTranslator:
 
     @staticmethod
     def _func_to_minimize(
-        angle_z: float,
+        angle_z: np.ndarray,
         al_points: Points,
         plane: CarbonHoneycombPlane,
     ) -> np.floating:
         rotated_points: Points = PointsRotator.rotate_on_angle_related_center(
-            al_points, angle_z=angle_z)
+            al_points, angle_z=angle_z[0])
 
         min_dists: np.ndarray = DistanceMeasure.calculate_min_distances(
             rotated_points.points, plane.points)
 
         var_result: np.floating = np.var(min_dists)
 
-        if np.min(min_dists) < 1:
+        if np.any(min_dists < 1.0):
             # Avoid situations when Al atoms are too close to the plane
             return var_result * 10
         
