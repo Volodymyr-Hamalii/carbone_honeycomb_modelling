@@ -12,6 +12,7 @@ from src.projects import (
     CarbonHoneycombActions,
     CoordinatesTableManager,
     AtomsParser,
+    AlAtomsTranslator,
 )
 
 from .init_data_parsing import AppActionsInitDataParsing
@@ -159,6 +160,27 @@ class AppActionsIntercalationAndSorption:
 
                 if file_is_closed is False:
                     raise
+
+    @staticmethod
+    def translate_al_to_other_planes(structure_folder: str, to_set: bool) -> None:
+        """ 
+        Read Al coordinates from the Excel table and translate the structure to other planes.
+        """
+        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
+        to_build_bonds: bool = True
+
+        al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(structure_folder, carbon_channel)
+
+        al_coordinates: Points = AlAtomsTranslator.translate_for_all_planes(carbon_channel, al_plane_coordinates)
+
+        StructureVisualizer.show_two_structures(
+            coordinates_first=carbon_channel.points,
+            coordinates_second=al_coordinates.points,
+            to_build_bonds=to_build_bonds,
+            title=structure_folder,
+            # show_coordinates=False,
+            # show_indexes=True,
+        )
 
     @staticmethod
     def _build_al_atoms(

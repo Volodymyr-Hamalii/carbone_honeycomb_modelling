@@ -68,3 +68,7 @@ class AppActions:
     @staticmethod
     def full_flow(structure_folder: str, to_set: bool) -> None:
         return AppActionsIntercalationAndSorption.full_flow(structure_folder, to_set)
+
+    @staticmethod
+    def translate_al_to_other_planes(structure_folder: str, to_set: bool) -> None:
+        return AppActionsIntercalationAndSorption.translate_al_to_other_planes(structure_folder, to_set)

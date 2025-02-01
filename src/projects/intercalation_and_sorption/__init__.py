@@ -3,4 +3,5 @@ from .build_intercalated_structure import (
     AlAtomsFilter,
     CoordinatesTableManager,
     AtomsParser,
+    AlAtomsTranslator,
 )
