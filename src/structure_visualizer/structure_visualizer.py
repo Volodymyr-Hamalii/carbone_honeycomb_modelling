@@ -61,6 +61,7 @@ class StructureVisualizer:
         visual_params_second: StructureVisualParams = VisualizationParams.al,
         title: str | None = None,
         show_coordinates: bool | None = None,
+        show_indexes: bool | None = None,
     ) -> None:
         """ Show 3D plot with 2 structures (by default there are carbon and aluminium) """
 
@@ -75,6 +76,7 @@ class StructureVisualizer:
             visual_params=visual_params_first,
             to_build_bonds=to_build_bonds,
             show_coordinates=show_coordinates,
+            show_indexes=show_indexes,
         )
 
         # Plot second structure atoms (al by default)
@@ -86,6 +88,7 @@ class StructureVisualizer:
             num_of_min_distances=1,
             skip_first_distances=0,
             show_coordinates=show_coordinates,
+            show_indexes=show_indexes,
         )
 
         ax.set_xlabel('X')
@@ -104,7 +107,8 @@ class StructureVisualizer:
         coordinates: np.ndarray,
         title: str | None = None,
         visual_params: StructureVisualParams = VisualizationParams.carbon,
-        show_coordinates: bool = False,
+        show_coordinates: bool | None = None,
+        show_indexes: bool | None = None,
     ) -> None:
         # Prepare to visualize in 2D
         fig: Figure = plt.figure()
@@ -120,6 +124,17 @@ class StructureVisualizer:
             for xx, yy in zip(x, y):
                 ax.annotate(
                     f"({xx:.2f}, {yy:.2f})",
+                    (xx, yy),
+                    textcoords="offset points",
+                    xytext=(5, 5),  # Offset from the point
+                    fontsize=6,
+                )
+
+        if show_indexes:
+            # Show coordinates near each point
+            for xx, yy, i in zip(x, y, range(len(coordinates))):
+                ax.annotate(
+                    str(i),
                     (xx, yy),
                     textcoords="offset points",
                     xytext=(5, 5),  # Offset from the point
@@ -147,6 +162,7 @@ class StructureVisualizer:
             num_of_min_distances: int = 3,
             skip_first_distances: int = 0,
             show_coordinates: bool | None = None,
+            show_indexes: bool | None = None,
     ) -> None:
 
         if coordinates.size == 0:
@@ -177,6 +193,17 @@ class StructureVisualizer:
                     xx, yy, zz,
                     f"({xx:.2f}, {yy:.2f}, {zz:.2f})",  # type: ignore
                     fontsize=6,
+                    color="black",
+                    ha="center",
+                    va="center",
+                )
+        if show_indexes is not False and visual_params.show_indexes:
+            # Show coordinates near each point
+            for xx, yy, zz, i in zip(x, y, z, range(len(coordinates))):
+                ax.text(
+                    xx, yy, zz,
+                    str(i),  # type: ignore
+                    fontsize=10,
                     color="black",
                     ha="center",
                     va="center",

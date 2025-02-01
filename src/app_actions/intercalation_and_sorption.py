@@ -142,7 +142,8 @@ class AppActionsIntercalationAndSorption:
                 coordinates_second=al_plane_coordinates.points,
                 to_build_bonds=to_build_bonds,
                 title=structure_folder,
-                show_coordinates=True,
+                # show_coordinates=False,
+                # show_indexes=True,
             )
 
             try:
