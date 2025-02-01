@@ -41,6 +41,19 @@ class Points:
         points: np.ndarray = self.points
         return points[np.lexsort((points[:, 2], points[:, 1], points[:, 0]))]
 
+    @cached_property
+    def center(self) -> np.ndarray:
+        """
+        Given a set of points (N, 3) in 3D space,
+        returns the coordinates of the center (centroid).
+        """
+        # Ensure points is a 2D array of shape (N, 3)
+        if len(self.points.shape) != 2 or self.points.shape[1] != 3:
+            raise ValueError("self.points must be of shape (N, 3).")
+
+        # Compute the centroid as the mean of the coordinates
+        return self.points.mean(axis=0)
+
     def copy(self) -> "Points":
         """ Returns a new Points instance. """
         return Points(points=self.points.copy())
