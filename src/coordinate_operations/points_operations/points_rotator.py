@@ -1,5 +1,4 @@
 import numpy as np
-from numpy import ndarray
 
 from src.base_structure_classes import Points
 
@@ -13,32 +12,35 @@ class PointsRotator:
             angle_y: float = 0,
             angle_z: float = 0,
     ) -> Points:
+        if angle_x == 0 and angle_y == 0 and angle_z == 0:
+            return points
+
         # Calculate the centroid (center) of the points
-        centroid = np.mean(points.points, axis=0)
+        centroid: np.ndarray = np.mean(points.points, axis=0)
 
         # Move the points to the origin (centroid becomes the origin)
-        centered_points: ndarray = points.points - centroid
+        centered_points: np.ndarray = points.points - centroid
 
         # Define rotation matrices for X, Y, and Z axis
-        rotation_matrix_x: ndarray = cls._get_rotation_matrix_x(angle_x)
-        rotation_matrix_y: ndarray = cls._get_rotation_matrix_y(angle_y)
-        rotation_matrix_z: ndarray = cls._get_rotation_matrix_z(angle_z)
+        rotation_matrix_x: np.ndarray = cls._get_rotation_matrix_x(angle_x)
+        rotation_matrix_y: np.ndarray = cls._get_rotation_matrix_y(angle_y)
+        rotation_matrix_z: np.ndarray = cls._get_rotation_matrix_z(angle_z)
 
         # Combine the rotation matrices
-        rotation_matrix = rotation_matrix_z @ rotation_matrix_y @ rotation_matrix_x
+        rotation_matrix: np.ndarray = rotation_matrix_z @ rotation_matrix_y @ rotation_matrix_x
 
         # Apply the rotation to the points
-        rotated_points = centered_points @ rotation_matrix.T
-
-        final_points: Points = points.copy()
+        rotated_points: np.ndarray = centered_points @ rotation_matrix.T
 
         # Move the points back to the original position (reverse translation)
-        final_points.points = rotated_points + centroid
+        final_points: np.ndarray = rotated_points + centroid
 
-        return final_points
+        return Points(
+            points=final_points
+        )
 
     @staticmethod
-    def _get_rotation_matrix_x(angle_x: float) -> ndarray:
+    def _get_rotation_matrix_x(angle_x: float) -> np.ndarray:
         return np.array([
             [1, 0, 0],
             [0, np.cos(angle_x), -np.sin(angle_x)],
@@ -46,7 +48,7 @@ class PointsRotator:
         ])
 
     @staticmethod
-    def _get_rotation_matrix_y(angle_y: float) -> ndarray:
+    def _get_rotation_matrix_y(angle_y: float) -> np.ndarray:
         return np.array([
             [np.cos(angle_y), 0, np.sin(angle_y)],
             [0, 1, 0],
@@ -54,7 +56,7 @@ class PointsRotator:
         ])
 
     @staticmethod
-    def _get_rotation_matrix_z(angle_z: float) -> ndarray:
+    def _get_rotation_matrix_z(angle_z: float) -> np.ndarray:
         return np.array([
             [np.cos(angle_z), -np.sin(angle_z), 0],
             [np.sin(angle_z), np.cos(angle_z), 0],
