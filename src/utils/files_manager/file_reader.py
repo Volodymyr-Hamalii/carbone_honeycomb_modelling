@@ -69,7 +69,7 @@ class FileReader(FileManager):
             is_init_data_dir: bool = True,
     ) -> pd.DataFrame | None:
         """
-        Read an Excel file (by default defined by Constants.filenames.PLANE_COORDINATES_XLSX_FILE).
+        Read an Excel file.
 
         Parameters:
         - structure_folder: str, the name of the structure folder.

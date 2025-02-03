@@ -35,7 +35,7 @@ class AtomsParser:
 
         al_plane_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
             structure_folder=structure_folder,
-            file_name=Constants.filenames.PLANE_COORDINATS_XLSX_FILE,
+            file_name=Constants.filenames.AL_PLANE_COORDINATES_XLSX_FILE,
             is_init_data_dir=False,
         )
 

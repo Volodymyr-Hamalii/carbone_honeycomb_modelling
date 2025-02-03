@@ -24,7 +24,7 @@ class CoordinatesTableManager:
             df=df,
             structure_folder=structure_folder,
             sheet_name="Al atoms for the plane",
-            file_name=Constants.filenames.PLANE_COORDINATS_XLSX_FILE,
+            file_name=Constants.filenames.AL_PLANE_COORDINATES_XLSX_FILE,
             is_init_data_dir=False,
         )
 
