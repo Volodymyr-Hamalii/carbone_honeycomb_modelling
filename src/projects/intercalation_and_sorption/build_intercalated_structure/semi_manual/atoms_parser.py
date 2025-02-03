@@ -81,7 +81,7 @@ class AtomsParser:
         The points with x_Al, y_Al, z_Al that equals NaN is ignored.
         """
         # Extract the x_Al, y_Al, z_Al columns
-        required_columns = ["x_Al", "y_Al", "z_Al"]
+        required_columns: list[str] = ["x_Al", "y_Al", "z_Al"]
         if not all(col in al_plane_coordinates_df.columns for col in required_columns):
             raise ValueError(f"DataFrame must contain columns: {required_columns}")
 
