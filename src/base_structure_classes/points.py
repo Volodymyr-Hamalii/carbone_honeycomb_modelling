@@ -1,6 +1,8 @@
 from dataclasses import dataclass
 from functools import cached_property
+
 import numpy as np
+import pandas as pd
 
 from .coordinate_limits import CoordinateLimits
 
@@ -53,6 +55,16 @@ class Points:
 
         # Compute the centroid as the mean of the coordinates
         return self.points.mean(axis=0)
+
+    def to_df(self) -> pd.DataFrame:
+        """ Convert point coordinates to pandas DataFrame. """
+        data: dict = {
+            "i": np.arange(len(self.points)),
+            "x": self.points[:, 0],
+            "y": self.points[:, 1],
+            "z": self.points[:, 2],
+        }
+        return pd.DataFrame(data)
 
     def copy(self) -> "Points":
         """ Returns a new Points instance. """
