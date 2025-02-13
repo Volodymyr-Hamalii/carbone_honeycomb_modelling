@@ -87,6 +87,7 @@ class FileReader(FileManager):
         # Check if the file exists
         if not path_to_file.exists():
             logger.warning(f"File not found at {path_to_file}")
+            return None
 
         try:
             # Read the Excel file into a pandas DataFrame
