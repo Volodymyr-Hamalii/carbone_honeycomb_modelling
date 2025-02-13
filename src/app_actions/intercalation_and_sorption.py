@@ -135,11 +135,21 @@ class AppActionsIntercalationAndSorption:
         carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
         to_build_bonds: bool = True
 
+        number_of_planes: int = int(Inputs.text_input(
+            to_set,
+            default_value="1",
+            text="Number of planes to translate",
+            env_id="number_of_planes",
+        ))
+
         while True:
-            al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(structure_folder, carbon_channel)
+            al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(
+                structure_folder, carbon_channel, number_of_planes)
+
+            plane_points: np.ndarray = np.vstack([carbon_channel.planes[i].points for i in range(number_of_planes)])
 
             StructureVisualizer.show_two_structures(
-                coordinates_first=carbon_channel.planes[0].points,
+                coordinates_first=plane_points,
                 coordinates_second=al_plane_coordinates.points,
                 to_build_bonds=to_build_bonds,
                 title=structure_folder,
@@ -169,7 +179,7 @@ class AppActionsIntercalationAndSorption:
         carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
         to_build_bonds: bool = True
 
-        al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(structure_folder, carbon_channel)
+        al_plane_coordinates: Points = AtomsParser.get_al_channel_coordinates(structure_folder, carbon_channel)
 
         al_coordinates: Points = AlAtomsTranslator.translate_for_all_planes(carbon_channel, al_plane_coordinates)
 
