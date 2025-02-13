@@ -1,2 +1,2 @@
-from .carbon_honeycomb_actions import CarbonHoneycombActions
+from .carbon_honeycomb_actions import CarbonHoneycombActions, CarbonHoneycombUtils
 from .channel import CarbonHoneycombChannel, CarbonHoneycombPlane

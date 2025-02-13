@@ -6,11 +6,45 @@ from src.coordinate_operations import PointsOrganizer, PointsRotator, DistanceMe
 from src.projects.carbon_honeycomb_actions import (
     CarbonHoneycombChannel,
     CarbonHoneycombPlane,
+    CarbonHoneycombActions,
+    CarbonHoneycombUtils,
 )
 
 from ..based_on_planes_configs import AtomsFilter
 
+
 class AlAtomsTranslator:
+    @classmethod
+    def translate_for_all_channels(
+        cls,
+        coordinates_carbon: Points,
+        carbon_channels: list[CarbonHoneycombChannel],
+        al_channel_coordinates: Points,
+    ) -> Points:
+
+        al_final_coordinates: np.ndarray = np.empty((0, 3))
+        al_final_coordinates = np.vstack((al_final_coordinates, al_channel_coordinates.points))
+
+        al_center: np.ndarray = al_channel_coordinates.center
+
+        for carbon_channel in carbon_channels:
+            # Check that it's not the channel for which we have already translated atoms
+            channel_center: np.ndarray = carbon_channel.center
+            # if np.linalg.norm(channel_center - al_center) < 1:
+            #     continue
+
+            # Translate on the vector from the channel center to the al center
+            vector: np.ndarray = channel_center - al_center
+            al_final_coordinates = np.vstack((al_final_coordinates, al_final_coordinates + vector))
+
+        edge_channel_centers: list[np.float32] = cls._get_centers_of_edge_carbon_channels(coordinates_carbon)
+
+        for center in edge_channel_centers:
+            vector: np.ndarray = center - al_center
+            al_final_coordinates = np.vstack((al_final_coordinates, al_channel_coordinates.points + vector))
+
+        return Points(al_final_coordinates)
+
     @classmethod
     def translate_for_all_planes(
         cls,
@@ -192,5 +226,67 @@ class AlAtomsTranslator:
         if np.any(min_dists < 1.0):
             # Avoid situations when Al atoms are too close to the plane
             return var_result * 10
-        
+
         return var_result
+
+    @staticmethod
+    def _get_centers_of_edge_carbon_channels(
+        coordinates_carbon: Points,
+    ) -> list[np.float32]:
+        """ 
+        Takes the lines with the pointns with the same Y coordinate, 
+        takes left and right (with the min and max X coordinate) parallel segments from the lines
+        and returns the centers of the segment pairs.
+        """
+
+        # Get the lines with the points with the same Y coordinate
+        groups_by_the_xy_lines: list[dict[tuple[np.float32, np.float32], np.ndarray]] = PointsOrganizer.group_by_the_xy_lines(
+            PointsOrganizer.group_by_unique_xy(coordinates_carbon.points), epsilon=1e-1, min_points_in_line=3)
+
+        honeycomb_planes_groups: list[
+            dict[tuple[np.float32, np.float32], np.ndarray]
+        ] = CarbonHoneycombUtils.split_xy_groups_by_max_distances(
+            groups_by_the_xy_lines, max_distance_between_xy_groups=3)
+
+        # Filter honeycomb_planes_groups groups with the same Y in the group
+        honeycomb_planes_groups = [
+            group for group in honeycomb_planes_groups
+            if list(group.keys())[0][1] == list(group.keys())[1][1]
+        ]
+
+        # Keep only planes, that contains max or min X coordinate along the all groups
+        max_x: np.floating = max(
+            subgroup[0]
+            for group in honeycomb_planes_groups
+            for subgroup in group.keys()
+        )
+        min_x: np.floating = min(
+            subgroup[0]
+            for group in honeycomb_planes_groups
+            for subgroup in group.keys()
+        )
+
+        honeycomb_planes_groups_left = [
+            group for group in honeycomb_planes_groups
+            if any(key[0] in [min_x] for key in group.keys())
+        ]
+
+        honeycomb_planes_groups_right = [
+            group for group in honeycomb_planes_groups
+            if any(key[0] in [max_x] for key in group.keys())
+        ]
+
+        honeycomb_planes_groups_left_coordinates = [
+            point for group in honeycomb_planes_groups_left
+            for point in group.values()
+        ]
+
+        honeycomb_planes_groups_right_coordinates = [
+            point for group in honeycomb_planes_groups_right
+            for point in group.values()
+        ]
+
+        left_centers = np.mean(np.concatenate(honeycomb_planes_groups_left_coordinates), axis=0)
+        right_centers = np.mean(np.concatenate(honeycomb_planes_groups_right_coordinates), axis=0)
+
+        return [left_centers, right_centers]

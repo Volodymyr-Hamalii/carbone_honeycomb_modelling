@@ -191,6 +191,44 @@ class AppActionsIntercalationAndSorption:
         )
 
     @staticmethod
+    def translate_al_to_all_channels(structure_folder: str, to_set: bool) -> None:
+        """ 
+        Read Al plane coordinates from the Excel table and translate the structure to other planes.
+        """
+        coordinates_carbon: Points = IntercalatedChannelBuilder.build_carbon_coordinates(
+            structure_folder=structure_folder)
+
+        carbon_channels: list[CarbonHoneycombChannel] = CarbonHoneycombActions.split_init_structure_into_separate_channels(
+            coordinates_carbon=coordinates_carbon)
+
+        al_channel_coordinates: Points = AtomsParser.get_al_channel_coordinates(
+            structure_folder, carbon_channels.pop(0))
+        al_coordinates: Points = AlAtomsTranslator.translate_for_all_channels(
+            coordinates_carbon=coordinates_carbon,
+            carbon_channels=carbon_channels,
+            al_channel_coordinates=al_channel_coordinates,
+        )
+
+        to_build_bonds = True
+
+        StructureVisualizer.show_two_structures(
+            coordinates_first=coordinates_carbon.points,
+            coordinates_second=al_coordinates.points,
+            to_build_bonds=to_build_bonds,
+            title=structure_folder,
+            # show_coordinates=False,
+            show_indexes=False,
+        )
+
+        FileWriter.write_excel_file(
+            df=al_coordinates.to_df(columns=["i", "x_Al", "y_Al", "z_Al"]),
+            structure_folder=structure_folder,
+            sheet_name="Al atoms for the channel",
+            file_name=Constants.filenames.AL_CHANNEL_COORDINATES_XLSX_FILE,
+            is_init_data_dir=False,
+        )
+
+    @staticmethod
     def _build_al_atoms(
             to_set: bool, coordinate_limits: CoordinateLimits
     ) -> Points:

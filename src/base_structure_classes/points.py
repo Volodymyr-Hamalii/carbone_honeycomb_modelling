@@ -56,13 +56,13 @@ class Points:
         # Compute the centroid as the mean of the coordinates
         return self.points.mean(axis=0)
 
-    def to_df(self) -> pd.DataFrame:
+    def to_df(self, columns: list[str] = ["i", "x", "y", "z"]) -> pd.DataFrame:
         """ Convert point coordinates to pandas DataFrame. """
         data: dict = {
-            "i": np.arange(len(self.points)),
-            "x": self.points[:, 0],
-            "y": self.points[:, 1],
-            "z": self.points[:, 2],
+            columns[0]: np.arange(len(self.points)),
+            columns[1]: self.points[:, 0],
+            columns[2]: self.points[:, 1],
+            columns[3]: self.points[:, 2],
         }
         return pd.DataFrame(data)
 

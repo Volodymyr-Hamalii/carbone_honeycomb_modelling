@@ -16,6 +16,7 @@ from ..based_on_planes_configs import (
     AtomsBuilder,
     AtomsFilter,
 )
+from .al_atoms_translator import AlAtomsTranslator
 
 
 logger = Logger("AtomsBuilder")
@@ -23,15 +24,42 @@ logger = Logger("AtomsBuilder")
 
 class AtomsParser:
     @classmethod
-    def get_al_plane_coordinates(
+    def get_al_channel_coordinates(
             cls,
             structure_folder: str,
             carbon_channel: CarbonHoneycombChannel,
     ) -> Points:
-        """
-        Read Al coordinates from the file
-        or build them if there is no Excel file.
-        """
+        """ Read Al coordinates from the Excel file or build them if there is no Excel file. """
+
+        al_plane_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
+            structure_folder=structure_folder,
+            file_name=Constants.filenames.AL_CHANNEL_COORDINATES_XLSX_FILE,
+            is_init_data_dir=False,
+        )
+
+        if al_plane_coordinates_df is not None:
+            return cls._parse_al_plane_coordinates_df(al_plane_coordinates_df)
+
+        # logger.warning(f"Excel table with Al atoms for {structure_folder} structure not found. Al atoms builder.")
+
+        # Build atoms
+        # carbon_channel: CarbonHoneycombChannel = cls.build_carbon_channel(structure_folder)
+        al_plane_coordinates: Points = cls._build_al_plane_coordinates(
+            carbon_channel, num_of_planes=1)
+
+        al_coordinates: Points = AlAtomsTranslator.translate_for_all_planes(carbon_channel, al_plane_coordinates)
+
+        return al_coordinates
+
+    @classmethod
+    def get_al_plane_coordinates(
+            cls,
+            structure_folder: str,
+            carbon_channel: CarbonHoneycombChannel,
+            number_of_planes: int,
+
+    ) -> Points:
+        """ Read Al coordinates from the file or build them if there is no Excel file. """
 
         al_plane_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
             structure_folder=structure_folder,
@@ -47,7 +75,7 @@ class AtomsParser:
         # Build atoms
         # carbon_channel: CarbonHoneycombChannel = cls.build_carbon_channel(structure_folder)
         coordinates_al: Points = cls._build_al_plane_coordinates(
-            carbon_channel, num_of_planes=1)
+            carbon_channel, num_of_planes=number_of_planes)
 
         return coordinates_al
 
