@@ -12,6 +12,7 @@ def _clear_env_cache() -> None:
         "open_calculated_atoms",
         "set_equidistant",
         "al_lattice_type",
+        "number_of_planes",
     ]
 
     for var in env_vars_to_clear:
