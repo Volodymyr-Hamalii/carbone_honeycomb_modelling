@@ -28,6 +28,7 @@ class AtomsParser:
             cls,
             structure_folder: str,
             carbon_channel: CarbonHoneycombChannel,
+            number_of_planes: int,
     ) -> Points:
         """ Read Al coordinates from the Excel file or build them if there is no Excel file. """
 
@@ -45,7 +46,7 @@ class AtomsParser:
         # Build atoms
         # carbon_channel: CarbonHoneycombChannel = cls.build_carbon_channel(structure_folder)
         al_plane_coordinates: Points = cls._build_al_plane_coordinates(
-            carbon_channel, num_of_planes=1)
+            carbon_channel, num_of_planes=number_of_planes)
 
         al_coordinates: Points = AlAtomsTranslator.translate_for_all_planes(carbon_channel, al_plane_coordinates)
 

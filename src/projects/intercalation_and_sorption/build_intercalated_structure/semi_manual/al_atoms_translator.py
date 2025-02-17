@@ -6,7 +6,6 @@ from src.coordinate_operations import PointsOrganizer, PointsRotator, DistanceMe
 from src.projects.carbon_honeycomb_actions import (
     CarbonHoneycombChannel,
     CarbonHoneycombPlane,
-    CarbonHoneycombActions,
     CarbonHoneycombUtils,
 )
 
@@ -75,7 +74,7 @@ class AlAtomsTranslator:
         # Define groups that lie on the same line
         groups_by_the_xy_lines: list[
             dict[tuple[np.float32, np.float32], np.ndarray]
-        ] = PointsOrganizer.group_by_the_xy_lines(groups_by_xy, epsilon=1e-1, min_points_in_line=3)
+        ] = PointsOrganizer.group_by_the_xy_lines(groups_by_xy, epsilon=1, min_points_in_line=3)
 
         grouped_by_lines: list[np.ndarray] = []
 
