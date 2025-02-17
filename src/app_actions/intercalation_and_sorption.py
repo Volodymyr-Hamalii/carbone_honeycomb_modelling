@@ -158,7 +158,7 @@ class AppActionsIntercalationAndSorption:
             )
 
             try:
-                CoordinatesTableManager.update_tbl_file(structure_folder, carbon_channel)
+                CoordinatesTableManager.update_tbl_file(structure_folder, carbon_channel, number_of_planes)
 
             except IOError as e:
                 logger.warning(e)

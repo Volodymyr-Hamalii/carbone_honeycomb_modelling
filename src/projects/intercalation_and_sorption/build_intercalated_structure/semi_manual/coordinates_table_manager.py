@@ -16,8 +16,9 @@ class CoordinatesTableManager:
             cls,
             structure_folder: str,
             carbon_channel: CarbonHoneycombChannel,
+            number_of_planes: int,
     ) -> None:
-        al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(structure_folder, carbon_channel)
+        al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(structure_folder, carbon_channel, number_of_planes)
         df: pd.DataFrame = cls._build_updated_df(al_plane_coordinates)
 
         FileWriter.write_excel_file(
