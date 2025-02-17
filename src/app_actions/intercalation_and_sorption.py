@@ -179,9 +179,7 @@ class AppActionsIntercalationAndSorption:
         carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
         to_build_bonds: bool = True
 
-        al_plane_coordinates: Points = AtomsParser.get_al_channel_coordinates(structure_folder, carbon_channel)
-
-        al_coordinates: Points = AlAtomsTranslator.translate_for_all_planes(carbon_channel, al_plane_coordinates)
+        al_coordinates: Points = AtomsParser.get_al_channel_coordinates(structure_folder, carbon_channel)
 
         StructureVisualizer.show_two_structures(
             coordinates_first=carbon_channel.points,
