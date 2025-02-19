@@ -62,3 +62,48 @@ class PointsRotator:
             [np.sin(angle_z), np.cos(angle_z), 0],
             [0, 0, 1]
         ])
+
+    @classmethod
+    def rotate_around_z_parallel_line(
+            cls,
+            points: Points,
+            line_point: np.ndarray,
+            angle: float
+    ) -> Points:
+        """
+        Rotate points around a line that is parallel to the Z axis and passes through the specified point.
+
+        Args:
+            points: Points to rotate
+            line_point: Point that the rotation line passes through (only x,y coordinates matter)
+            angle: Rotation angle in radians
+        """
+        if angle == 0:
+            return points
+
+        # Extract only x,y coordinates of the rotation point
+        rotation_center: np.ndarray = line_point[:2]
+
+        # Separate x,y coordinates and z coordinates of points
+        xy_coords: np.ndarray = points.points[:, :2]
+        z_coords: np.ndarray = points.points[:, 2:]
+
+        # Translate points so the rotation line passes through origin
+        centered_xy: np.ndarray = xy_coords - rotation_center
+
+        # Create 2D rotation matrix
+        cos_angle: float = np.cos(angle)
+        sin_angle: float = np.sin(angle)
+        rotation_matrix_2d: np.ndarray = np.array([
+            [cos_angle, -sin_angle],
+            [sin_angle, cos_angle]
+        ])
+
+        # Apply rotation to x,y coordinates
+        rotated_xy: np.ndarray = centered_xy @ rotation_matrix_2d.T
+
+        # Translate back and combine with z coordinates
+        final_xy: np.ndarray = rotated_xy + rotation_center
+        final_points: np.ndarray = np.hstack([final_xy, z_coords])
+
+        return Points(points=final_points)
