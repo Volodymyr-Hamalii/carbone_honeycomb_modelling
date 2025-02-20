@@ -25,3 +25,19 @@ class PointsMover:
             translated_inner_points.points[:, 1] += vector[2]
 
         return translated_inner_points
+
+    @staticmethod
+    def reflect_through_vertical_axis(points: Points) -> Points:
+        """Reflects points through a vertical (Z) axis passing through the centroid.
+
+        Returns:
+            Points: A new Points object containing the reflected coordinates
+        """
+        centroid: np.ndarray = points.center
+
+        # Create reflection matrix for XY plane (Z stays unchanged)
+        reflected_points: np.ndarray = points.points.copy()
+        reflected_points[:, 0] = 2 * centroid[0] - reflected_points[:, 0]  # Reflect X
+        reflected_points[:, 1] = 2 * centroid[1] - reflected_points[:, 1]  # Reflect Y
+
+        return Points(reflected_points)
