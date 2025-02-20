@@ -3,7 +3,12 @@ from scipy.optimize import minimize
 
 
 from src.base_structure_classes import Points
-from src.coordinate_operations import PointsOrganizer, PointsRotator, DistanceMeasure
+from src.coordinate_operations import (
+    PointsOrganizer,
+    PointsRotator,
+    PointsMover,
+    DistanceMeasure,
+)
 from src.projects.carbon_honeycomb_actions import (
     CarbonHoneycombChannel,
     CarbonHoneycombPlane,
@@ -172,7 +177,18 @@ class AlAtomsTranslator:
 
             al_points_adjusted: Points = cls._adjust_al_atoms(al_points_rotated, plane)
 
-            all_al_points.append(al_points_adjusted.points)
+            # Check if we need to reflect points
+            al_points_reflected: Points = PointsMover.reflect_through_vertical_axis(al_points_adjusted)
+
+            al_points_reflected_min_dists: np.floating = DistanceMeasure.calculate_min_distance_sum(
+                al_points_reflected.points, plane.points)
+            al_points_adjusted_min_dists: np.floating = DistanceMeasure.calculate_min_distance_sum(
+                al_points_adjusted.points, plane.points)
+
+            if al_points_adjusted_min_dists < al_points_reflected_min_dists:
+                all_al_points.append(al_points_adjusted.points)
+            else:
+                all_al_points.append(al_points_reflected.points)
 
         al_points_ndarray: np.ndarray = np.concatenate(all_al_points)
         return Points(al_points_ndarray)
