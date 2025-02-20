@@ -18,21 +18,19 @@ class PointsFilter:
         Ax + By + Cz + D = 0 plane equation.
         """
 
-        filtered_points: Points = points.copy()
-
         signed_distances: float = DistanceMeasure.calculate_signed_distance_from_plane(
-            filtered_points.points, A, B, C, D)
-        
+            points.points, A, B, C, D)
+
         if direction is True:
             # Keep points above the plane at the minimum distance
-            filtered_points.points = filtered_points.points[signed_distances >= min_distance]
+            result_points: np.ndarray = points.points[signed_distances >= min_distance]
         elif direction is False:
             # Keep points below the plane at the minimum distance
-            filtered_points.points = filtered_points.points[signed_distances <= -min_distance]
+            result_points: np.ndarray = points.points[signed_distances <= -min_distance]
         else:
             raise ValueError("direction should be True (above the plane) or False (below the plane)")
 
-        return filtered_points
+        return Points(result_points)
 
     @staticmethod
     def filter_by_min_max_z(
@@ -46,18 +44,16 @@ class PointsFilter:
         if len(points_to_filter) == 0:
             return points_to_filter
 
-        filtered_points: Points = points_to_filter.copy()
-
-        filtered_points.points = filtered_points.points[filtered_points.points[:, 2] >= z_min]
+        filtered_points: np.ndarray = points_to_filter.points[points_to_filter.points[:, 2] >= z_min]
 
         if len(filtered_points) == 0:
-            return filtered_points
+            return Points(filtered_points)
 
         if move_align_z:
             # Move Al atoms along Oz down to align the lowest Al atom with the channel bottom
-            move_to: np.float32 = np.min(filtered_points.points[:, 2]) - z_min
-            filtered_points.points[:, 2] = filtered_points.points[:, 2] - move_to
+            move_to: np.float32 = np.min(filtered_points[:, 2]) - z_min
+            filtered_points[:, 2] = filtered_points[:, 2] - move_to
 
-        filtered_points.points = filtered_points.points[filtered_points.points[:, 2] <= z_max]
+        filtered_points = filtered_points[filtered_points[:, 2] <= z_max]
 
-        return filtered_points
+        return Points(filtered_points)
