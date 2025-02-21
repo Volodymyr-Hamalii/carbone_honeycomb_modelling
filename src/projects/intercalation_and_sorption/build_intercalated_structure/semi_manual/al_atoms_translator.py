@@ -185,7 +185,7 @@ class AlAtomsTranslator:
             al_points_adjusted_min_dists: np.floating = DistanceMeasure.calculate_min_distance_sum(
                 al_points_adjusted.points, plane.points)
 
-            if al_points_adjusted_min_dists < al_points_reflected_min_dists:
+            if al_points_adjusted_min_dists > al_points_reflected_min_dists:
                 all_al_points.append(al_points_adjusted.points)
             else:
                 all_al_points.append(al_points_reflected.points)
