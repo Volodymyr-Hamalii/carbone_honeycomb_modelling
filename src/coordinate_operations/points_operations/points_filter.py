@@ -21,14 +21,12 @@ class PointsFilter:
         signed_distances: float = DistanceMeasure.calculate_signed_distance_from_plane(
             points.points, A, B, C, D)
 
-        if direction is True:
+        if direction:
             # Keep points above the plane at the minimum distance
             result_points: np.ndarray = points.points[signed_distances >= min_distance]
-        elif direction is False:
+        else:
             # Keep points below the plane at the minimum distance
             result_points: np.ndarray = points.points[signed_distances <= -min_distance]
-        else:
-            raise ValueError("direction should be True (above the plane) or False (below the plane)")
 
         return Points(result_points)
 
