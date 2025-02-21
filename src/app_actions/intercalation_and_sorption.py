@@ -208,8 +208,8 @@ class AppActionsIntercalationAndSorption:
             is_init_data_dir=False,
         )
 
-    @staticmethod
-    def update_al_full_channel_coordinates_tbl(structure_folder: str, to_set: bool) -> None:
+    @classmethod
+    def update_al_full_channel_coordinates_tbl(cls, structure_folder: str, to_set: bool) -> None:
         """
         Run in loop:
         1) read Excel file to get Al atoms for the full channel;
@@ -221,22 +221,37 @@ class AppActionsIntercalationAndSorption:
         to_build_bonds: bool = True
 
         while True:
-            al_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
+            al_full_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
                 structure_folder=structure_folder,
                 file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
                 is_init_data_dir=False,
             )
 
-            if al_channel_coordinates_df is not None:
-                al_channel_coordinates: Points = AtomsParser._parse_al_coordinates_df(al_channel_coordinates_df)
+            if al_full_channel_coordinates_df is not None:
+                al_full_channel_coordinates: Points = AtomsParser._parse_al_coordinates_df(al_full_channel_coordinates_df)
             else:
                 logger.warning(
                     f"Excel file with Al atoms for the full channel not found in {structure_folder}; building full channel.")
-                al_channel_coordinates: Points = FullChannelBuilder.build_full_channel(carbon_channel)
+
+                al_crystal: Points = cls._build_al_atoms(
+                    to_set, carbon_channel.coordinate_limits)
+
+                # number_of_planes: int = int(Inputs.text_input(
+                #     to_set,
+                #     default_value="1",
+                #     text="Number of planes to translate",
+                #     env_id="number_of_planes",
+                # ))
+
+                al_channel_planes_coordinates: Points = AtomsParser.get_al_channel_coordinates(
+                    structure_folder, carbon_channel, number_of_planes=1)
+
+                al_full_channel_coordinates: Points = FullChannelBuilder.build_full_channel(
+                    carbon_channel, al_channel_planes_coordinates, al_crystal)
 
             StructureVisualizer.show_two_structures(
                 coordinates_first=carbon_channel.points,
-                coordinates_second=al_channel_coordinates.points,
+                coordinates_second=al_full_channel_coordinates.points,
                 to_build_bonds=to_build_bonds,
                 title=structure_folder,
                 # show_coordinates=False,

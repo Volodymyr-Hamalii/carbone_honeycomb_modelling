@@ -76,3 +76,7 @@ class AppActions:
     @staticmethod
     def translate_al_to_all_channels(structure_folder: str, to_set: bool) -> None:
         return AppActionsIntercalationAndSorption.translate_al_to_all_channels(structure_folder, to_set)
+
+    @staticmethod
+    def update_al_full_channel_coordinates_tbl(structure_folder: str, to_set: bool) -> None:
+        return AppActionsIntercalationAndSorption.update_al_full_channel_coordinates_tbl(structure_folder, to_set)
