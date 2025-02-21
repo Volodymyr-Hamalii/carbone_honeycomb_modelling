@@ -41,7 +41,7 @@ class IntercalatedChannelBuilderBasedOnPlaneConfigs:
     def _print_statistics(
         coordinates_al: Points,
         carbon_channel: CarbonHoneycombChannel,
-    ):
+    ) -> None:
 
         al: np.ndarray = coordinates_al.points
         carbon: np.ndarray = carbon_channel.points
