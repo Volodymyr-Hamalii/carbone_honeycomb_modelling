@@ -4,8 +4,7 @@ from pathlib import Path
 import numpy as np
 
 from src.utils import Constants, PathBuilder, Logger, execution_time_logger
-from src.structure_visualizer import AtomsUniverseBuilder
-from src.data_preparation import StructureSettings
+from src.data_preparation import StructureSettings, AtomsUniverseBuilder
 from src.base_structure_classes import Points, AlLatticeType, CoordinateLimits
 from src.projects.carbon_honeycomb_actions import CarbonHoneycombChannel
 

@@ -2,7 +2,8 @@ from pathlib import Path
 
 from src.utils import Constants, PathBuilder, Logger, Inputs
 from src.base_structure_classes import AlLatticeType, Points, CoordinateLimits
-from src.structure_visualizer import StructureVisualizer, AtomsUniverseBuilder, VisualizationParams
+from src.structure_visualizer import StructureVisualizer, VisualizationParams
+from src.data_preparation import AtomsUniverseBuilder
 from src.projects import (
     IntercalatedChannelBuilder,
     CarbonHoneycombActions,

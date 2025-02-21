@@ -4,6 +4,7 @@ import pandas as pd
 from src.projects.carbon_honeycomb_actions.channel.planes.carbon_honeycomb_plane import CarbonHoneycombPlane
 from src.utils import Constants, Logger, FileReader
 from src.base_structure_classes import Points
+from src.data_preparation import AtomsUniverseBuilder
 from src.projects.carbon_honeycomb_actions import (
     CarbonHoneycombChannel,
     CarbonHoneycombActions,

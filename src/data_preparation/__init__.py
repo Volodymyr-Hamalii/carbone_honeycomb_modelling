@@ -1,2 +1,3 @@
 from .structure_settings import StructureSettings
 from .structure_settings_manager import StructureSettingsManager
+from .atoms_universe_builder import AtomsUniverseBuilder
