@@ -48,13 +48,13 @@ class IntercalatedChannelBuilder:
 
         if al_lattice_type.is_fcc:
             return AtomsUniverseBuilder.build_fcc_lattice_type(
-                lattice_parameter=Constants.phys.al.LATTICE_PARAM,
+                dist_between_atoms=Constants.phys.al.DIST_BETWEEN_ATOMS,
                 coordinate_limits=coordinate_limits,
             )
 
         if al_lattice_type.is_hcp:
             return AtomsUniverseBuilder.build_hcp_lattice_type(
-                lattice_parameter=Constants.phys.al.LATTICE_PARAM,
+                dist_between_atoms=Constants.phys.al.DIST_BETWEEN_ATOMS,
                 coordinate_limits=coordinate_limits,
             )
 

@@ -38,16 +38,22 @@ class AtomsUniverseBuilder:
     @classmethod
     def build_hcp_lattice_type(
         cls,
-        lattice_parameter: float,
+        dist_between_atoms: float,
         coordinate_limits: CoordinateLimits,
     ) -> Points:
         """ Generate coordinates for planes with a 'ABAB' close-packed stacking sequence (Hexagonal close-packed) """
 
         # Extract limits
-        x_min, x_max, y_min, y_max, z_min, z_max = cls._get_extended_limits(
-            coordinate_limits)
+        # x_min, x_max, y_min, y_max, z_min, z_max = cls._get_extended_limits(
+        #     coordinate_limits)
+        x_min: float = coordinate_limits.x_min
+        x_max: float = coordinate_limits.x_max
+        y_min: float = coordinate_limits.y_min
+        y_max: float = coordinate_limits.y_max
+        z_min: float = coordinate_limits.z_min
+        z_max: float = coordinate_limits.z_max
 
-        a: float = lattice_parameter
+        a: float = dist_between_atoms
 
         # Regular tetrahedron altitude
         reg_tet_alt: float = np.sqrt(6) * a / 3
@@ -103,7 +109,7 @@ class AtomsUniverseBuilder:
     @classmethod
     def build_fcc_lattice_type(
         cls,
-        lattice_parameter: float,
+        dist_between_atoms: float,
         coordinate_limits: CoordinateLimits,
     ) -> Points:
         """
@@ -111,10 +117,16 @@ class AtomsUniverseBuilder:
         """
 
         # Extract limits
-        x_min, x_max, y_min, y_max, z_min, z_max = cls._get_extended_limits(
-            coordinate_limits)
+        # x_min, x_max, y_min, y_max, z_min, z_max = cls._get_extended_limits(
+        #     coordinate_limits)
+        x_min: float = coordinate_limits.x_min
+        x_max: float = coordinate_limits.x_max
+        y_min: float = coordinate_limits.y_min
+        y_max: float = coordinate_limits.y_max
+        z_min: float = coordinate_limits.z_min
+        z_max: float = coordinate_limits.z_max
 
-        a: float = lattice_parameter
+        a: float = dist_between_atoms
 
         # Regular tetrahedron altitude
         reg_tet_alt: float = np.sqrt(6) * a / 3
