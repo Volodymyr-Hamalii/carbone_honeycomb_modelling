@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 from scipy.spatial.distance import cdist
 
-from src.utils import Constants, FileWriter
+from src.utils import Constants, FileReader, FileWriter
 from src.base_structure_classes import Points
 from src.projects.carbon_honeycomb_actions import (
     CarbonHoneycombChannel,
@@ -12,13 +12,14 @@ from .atoms_parser import AtomsParser
 
 class CoordinatesTableManager:
     @classmethod
-    def update_tbl_file(
+    def update_plane_tbl_file(
             cls,
             structure_folder: str,
             carbon_channel: CarbonHoneycombChannel,
             number_of_planes: int,
     ) -> None:
-        al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(structure_folder, carbon_channel, number_of_planes)
+        al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(
+            structure_folder, carbon_channel, number_of_planes)
         df: pd.DataFrame = cls._build_updated_df(al_plane_coordinates)
 
         FileWriter.write_excel_file(
@@ -26,6 +27,29 @@ class CoordinatesTableManager:
             structure_folder=structure_folder,
             sheet_name="Al atoms for the plane",
             file_name=Constants.filenames.AL_PLANE_COORDINATES_XLSX_FILE,
+            is_init_data_dir=False,
+        )
+
+    @classmethod
+    def update_full_channel_tbl_file(cls, structure_folder: str,) -> None:
+        al_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
+            structure_folder=structure_folder,
+            file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
+            is_init_data_dir=False,
+        )
+
+        if al_channel_coordinates_df is None:
+            raise FileNotFoundError(
+                f"Excel file with Al atoms for the full channel not found in {structure_folder}.")
+
+        al_channel_coordinates: Points = AtomsParser._parse_al_coordinates_df(al_channel_coordinates_df)
+        df: pd.DataFrame = cls._build_updated_df(al_channel_coordinates)
+
+        FileWriter.write_excel_file(
+            df=df,
+            structure_folder=structure_folder,
+            sheet_name="Al atoms for the full channel",
+            file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
             is_init_data_dir=False,
         )
 

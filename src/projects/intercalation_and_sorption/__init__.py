@@ -4,4 +4,5 @@ from .build_intercalated_structure import (
     CoordinatesTableManager,
     AtomsParser,
     AlAtomsTranslator,
+    FullChannelBuilder,
 )

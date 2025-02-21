@@ -1,3 +1,4 @@
 from .coordinates_table_manager import CoordinatesTableManager
 from .atoms_parser import AtomsParser
 from .al_atoms_translator import AlAtomsTranslator
+from .full_channel_builder import FullChannelBuilder

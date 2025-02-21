@@ -1,5 +1,6 @@
 from pathlib import Path
 import numpy as np
+import pandas as pd
 
 from src.utils import Constants, PathBuilder, FileReader, FileWriter, Logger, Inputs
 from src.base_structure_classes import AlLatticeType, Points, CoordinateLimits
@@ -13,6 +14,7 @@ from src.projects import (
     CoordinatesTableManager,
     AtomsParser,
     AlAtomsTranslator,
+    FullChannelBuilder,
 )
 
 from .init_data_parsing import AppActionsInitDataParsing
@@ -125,7 +127,7 @@ class AppActionsIntercalationAndSorption:
 
     @staticmethod
     def update_al_coordinates_tbl(structure_folder: str, to_set: bool) -> None:
-        """ 
+        """
         Run in loop:
         1) read Excel file to get Al atoms;
         2) filter empty lines (if some lines were removed);
@@ -158,7 +160,7 @@ class AppActionsIntercalationAndSorption:
             )
 
             try:
-                CoordinatesTableManager.update_tbl_file(structure_folder, carbon_channel, number_of_planes)
+                CoordinatesTableManager.update_plane_tbl_file(structure_folder, carbon_channel, number_of_planes)
 
             except IOError as e:
                 logger.warning(e)
@@ -173,7 +175,7 @@ class AppActionsIntercalationAndSorption:
 
     @staticmethod
     def translate_al_to_other_planes(structure_folder: str, to_set: bool) -> None:
-        """ 
+        """
         Read Al coordinates from the Excel table and translate the structure to other planes.
         """
         carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
@@ -207,8 +209,57 @@ class AppActionsIntercalationAndSorption:
         )
 
     @staticmethod
+    def update_al_full_channel_coordinates_tbl(structure_folder: str, to_set: bool) -> None:
+        """
+        Run in loop:
+        1) read Excel file to get Al atoms for the full channel;
+        2) filter empty lines (if some lines were removed);
+        3) show current structure based on the coordinates from the file;
+        4) after closing the plot go to 1).
+        """
+        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
+        to_build_bonds: bool = True
+
+        while True:
+            al_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
+                structure_folder=structure_folder,
+                file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
+                is_init_data_dir=False,
+            )
+
+            if al_channel_coordinates_df is not None:
+                al_channel_coordinates: Points = AtomsParser._parse_al_coordinates_df(al_channel_coordinates_df)
+            else:
+                logger.warning(
+                    f"Excel file with Al atoms for the full channel not found in {structure_folder}; building full channel.")
+                al_channel_coordinates: Points = FullChannelBuilder.build_full_channel(carbon_channel)
+
+            StructureVisualizer.show_two_structures(
+                coordinates_first=carbon_channel.points,
+                coordinates_second=al_channel_coordinates.points,
+                to_build_bonds=to_build_bonds,
+                title=structure_folder,
+                # show_coordinates=False,
+                # show_indexes=True,
+            )
+
+            try:
+                CoordinatesTableManager.update_full_channel_tbl_file(structure_folder)
+
+            except IOError as e:
+                logger.warning(e)
+                file_is_closed: bool = Inputs.bool_input(
+                    to_set,
+                    default_value=True,
+                    text="Did you save and close Excel file?",
+                )
+
+                if file_is_closed is False:
+                    raise
+
+    @staticmethod
     def translate_al_to_all_channels(structure_folder: str, to_set: bool) -> None:
-        """ 
+        """
         Read Al plane coordinates from the Excel table and translate the structure to other planes.
         """
         coordinates_carbon: Points = IntercalatedChannelBuilder.build_carbon_coordinates(
