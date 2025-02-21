@@ -247,7 +247,7 @@ class AppActionsIntercalationAndSorption:
             df=al_coordinates.to_df(columns=["i", "x_Al", "y_Al", "z_Al"]),
             structure_folder=structure_folder,
             sheet_name="Al atoms for the channel",
-            file_name=Constants.filenames.AL_CHANNEL_COORDINATES_XLSX_FILE,
+            file_name=Constants.filenames.AL_ALL_CHANNELS_COORDINATES_XLSX_FILE,
             is_init_data_dir=False,
         )
 
