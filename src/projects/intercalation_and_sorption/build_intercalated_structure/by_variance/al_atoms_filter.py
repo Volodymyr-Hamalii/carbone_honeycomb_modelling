@@ -219,10 +219,10 @@ class AlAtomsFilter:
     ) -> Points:
         """Filter Al atoms related planes and then related carbon atoms."""
 
-        coordinates_al_filtered: Points = cls._filter_atoms_related_clannel_planes(
+        coordinates_al_filtered: Points = cls.filter_atoms_related_clannel_planes(
             coordinates_al=coordinates_al,
             carbon_channel=carbon_channel,
-            structure_settings=structure_settings,
+            distance_from_plane=structure_settings.distance_from_plane,
         )
 
         limits: CoordinateLimits = carbon_channel.coordinate_limits
@@ -239,10 +239,10 @@ class AlAtomsFilter:
             max_distance_to_carbon_atoms=structure_settings.max_distance_to_carbon_atoms)
 
     @staticmethod
-    def _filter_atoms_related_clannel_planes(
+    def filter_atoms_related_clannel_planes(
             coordinates_al: Points,
             carbon_channel: CarbonHoneycombChannel,
-            structure_settings: StructureSettings,
+            distance_from_plane: float = 0,
     ) -> Points:
         """
         Filter points from coordinates array by planes
@@ -256,12 +256,13 @@ class AlAtomsFilter:
             # Build plane parameters
             A, B, C, D = plane.plane_params
 
-            direction = bool(carbon_channel_center[1] > plane.center[1])
+            direction: bool = plane.center[1] <= carbon_channel_center[1]
+
             filtered_coordinates = PointsFilter.filter_coordinates_related_to_plane(
                 filtered_coordinates,
                 A, B, C, D,
                 direction=direction,
-                min_distance=structure_settings.distance_from_plane)
+                min_distance=distance_from_plane)
 
             # from src.structure_visualizer import StructureVisualizer
             # StructureVisualizer.show_two_structures(carbon_channel.points, filtered_coordinates.points)
