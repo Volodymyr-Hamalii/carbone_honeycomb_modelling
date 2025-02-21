@@ -118,4 +118,5 @@ class AppActionsShowInitData:
             to_build_bonds=to_build_bonds,
             title=structure_folder,
             # show_coordinates=True,
+            # num_of_min_distances=2,
         )
