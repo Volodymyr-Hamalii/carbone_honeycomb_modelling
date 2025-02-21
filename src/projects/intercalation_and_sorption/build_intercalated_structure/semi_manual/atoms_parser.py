@@ -106,7 +106,11 @@ class AtomsParser:
         coordinates_al: Points = AtomsBuilder._build_al_atoms_near_planes(carbon_channel, planes_limit=num_of_planes)
         coordinates_al = AtomsFilter.replace_nearby_atoms_with_one_atom(coordinates_al)
         coordinates_al = AtomsFilter.remove_too_close_atoms(coordinates_al)
-        return coordinates_al
+
+        # Round coordinates to 3 decimal places
+        coordinates_al = Points(points=np.round(coordinates_al.points, 3))
+
+        return Points(points=coordinates_al.sorted_points)
 
     @staticmethod
     def _parse_al_coordinates_df(al_plane_coordinates_df: pd.DataFrame) -> Points:
