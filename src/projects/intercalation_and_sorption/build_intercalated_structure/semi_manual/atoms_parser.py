@@ -108,7 +108,7 @@ class AtomsParser:
         coordinates_al = AtomsFilter.remove_too_close_atoms(coordinates_al)
 
         # Round coordinates to 3 decimal places
-        coordinates_al = Points(points=np.round(coordinates_al.points, 3))
+        coordinates_al = Points(points=np.round(coordinates_al.points, 2))
 
         return Points(points=coordinates_al.sorted_points)
 
