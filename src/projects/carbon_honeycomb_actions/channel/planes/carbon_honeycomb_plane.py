@@ -27,3 +27,7 @@ class CarbonHoneycombPlane(FlatFigure):
         (points between polygon edges).
         """
         return CarbonHoneycombPlaneActions.calculate_edge_holes(self.points, self.coordinate_limits)
+
+    def get_direction_to_center(self, channel_center: np.ndarray) -> bool:
+        """ Get the direction to the center of the plane (e.g., to filter atoms). """
+        return bool(self.center[1] <= channel_center[1])

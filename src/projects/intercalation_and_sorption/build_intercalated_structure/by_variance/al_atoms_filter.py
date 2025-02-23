@@ -256,7 +256,7 @@ class AlAtomsFilter:
             # Build plane parameters
             A, B, C, D = plane.plane_params
 
-            direction: bool = plane.center[1] <= carbon_channel_center[1]
+            direction: bool = plane.get_direction_to_center(carbon_channel_center)
 
             filtered_coordinates = PointsFilter.filter_coordinates_related_to_plane(
                 filtered_coordinates,
