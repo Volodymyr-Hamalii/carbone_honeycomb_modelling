@@ -248,6 +248,14 @@ class AppActionsIntercalationAndSorption:
 
                 al_full_channel_coordinates: Points = FullChannelBuilder.build_full_channel(
                     carbon_channel, al_channel_planes_coordinates, al_bulk)
+                
+                FileWriter.write_excel_file(
+                    df=al_full_channel_coordinates.to_df(columns=["i", "x_Al", "y_Al", "z_Al"]),
+                    structure_folder=structure_folder,
+                    sheet_name="Al atoms for the full channel",
+                    file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
+                    is_init_data_dir=False,
+                )
 
             StructureVisualizer.show_two_structures(
                 coordinates_first=carbon_channel.points,
