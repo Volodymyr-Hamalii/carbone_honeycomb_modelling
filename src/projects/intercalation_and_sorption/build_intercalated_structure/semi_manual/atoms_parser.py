@@ -32,6 +32,17 @@ class AtomsParser:
     ) -> Points:
         """ Read Al coordinates from the Excel file or build them if there is no Excel file. """
 
+        # Try to read the full channel coordinates
+        al_full_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
+            structure_folder=structure_folder,
+            file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
+            is_init_data_dir=False,
+        )
+
+        if al_full_channel_coordinates_df is not None:
+            return cls._parse_al_coordinates_df(al_full_channel_coordinates_df)
+
+        # Try to read the channel Al plane coordinates
         al_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
             structure_folder=structure_folder,
             file_name=Constants.filenames.AL_CHANNEL_COORDINATES_XLSX_FILE,
