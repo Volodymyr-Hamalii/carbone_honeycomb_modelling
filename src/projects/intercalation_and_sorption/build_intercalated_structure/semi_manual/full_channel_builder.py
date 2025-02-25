@@ -1,5 +1,6 @@
 import numpy as np
 from scipy.optimize import minimize
+from scipy.spatial.distance import cdist
 
 from src.utils import Constants, Logger
 from src.base_structure_classes import Points
@@ -13,7 +14,7 @@ from ..by_variance import (
 from .al_atoms_translator import AlAtomsTranslator
 
 
-logger = Logger(__name__)
+logger = Logger("FullChannelBuilder")
 
 
 class FullChannelBuilder:
@@ -35,8 +36,13 @@ class FullChannelBuilder:
             al_channel_planes_coordinates=al_channel_planes_coordinates,
         )
 
+        al_bulk_adjusted: Points = cls._adjust_the_closest_al_atoms(
+            al_bulk_coordinates=al_bulk_optimized_positions,
+            al_channel_planes_coordinates=al_channel_planes_coordinates,
+        )
+
         return Points(
-            points=np.vstack([al_channel_planes_coordinates.points, al_bulk_optimized_positions.points])
+            points=np.vstack([al_channel_planes_coordinates.points, al_bulk_adjusted.points])
         )
 
     @staticmethod
@@ -78,7 +84,7 @@ class FullChannelBuilder:
         init_vector: np.ndarray = np.array([0.0, 0.0])
 
         result = minimize(
-            cls.objective_function,
+            cls._objective_function,
             init_vector,
             args=(al_bulk_coordinates, al_channel_planes_coordinates),
             method="BFGS",
@@ -90,15 +96,20 @@ class FullChannelBuilder:
         if len(vector_to_move) == 2:
             vector_to_move = np.append(vector_to_move, 0.0)
 
-        moved_al_points: Points = PointsMover.move_on_vector(
+        moved_al_bulk_coordinates: Points = PointsMover.move_on_vector(
             points=al_bulk_coordinates,
             vector=vector_to_move,
         )
 
-        return moved_al_points
+        filtered_al_bulk_coordinates: Points = cls._filter_related_plane_al_atoms(
+            al_bulk_coordinates=moved_al_bulk_coordinates,
+            al_channel_planes_coordinates=al_channel_planes_coordinates,
+        )
+
+        return filtered_al_bulk_coordinates
 
     @classmethod
-    def objective_function(
+    def _objective_function(
         cls,
         vector_to_move: np.ndarray,
         al_bulk_coordinates: Points,
@@ -146,3 +157,46 @@ class FullChannelBuilder:
             points_1.points, points_2.points)
 
         return np.var(min_distances)
+
+    @staticmethod
+    def _adjust_the_closest_al_atoms(
+        al_bulk_coordinates: Points,
+        al_channel_planes_coordinates: Points,
+    ) -> Points:
+        """
+        Check distances between atoms in al_bulk_coordinates and al_channel_planes_coordinates.
+        If the distance is less than Constants.phys.al.DIST_BETWEEN_ATOMS,
+        get 3 the closest atoms in al_bulk_coordinates and all atoms in al_channel_planes_coordinates
+        that are closer than Constants.phys.al.DIST_BETWEEN_ATOMS and move the atom to the center of these atoms.
+        """
+        min_dists: np.ndarray = DistanceMeasure.calculate_min_distances(
+            al_bulk_coordinates.points, al_channel_planes_coordinates.points
+        )
+
+        counter: int = 0
+
+        for i in range(len(min_dists)):
+            if min_dists[i] < Constants.phys.al.DIST_BETWEEN_ATOMS:
+                dists_plane_bulk: np.ndarray = cdist(al_bulk_coordinates.points, al_channel_planes_coordinates.points)
+                dists_bulk: np.ndarray = DistanceMeasure.calculate_dist_matrix(al_bulk_coordinates.points)
+
+                # Get the closest atoms from the plane
+                closest_atoms_from_plane: np.ndarray = al_channel_planes_coordinates.points[
+                    dists_plane_bulk[i] < Constants.phys.al.DIST_BETWEEN_ATOMS * 1.01]
+
+                # Get the closest atoms from the bulk
+                closest_atoms_from_bulk: np.ndarray = al_bulk_coordinates.points[
+                    dists_bulk[i] < Constants.phys.al.DIST_BETWEEN_ATOMS * 1.01]
+
+                if len(closest_atoms_from_plane) == 0 or len(closest_atoms_from_bulk) == 0:
+                    continue
+
+                adjusted_atom: np.ndarray = np.mean(
+                    np.vstack([closest_atoms_from_plane, closest_atoms_from_bulk]), axis=0)
+
+                al_bulk_coordinates.points[i] = adjusted_atom
+                counter += 1
+
+        logger.info(f"Adjusted {counter} atoms.")
+
+        return al_bulk_coordinates
