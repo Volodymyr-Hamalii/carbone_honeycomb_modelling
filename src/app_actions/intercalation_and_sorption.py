@@ -233,7 +233,7 @@ class AppActionsIntercalationAndSorption:
                 logger.warning(
                     f"Excel file with Al atoms for the full channel not found in {structure_folder}; building full channel.")
 
-                al_crystal: Points = cls._build_al_atoms(
+                al_bulk: Points = cls._build_al_atoms(
                     to_set, carbon_channel.coordinate_limits)
 
                 # number_of_planes: int = int(Inputs.text_input(
@@ -247,7 +247,7 @@ class AppActionsIntercalationAndSorption:
                     structure_folder, carbon_channel, number_of_planes=1)
 
                 al_full_channel_coordinates: Points = FullChannelBuilder.build_full_channel(
-                    carbon_channel, al_channel_planes_coordinates, al_crystal)
+                    carbon_channel, al_channel_planes_coordinates, al_bulk)
 
             StructureVisualizer.show_two_structures(
                 coordinates_first=carbon_channel.points,
