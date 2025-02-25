@@ -41,6 +41,8 @@ class FullChannelBuilder:
             al_channel_planes_coordinates=al_channel_planes_coordinates,
         )
 
+        logger.info(f"Al bulk atoms added: {len(al_bulk_adjusted.points)}")
+
         return Points(
             points=np.vstack([al_channel_planes_coordinates.points, al_bulk_adjusted.points])
         )
