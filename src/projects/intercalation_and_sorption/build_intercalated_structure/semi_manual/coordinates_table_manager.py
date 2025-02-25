@@ -2,12 +2,15 @@ import numpy as np
 import pandas as pd
 from scipy.spatial.distance import cdist
 
-from src.utils import Constants, FileReader, FileWriter
+from src.utils import Constants, Logger, FileReader, FileWriter
 from src.base_structure_classes import Points
 from src.projects.carbon_honeycomb_actions import (
     CarbonHoneycombChannel,
 )
 from .atoms_parser import AtomsParser
+
+
+logger = Logger("CoordinatesTableManager")
 
 
 class CoordinatesTableManager:
