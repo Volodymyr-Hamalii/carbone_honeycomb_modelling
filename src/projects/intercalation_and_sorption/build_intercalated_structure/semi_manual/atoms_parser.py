@@ -56,7 +56,12 @@ class AtomsParser:
             al_plane_coordinates: Points = cls._build_al_plane_coordinates(
                 carbon_channel, num_of_planes=number_of_planes)
 
-        al_coordinates: Points = AlAtomsTranslator.translate_for_all_planes(carbon_channel, al_plane_coordinates)
+        try:
+            al_coordinates: Points = AlAtomsTranslator.translate_for_all_planes(carbon_channel, al_plane_coordinates)
+        except Exception as e:
+            logger.error(f"Error translating Al atoms: {e}", exc_info=False)
+            logger.warning(f"Structure for {structure_folder} is not translated. Using the original structure.")
+            al_coordinates: Points = al_plane_coordinates
 
         return al_coordinates
 
