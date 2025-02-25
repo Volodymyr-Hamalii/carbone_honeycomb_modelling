@@ -325,6 +325,12 @@ class AppActionsIntercalationAndSorption:
             is_init_data_dir=False,
         )
 
+        FileWriter.write_dat_file(
+            al_coordinates.points,
+            structure_folder=structure_folder,
+            filename=Constants.filenames.AL_ALL_CHANNELS_COORDINATES_DAT_FILE,
+        )
+
     @staticmethod
     def _build_al_atoms(
             to_set: bool, coordinate_limits: CoordinateLimits

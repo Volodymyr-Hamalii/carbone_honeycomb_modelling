@@ -43,6 +43,7 @@ class _ConstantsFilenames:
     AL_CHANNEL_COORDINATES_XLSX_FILE: str = "al-channel-coordinates.xlsx"
     AL_FULL_CHANNEL_COORDINATES_XLSX_FILE: str = "al-full-channel-coordinates.xlsx"
     AL_ALL_CHANNELS_COORDINATES_XLSX_FILE: str = "al-all-channels-coordinates.xlsx"
+    AL_ALL_CHANNELS_COORDINATES_DAT_FILE: str = "al-all-channels-coordinates.dat"
 
     STRUCTURE_SETTINGS_FILE: str = "structure_settings.json"
 
