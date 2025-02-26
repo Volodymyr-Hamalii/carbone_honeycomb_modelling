@@ -29,6 +29,7 @@ class AtomsParser:
             structure_folder: str,
             carbon_channel: CarbonHoneycombChannel,
             number_of_planes: int,
+            try_to_reflect_al_atoms: bool,
     ) -> Points:
         """ Read Al coordinates from the Excel file or build them if there is no Excel file. """
 
@@ -69,7 +70,7 @@ class AtomsParser:
 
         try:
             al_coordinates: Points = AlAtomsTranslator.translate_for_all_planes(
-                carbon_channel, al_plane_coordinates, number_of_planes)
+                carbon_channel, al_plane_coordinates, number_of_planes, try_to_reflect_al_atoms)
         except Exception as e:
             logger.error(f"Error translating Al atoms: {e}", exc_info=False)
             logger.warning(f"Structure for {structure_folder} is not translated. Using the original structure.")

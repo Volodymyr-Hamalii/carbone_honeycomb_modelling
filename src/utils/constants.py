@@ -14,6 +14,7 @@ def _clear_env_cache() -> None:
         "al_lattice_type",
         "number_of_planes",
         "number_of_min_distances",
+        "try_to_reflect_al_atoms",
     ]
 
     for var in env_vars_to_clear:

@@ -213,8 +213,15 @@ class AppActionsIntercalationAndSorption:
             env_id="number_of_min_distances",
         ))
 
+        try_to_reflect_al_atoms: bool = Inputs.bool_input(
+            to_set,
+            default_value=True,
+            text="Try to reflect aluminum atoms for other planes",
+            env_id="try_to_reflect_al_atoms",
+        )
+
         al_coordinates: Points = AtomsParser.get_al_channel_coordinates(
-            structure_folder, carbon_channel, number_of_planes)
+            structure_folder, carbon_channel, number_of_planes, try_to_reflect_al_atoms)
 
         StructureVisualizer.show_two_structures(
             coordinates_first=carbon_channel.points,
@@ -277,8 +284,16 @@ class AppActionsIntercalationAndSorption:
                 #     env_id="number_of_planes",
                 # ))
 
+                try_to_reflect_al_atoms: bool = Inputs.bool_input(
+                    to_set,
+                    default_value=True,
+                    text="Try to reflect aluminum atoms for other planes",
+                    env_id="try_to_reflect_al_atoms",
+                )
+
                 al_channel_planes_coordinates: Points = AtomsParser.get_al_channel_coordinates(
-                    structure_folder, carbon_channel, number_of_planes=1)
+                    structure_folder, carbon_channel, number_of_planes=1,
+                    try_to_reflect_al_atoms=try_to_reflect_al_atoms)
 
                 al_full_channel_coordinates: Points = FullChannelBuilder.build_full_channel(
                     carbon_channel, al_channel_planes_coordinates, al_bulk)
@@ -340,8 +355,15 @@ class AppActionsIntercalationAndSorption:
             env_id="number_of_min_distances",
         ))
 
+        try_to_reflect_al_atoms: bool = Inputs.bool_input(
+            to_set,
+            default_value=True,
+            text="Try to reflect aluminum atoms for other planes",
+            env_id="try_to_reflect_al_atoms",
+        )
         al_channel_coordinates: Points = AtomsParser.get_al_channel_coordinates(
-            structure_folder, carbon_channels.pop(0), number_of_planes)
+            structure_folder, carbon_channels.pop(0), number_of_planes, try_to_reflect_al_atoms)
+
         al_coordinates: Points = AlAtomsTranslator.translate_for_all_channels(
             coordinates_carbon=coordinates_carbon,
             carbon_channels=carbon_channels,
