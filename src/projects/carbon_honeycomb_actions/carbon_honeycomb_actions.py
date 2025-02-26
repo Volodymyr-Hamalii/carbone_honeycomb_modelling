@@ -138,7 +138,7 @@ class CarbonHoneycombActions:
         # honeycomb_channel: CarbonHoneycombChannel = honeycomb_channels[0]
         # plane = honeycomb_channel.planes[0]
 
-        # StructureVisualizer.show_structure(plane.points, num_of_min_distances=3)
+        # StructureVisualizer.show_structure(plane.points, num_of_min_distances=2)
 
         # hexagon = plane.hexagons[1]
         # points = []

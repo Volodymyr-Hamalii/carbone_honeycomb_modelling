@@ -119,7 +119,7 @@ class AppActionsIntercalationAndSorption:
 
         num_of_min_distances: int = int(Inputs.text_input(
             to_set,
-            default_value="3",
+            default_value="2",
             text="Number of min distances for bonds to show on plot",
             env_id="number_of_min_distances",
         ))
@@ -155,7 +155,7 @@ class AppActionsIntercalationAndSorption:
 
         num_of_min_distances: int = int(Inputs.text_input(
             to_set,
-            default_value="3",
+            default_value="2",
             text="Number of min distances for bonds to show on plot",
             env_id="number_of_min_distances",
         ))
@@ -208,7 +208,7 @@ class AppActionsIntercalationAndSorption:
 
         num_of_min_distances: int = int(Inputs.text_input(
             to_set,
-            default_value="3",
+            default_value="2",
             text="Number of min distances for bonds to show on plot",
             env_id="number_of_min_distances",
         ))
@@ -248,7 +248,7 @@ class AppActionsIntercalationAndSorption:
 
         num_of_min_distances: int = int(Inputs.text_input(
             to_set,
-            default_value="3",
+            default_value="2",
             text="Number of min distances for bonds to show on plot",
             env_id="number_of_min_distances",
         ))
@@ -335,7 +335,7 @@ class AppActionsIntercalationAndSorption:
 
         num_of_min_distances: int = int(Inputs.text_input(
             to_set,
-            default_value="3",
+            default_value="2",
             text="Number of min distances for bonds to show on plot",
             env_id="number_of_min_distances",
         ))

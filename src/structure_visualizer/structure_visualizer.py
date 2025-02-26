@@ -19,7 +19,7 @@ class StructureVisualizer:
             coordinates: ndarray,
             to_build_bonds: bool = True,
             visual_params: StructureVisualParams = VisualizationParams.carbon,
-            num_of_min_distances: int = 3,
+            num_of_min_distances: int = 2,
             skip_first_distances: int = 0,
             set_equal_scale: bool | None = None,
             title: str | None = None,
@@ -62,7 +62,7 @@ class StructureVisualizer:
         title: str | None = None,
         show_coordinates: bool | None = None,
         show_indexes: bool | None = None,
-        num_of_min_distances: int = 3,
+        num_of_min_distances: int = 2,
         skip_first_distances: int = 0,
     ) -> None:
         """ Show 3D plot with 2 structures (by default there are carbon and aluminium) """
@@ -163,7 +163,7 @@ class StructureVisualizer:
             visual_params: StructureVisualParams,
             set_equal_scale: bool | None = None,
             to_build_bonds: bool = True,
-            num_of_min_distances: int = 3,
+            num_of_min_distances: int = 2,
             skip_first_distances: int = 0,
             show_coordinates: bool | None = None,
             show_indexes: bool | None = None,

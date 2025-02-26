@@ -96,6 +96,9 @@ class LinesBuilder:
         # Sort the unique values
         sorted_unique_values: ndarray = np.sort(unique_values)
 
+        # Remove 0.0 values
+        sorted_unique_values = sorted_unique_values[sorted_unique_values != 0.0]
+
         # Return the values from specified range
         start: int = skip_first_values
         end: int = skip_first_values + num_of_values
