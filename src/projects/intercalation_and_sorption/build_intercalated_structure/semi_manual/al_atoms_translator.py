@@ -59,9 +59,11 @@ class AlAtomsTranslator:
         cls,
         carbon_channel: CarbonHoneycombChannel,
         al_plane_coordinates: Points,
+        number_of_planes: int,
+
     ) -> Points:
 
-        planes: list[CarbonHoneycombPlane] = carbon_channel.planes
+        planes: list[CarbonHoneycombPlane] = carbon_channel.planes[:number_of_planes]
 
         # al_groups: list[np.ndarray] = cls._group_by_lines(al_plane_coordinates)
         plane_group_map: dict[int, np.ndarray] = cls._match_plane_with_group(
@@ -129,13 +131,14 @@ class AlAtomsTranslator:
             # )
             # plane_group_map[closest_plane_index] = atom
 
-        max_len: int = max(len(value) for value in plane_group_map.values())
+        # max_len: int = max(len(value) for value in plane_group_map.values())
 
         # Filter plane groups with the max length
         plane_group_map = {
             key: value
             for key, value in plane_group_map.items()
-            if len(value) == max_len
+            # if len(value) == max_len
+            if value
         }
 
         return {
@@ -168,32 +171,43 @@ class AlAtomsTranslator:
                 continue
 
             al_points = Points(plane_group_map[group_i])
-            al_points_moved: Points = cls._move_al_to_other_plane(
-                al_points, channel_center,
-                al_points_plane=planes[group_i],
-                target_plane=plane,
-            )
+            # al_points_moved: Points = cls._move_al_to_other_plane(
+            #     al_points, channel_center,
+            #     al_points_plane=planes[group_i],
+            #     target_plane=plane,
+            # )
 
             # all_al_points.append(al_points_moved.points)
             # continue
 
             angle: float = (group_i - plane_i) * np.pi / 3
+            # logger.info(f"Angle: {angle / np.pi * 180} degrees")
 
-            al_points_rotated: Points = PointsRotator.rotate_on_angle_related_center(
-                al_points_moved, angle_z=angle)
+            al_points_rotated: Points = PointsRotator.rotate_around_z_parallel_line(
+                al_points, line_point=carbon_channel.center, angle=angle)
 
-            al_points_adjusted: Points = cls._adjust_al_atoms(al_points_rotated, plane)
+            # StructureVisualizer.show_two_structures(
+            #     carbon_channel.points,
+            #     np.concatenate(all_al_points + [al_points_rotated.points]),
+            #     title=f"Plane {plane_i}",
+            #     to_build_bonds=True
+            # )
+
+            # all_al_points.append(al_points_rotated.points)
+            # continue
+
+            # al_points_adjusted: Points = cls._adjust_al_atoms(al_points_rotated, plane)
 
             # Check if we need to reflect points
-            al_points_reflected: Points = PointsMover.reflect_through_vertical_axis(al_points_adjusted)
+            al_points_reflected: Points = PointsMover.reflect_through_vertical_axis(al_points_rotated)
 
             al_points_reflected_min_dists: np.floating = DistanceMeasure.calculate_min_distance_sum(
                 al_points_reflected.points, plane.points)
             al_points_adjusted_min_dists: np.floating = DistanceMeasure.calculate_min_distance_sum(
-                al_points_adjusted.points, plane.points)
+                al_points_rotated.points, plane.points)
 
             if al_points_adjusted_min_dists > al_points_reflected_min_dists:
-                all_al_points.append(al_points_adjusted.points)
+                all_al_points.append(al_points_rotated.points)
             else:
                 all_al_points.append(al_points_reflected.points)
 
