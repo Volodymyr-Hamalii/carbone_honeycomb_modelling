@@ -13,10 +13,14 @@ class Inputs:
             text: str,
             env_id: str | None = None,
     ) -> bool:
+        true_values: list[str] = ["+", "y", "yes", "true", "1"]
+        false_values: list[str] = ["-", "n", "no", "false", "0"]
+        all_available_values: list[str] = true_values + false_values
+
         if env_id is not None:
             # Try to get value from envs
             try:
-                value: bool = os.environ[env_id] == "+"
+                value: bool = os.environ[env_id].lower() in true_values
                 logger.info(f"{text}: {value}")
                 return value
             except KeyError:
@@ -26,16 +30,14 @@ class Inputs:
             logger.info(f"{text}: {default_value}")
             return default_value
 
-        available_values: list[str] = ["+", "-"]
-
         default_value_str: str = "+" if default_value is True else "-"
         message: str = f"{text} (print '+', '-' or nothing; by default is '{default_value_str}'): "
         result_str: str = input(message) or default_value_str
 
-        if cls._validate_result(result_str, available_values):
-            return result_str == "+"
+        if cls._validate_result(result_str, all_available_values):
+            return result_str.lower() in true_values
         else:
-            logger.warning("Wront input. Available values:", available_values)
+            logger.warning(f"Wront input. Available values: {true_values} for true and {false_values} for false.")
             return cls.bool_input(to_set, default_value, text)
 
     @classmethod
