@@ -49,7 +49,7 @@ class FileWriter(FileManager):
 
             # Convert ndarray to list[str]
             if isinstance(data_lines, ndarray):
-                data_lines = [f"{i[0]} {i[1]} {i[2]}" for i in data_lines]
+                data_lines = [f"{i[0]}\t{i[1]}\t{i[2]}" for i in data_lines]
 
             with Path(path_to_file).open("w") as dat_file:
                 dat_file.write(cls.dat_file_first_lines)

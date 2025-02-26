@@ -38,6 +38,10 @@ class AppActions:
         return AppActionsInitDataParsing.convert_init_dat_to_pdb(structure_folder, to_set)
 
     @staticmethod
+    def convert_excel_to_dat(structure_folder: str, to_set: bool) -> None:
+        return AppActionsInitDataParsing.convert_excel_to_dat(structure_folder, to_set)
+
+    @staticmethod
     def show_init_structure(structure_folder: str, to_set: bool) -> None:
         return AppActionsShowInitData.show_init_structure(structure_folder, to_set)
 
