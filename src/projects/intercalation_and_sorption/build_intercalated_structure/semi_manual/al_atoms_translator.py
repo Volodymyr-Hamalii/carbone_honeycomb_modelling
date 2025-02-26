@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.optimize import minimize
 
-from src.utils import Logger
+from src.utils import Logger, Constants
 from src.base_structure_classes import Points
 from src.coordinate_operations import (
     PointsOrganizer,
@@ -154,14 +154,24 @@ class AlAtomsTranslator:
             carbon_channel: CarbonHoneycombChannel,
     ) -> Points:
         planes: list[CarbonHoneycombPlane] = carbon_channel.planes
-        channel_center: np.ndarray = carbon_channel.center
+        # channel_center: np.ndarray = carbon_channel.center
         all_al_points: list[np.ndarray] = []
+        min_allowed_dist: float = Constants.phys.al.DIST_BETWEEN_ATOMS
 
         for plane_i, plane in enumerate(planes):
             if plane_i in plane_group_map:
                 # Just add the related points
                 all_al_points.append(plane_group_map[plane_i])
-                continue
+
+                # Update the minimum allowed distance according to the built plane
+                # (take 95% of the minimum distance for some margin)
+                min_dist: float = np.min(
+                    DistanceMeasure.calculate_min_distances(
+                        plane_group_map[plane_i], plane.points
+                    )
+                ) * 0.95
+                if min_dist < min_allowed_dist:
+                    min_allowed_dist = min_dist
 
             # Get the index of the related plane
             group_i: int = plane_i % len(plane_group_map)
@@ -201,15 +211,16 @@ class AlAtomsTranslator:
             # Check if we need to reflect points
             al_points_reflected: Points = PointsMover.reflect_through_vertical_axis(al_points_rotated)
 
-            al_points_reflected_min_dists: np.floating = DistanceMeasure.calculate_min_distance_sum(
+            reflected_min_dists: np.ndarray = DistanceMeasure.calculate_min_distances(
                 al_points_reflected.points, plane.points)
-            al_points_adjusted_min_dists: np.floating = DistanceMeasure.calculate_min_distance_sum(
+            rotated_min_dists: np.ndarray = DistanceMeasure.calculate_min_distances(
                 al_points_rotated.points, plane.points)
 
-            if al_points_adjusted_min_dists > al_points_reflected_min_dists:
-                all_al_points.append(al_points_rotated.points)
-            else:
+            if np.min(reflected_min_dists) > min_allowed_dist and (
+                    np.sum(reflected_min_dists) > np.sum(rotated_min_dists)):
                 all_al_points.append(al_points_reflected.points)
+            else:
+                all_al_points.append(al_points_rotated.points)
 
         al_points_ndarray: np.ndarray = np.concatenate(all_al_points)
         return Points(al_points_ndarray)
