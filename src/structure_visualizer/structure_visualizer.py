@@ -190,7 +190,7 @@ class StructureVisualizer:
         if set_equal_scale:
             cls._set_equal_scale(ax, x, y, z)
 
-        if show_coordinates is not False and visual_params.show_coordinates:
+        if show_coordinates is True or (show_coordinates is None and visual_params.show_coordinates):
             # Show coordinates near each point
             for xx, yy, zz in zip(x, y, z):
                 ax.text(
