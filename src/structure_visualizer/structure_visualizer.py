@@ -62,6 +62,8 @@ class StructureVisualizer:
         title: str | None = None,
         show_coordinates: bool | None = None,
         show_indexes: bool | None = None,
+        num_of_min_distances: int = 3,
+        skip_first_distances: int = 0,
     ) -> None:
         """ Show 3D plot with 2 structures (by default there are carbon and aluminium) """
 
@@ -75,6 +77,8 @@ class StructureVisualizer:
             coordinates=coordinates_first,
             visual_params=visual_params_first,
             to_build_bonds=to_build_bonds,
+            num_of_min_distances=num_of_min_distances,
+            skip_first_distances=skip_first_distances,
             show_coordinates=show_coordinates,
             show_indexes=show_indexes,
         )

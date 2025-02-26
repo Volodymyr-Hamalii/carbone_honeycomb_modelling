@@ -117,11 +117,20 @@ class AppActionsIntercalationAndSorption:
             env_id="to_build_bonds",
         )
 
+        num_of_min_distances: int = int(Inputs.text_input(
+            to_set,
+            default_value="3",
+            text="Number of min distances for bonds to show on plot",
+            env_id="number_of_min_distances",
+        ))
+
         StructureVisualizer.show_two_structures(
             coordinates_first=coordinates_carbon.points,
             coordinates_second=upd_al_points,
             to_build_bonds=to_build_bonds,
-            title=structure_folder)
+            title=structure_folder,
+            num_of_min_distances=num_of_min_distances,
+        )
 
         FileWriter.write_dat_file(upd_al_points, structure_folder=structure_folder, filename="al_in_all_channels.dat")
 
@@ -144,6 +153,13 @@ class AppActionsIntercalationAndSorption:
             env_id="number_of_planes",
         ))
 
+        num_of_min_distances: int = int(Inputs.text_input(
+            to_set,
+            default_value="3",
+            text="Number of min distances for bonds to show on plot",
+            env_id="number_of_min_distances",
+        ))
+
         while True:
             al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(
                 structure_folder, carbon_channel, number_of_planes)
@@ -155,6 +171,8 @@ class AppActionsIntercalationAndSorption:
                 coordinates_second=al_plane_coordinates.points,
                 to_build_bonds=to_build_bonds,
                 title=structure_folder,
+                num_of_min_distances=num_of_min_distances,
+                # skip_first_distances=0,
                 # show_coordinates=False,
                 # show_indexes=True,
             )
@@ -188,6 +206,13 @@ class AppActionsIntercalationAndSorption:
             env_id="number_of_planes",
         ))
 
+        num_of_min_distances: int = int(Inputs.text_input(
+            to_set,
+            default_value="3",
+            text="Number of min distances for bonds to show on plot",
+            env_id="number_of_min_distances",
+        ))
+
         al_coordinates: Points = AtomsParser.get_al_channel_coordinates(
             structure_folder, carbon_channel, number_of_planes)
 
@@ -196,6 +221,7 @@ class AppActionsIntercalationAndSorption:
             coordinates_second=al_coordinates.points,
             to_build_bonds=to_build_bonds,
             title=structure_folder,
+            num_of_min_distances=num_of_min_distances,
             # show_coordinates=False,
             # show_indexes=True,
         )
@@ -220,6 +246,13 @@ class AppActionsIntercalationAndSorption:
         carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
         to_build_bonds: bool = True
 
+        num_of_min_distances: int = int(Inputs.text_input(
+            to_set,
+            default_value="3",
+            text="Number of min distances for bonds to show on plot",
+            env_id="number_of_min_distances",
+        ))
+
         while True:
             al_full_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
                 structure_folder=structure_folder,
@@ -228,7 +261,8 @@ class AppActionsIntercalationAndSorption:
             )
 
             if al_full_channel_coordinates_df is not None:
-                al_full_channel_coordinates: Points = AtomsParser._parse_al_coordinates_df(al_full_channel_coordinates_df)
+                al_full_channel_coordinates: Points = AtomsParser._parse_al_coordinates_df(
+                    al_full_channel_coordinates_df)
             else:
                 logger.warning(
                     f"Excel file with Al atoms for the full channel not found in {structure_folder}; building full channel.")
@@ -248,7 +282,7 @@ class AppActionsIntercalationAndSorption:
 
                 al_full_channel_coordinates: Points = FullChannelBuilder.build_full_channel(
                     carbon_channel, al_channel_planes_coordinates, al_bulk)
-                
+
                 FileWriter.write_excel_file(
                     df=al_full_channel_coordinates.to_df(columns=["i", "x_Al", "y_Al", "z_Al"]),
                     structure_folder=structure_folder,
@@ -262,6 +296,7 @@ class AppActionsIntercalationAndSorption:
                 coordinates_second=al_full_channel_coordinates.points,
                 to_build_bonds=to_build_bonds,
                 title=structure_folder,
+                num_of_min_distances=num_of_min_distances,
                 # show_coordinates=False,
                 # show_indexes=True,
             )
@@ -298,6 +333,13 @@ class AppActionsIntercalationAndSorption:
             env_id="number_of_planes",
         ))
 
+        num_of_min_distances: int = int(Inputs.text_input(
+            to_set,
+            default_value="3",
+            text="Number of min distances for bonds to show on plot",
+            env_id="number_of_min_distances",
+        ))
+
         al_channel_coordinates: Points = AtomsParser.get_al_channel_coordinates(
             structure_folder, carbon_channels.pop(0), number_of_planes)
         al_coordinates: Points = AlAtomsTranslator.translate_for_all_channels(
@@ -313,8 +355,9 @@ class AppActionsIntercalationAndSorption:
             coordinates_second=al_coordinates.points,
             to_build_bonds=to_build_bonds,
             title=structure_folder,
+            num_of_min_distances=num_of_min_distances,
             # show_coordinates=False,
-            show_indexes=False,
+            # show_indexes=False,
         )
 
         FileWriter.write_excel_file(
