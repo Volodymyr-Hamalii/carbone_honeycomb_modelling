@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.optimize import minimize
 
-
+from src.utils import Logger
 from src.base_structure_classes import Points
 from src.coordinate_operations import (
     PointsOrganizer,
@@ -17,6 +17,9 @@ from src.projects.carbon_honeycomb_actions import (
 # from src.structure_visualizer import StructureVisualizer
 
 from ..based_on_planes_configs import AtomsFilter
+
+
+logger = Logger("AlAtomsTranslator")
 
 
 class AlAtomsTranslator:
@@ -159,6 +162,10 @@ class AlAtomsTranslator:
 
             # Get the index of the related plane
             group_i: int = plane_i % len(plane_group_map)
+
+            if group_i not in plane_group_map:
+                logger.warning(f"Group {group_i} not found in plane_group_map ({plane_group_map.keys()})")
+                continue
 
             al_points = Points(plane_group_map[group_i])
             al_points_moved: Points = cls._move_al_to_other_plane(
