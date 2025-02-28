@@ -105,15 +105,14 @@ class StructureVisualizer:
 
         plt.show()
 
-    @classmethod
-    def show_2d_graph(
-        cls,
+    @staticmethod
+    def get_2d_plot(
         coordinates: np.ndarray,
         title: str | None = None,
         visual_params: StructureVisualParams = VisualizationParams.carbon,
         show_coordinates: bool | None = None,
         show_indexes: bool | None = None,
-    ) -> None:
+    ) -> Axes:
         # Prepare to visualize in 2D
         fig: Figure = plt.figure()
         ax: Axes = fig.add_subplot(111)  # No 3D projection here, just 2D
@@ -151,8 +150,27 @@ class StructureVisualizer:
         if title is not None:
             ax.set_title(title)
 
-        ax.legend()
+        # ax.legend()
         plt.grid(True)
+
+        return ax
+
+    @classmethod
+    def show_2d_graph(
+        cls,
+        coordinates: np.ndarray,
+        title: str | None = None,
+        visual_params: StructureVisualParams = VisualizationParams.carbon,
+        show_coordinates: bool | None = None,
+        show_indexes: bool | None = None,
+    ) -> None:
+        cls.get_2d_plot(
+            coordinates,
+            title,
+            visual_params,
+            show_coordinates,
+            show_indexes
+        )
         plt.show()
 
     @classmethod
