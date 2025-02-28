@@ -2,8 +2,8 @@ from functools import cached_property
 from dataclasses import dataclass
 import numpy as np
 
-from src.base_structure_classes import CoordinateLimits
-from src.coordinate_operations import PlanesBuilder, LinesOperations
+from src.coordinate_operations.planes_operations import PlanesBuilder
+from src.coordinate_operations.lines_operations import LinesOperations
 from .points import Points
 
 
