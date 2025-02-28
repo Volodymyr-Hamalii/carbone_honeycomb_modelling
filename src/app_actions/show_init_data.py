@@ -213,12 +213,26 @@ class AppActionsShowInitData:
 
             next_plane_line_equation: tuple[float, float, float, float] = LinesOperations.get_line_equation(
                 next_plane_points[0], next_plane_points[1])
-            angle: float = np.degrees(
-                np.arctan2(
-                    next_plane_line_equation[1] - line_equation[1],
-                    next_plane_line_equation[0] - line_equation[0]
-                )
-            )
+
+            # Calculate vectors along the lines
+            current_vector: np.ndarray = np.array(
+                [1.0, line_equation[1] / line_equation[0]]) if line_equation[0] != 0 else np.array([0.0, 1.0])
+            next_vector: np.ndarray = np.array(
+                [1.0, next_plane_line_equation[1] / next_plane_line_equation[0]]) if next_plane_line_equation[0] != 0 else np.array([0.0, 1.0])
+
+            # Normalize vectors
+            current_vector = current_vector / np.linalg.norm(current_vector)
+            next_vector = next_vector / np.linalg.norm(next_vector)
+
+            # Calculate angle using dot product and handle the direction
+            dot_product: float = np.clip(np.dot(current_vector, next_vector), -1.0, 1.0)
+            angle: float = np.degrees(np.arccos(dot_product))
+
+            # Ensure we get the smaller angle (should be ~120° not ~240°)
+            if angle > 180:
+                angle = 360 - angle
+            if angle < 90:
+                angle = 180 - angle
 
             # Get the point that is general for plane_points_2d and next_plane_points
             general_planes_point: np.ndarray = next(
