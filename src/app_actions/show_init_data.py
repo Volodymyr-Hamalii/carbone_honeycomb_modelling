@@ -1,6 +1,11 @@
 from pathlib import Path
 
+import numpy as np
+import matplotlib.pyplot as plt
+from matplotlib.pyplot import Axes  # type: ignore
+
 from src.utils import Constants, PathBuilder, Logger, Inputs
+from src.coordinate_operations import DistanceMeasure, LinesOperations
 from src.base_structure_classes import AlLatticeType, Points, CoordinateLimits
 from src.structure_visualizer import StructureVisualizer, VisualizationParams
 from src.data_preparation import AtomsUniverseBuilder
@@ -9,6 +14,8 @@ from src.projects import (
     CarbonHoneycombActions,
     CarbonHoneycombChannel,
     CarbonHoneycombActions,
+    AtomsParser,
+    CarbonHoneycombPlane,
 )
 
 
@@ -120,3 +127,141 @@ class AppActionsShowInitData:
             # show_coordinates=True,
             # num_of_min_distances=2,
         )
+
+    @staticmethod
+    def get_channel_details(structure_folder: str, to_set: bool) -> None:
+        """
+        Get details of the channel from result_data/{structure_folder}/structure_settings.json:
+        - distance from the channel centet to the planes and to the connection edges,
+        - angles between the planes on the connection edges.
+
+        And shows the details in the console and on the 2D graph.
+        """
+
+        fontsize: int = 8
+
+        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
+
+        center_2d: np.ndarray = carbon_channel.center[:2]
+        planes: list[CarbonHoneycombPlane] = carbon_channel.planes
+
+        # Convert planes to 2D points (take only unique x and y coordinates)
+        # Here we have the point groups for each plane (6 groups of points laying on the lines for each of the hexagon sides)
+        planes_points_2d: list[np.ndarray] = [np.unique(plane.points[:, :2], axis=0) for plane in planes]
+
+        ax: Axes = StructureVisualizer.get_2d_plot(
+            np.concatenate(planes_points_2d),
+            title=structure_folder,
+            visual_params=VisualizationParams.carbon,
+        )
+
+        # Add center point to the plot
+        ax.scatter(center_2d[0], center_2d[1], color=VisualizationParams.al.color_atoms, label='Center')
+        # Add center coordinates text
+        ax.text(
+            center_2d[0], center_2d[1],
+            f"Center: ({center_2d[0]:.2f}, {center_2d[1]:.2f})",
+            fontsize=fontsize,
+            ha="center",
+            va="bottom",
+        )
+
+        # distances_from_center_to_planes: list[float] = []
+        # distances_from_center_to_edges: list[float] = []
+
+        processed_points: list[np.ndarray] = []
+
+        for i, plane_points_2d in enumerate(planes_points_2d):
+            # Build lines for the plane
+            ax.plot(
+                plane_points_2d[:, 0],
+                plane_points_2d[:, 1],
+                color=VisualizationParams.carbon.color_bonds,
+                label='Plane',
+            )
+
+            # Get points with the min and max x coordinate
+            min_point = plane_points_2d[np.argmin(plane_points_2d[:, 0])]
+            max_point = plane_points_2d[np.argmax(plane_points_2d[:, 0])]
+
+            line_equation: tuple[float, float, float, float] = LinesOperations.get_line_equation(min_point, max_point)
+
+            a, b, c, d = line_equation
+
+            distance_from_center_to_plane: float = DistanceMeasure.calculate_distance_from_plane(
+                np.array([center_2d]), a, b, c, d)[0]  # type: ignore
+            # distances_from_center_to_planes.append(distance_from_center_to_plane)
+
+            # Center of the plane
+            plane_center = np.mean(plane_points_2d, axis=0)
+
+            # Show the distance from the center to the plane
+            ax.text(
+                plane_center[0], plane_center[1],
+                f"Dist to plane: {distance_from_center_to_plane:.2f}",
+                # color="black",
+                fontsize=fontsize,
+                ha="center",
+                va="top" if plane_center[1] < center_2d[1] else "bottom",
+            )
+
+            # Calculate the angle between the plane and the next plane
+            if i < len(planes_points_2d) - 1:
+                next_plane_points: np.ndarray = planes_points_2d[i + 1]
+            else:
+                next_plane_points: np.ndarray = planes_points_2d[0]
+
+            next_plane_line_equation: tuple[float, float, float, float] = LinesOperations.get_line_equation(
+                next_plane_points[0], next_plane_points[1])
+            angle: float = np.degrees(
+                np.arctan2(
+                    next_plane_line_equation[1] - line_equation[1],
+                    next_plane_line_equation[0] - line_equation[0]
+                )
+            )
+
+            # Get the point that is general for plane_points_2d and next_plane_points
+            general_planes_point: np.ndarray = next(
+                point for point in plane_points_2d
+                if any(np.array_equal(point, p) for p in next_plane_points)
+            )
+
+            ax.text(
+                general_planes_point[0], general_planes_point[1],
+                f"{round(angle, 1)}°",
+                # color="black",
+                fontsize=fontsize,
+                ha="left" if general_planes_point[0] < center_2d[0] else "right",
+                va="top" if general_planes_point[1] > center_2d[1] else "bottom",
+            )
+
+            for point in (min_point, max_point):
+                if not any(np.array_equal(point, p) for p in processed_points):
+                    processed_points.append(point)
+
+                    distance_from_center_to_point: np.floating = np.linalg.norm(center_2d - point)
+                    # distances_from_center_to_edges.append(distance_from_center_to_point)
+
+                    # Show the distance from the center to the point
+                    ax.text(
+                        point[0], point[1],
+                        f"Dist to edge: {distance_from_center_to_point:.2f}",
+                        # color="black",
+                        fontsize=fontsize,
+                        # ha="left" if point[0] > center_2d[0] else "right",
+                        ha="center",
+                        va="bottom" if point[1] > center_2d[1] else "top",
+                    )
+
+        # # Calculate the distance from the center to the planes
+        # distances_from_center_to_planes: list[float] = [
+        #     DistanceMeasure.calculate_distance_from_plane(np.array([center_2d]), *plane.get_plane_params())
+        #     for plane in planes
+        # ]
+
+        plt.show()
+
+        # for plane in planes:
+        # plane_params: tuple[float, float, float, float] = plane.get_plane_params()
+        # distance: float = DistanceMeasure.calculate_distance_from_plane(np.array([center]), *plane_params)
+        # print(f"Distance from center to plane: {distance}")

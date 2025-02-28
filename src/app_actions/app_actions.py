@@ -46,6 +46,10 @@ class AppActions:
         return AppActionsShowInitData.show_init_structure(structure_folder, to_set)
 
     @staticmethod
+    def get_channel_details(structure_folder: str, to_set: bool) -> None:
+        return AppActionsShowInitData.get_channel_details(structure_folder, to_set)
+
+    @staticmethod
     def show_init_al_structure(structure_folder: str, to_set: bool) -> None:
         return AppActionsShowInitData.show_init_al_structure(structure_folder, to_set)
 
