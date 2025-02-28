@@ -24,6 +24,10 @@ class DistanceMeasure:
     @staticmethod
     def calculate_distance_from_plane(points: ndarray, A: float, B: float, C: float, D: float) -> float:
         """ Calculate the distance of each point from the plane. """
+        # Convert 2D to 3D if no z coordinate
+        if points.shape[1] == 2:
+            points = np.hstack((points, np.zeros((points.shape[0], 1))))
+        
         numerator: ndarray = np.abs(A * points[:, 0] + B * points[:, 1] + C * points[:, 2] + D)
         denominator = np.sqrt(A**2 + B**2 + C**2)
         return numerator / denominator
@@ -31,6 +35,10 @@ class DistanceMeasure:
     @staticmethod
     def calculate_signed_distance_from_plane(points: ndarray, A: float, B: float, C: float, D: float) -> float:
         """ Calculate the signed distance of each point from the plane. """
+        # Convert 2D to 3D if no z coordinate
+        if points.shape[1] == 2:
+            points = np.hstack((points, np.zeros((points.shape[0], 1))))
+
         numerator: ndarray = A * points[:, 0] + B * points[:, 1] + C * points[:, 2] + D
         denominator = np.sqrt(A**2 + B**2 + C**2)
         return numerator / denominator
