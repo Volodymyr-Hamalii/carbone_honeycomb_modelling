@@ -156,11 +156,18 @@ class AppActionsShowInitData:
         )
 
         # Add center point to the plot
-        ax.scatter(center_2d[0], center_2d[1], color=VisualizationParams.al.color_atoms, label='Center')
+        ax.scatter(
+            center_2d[0],
+            center_2d[1],
+            color=VisualizationParams.al.color_atoms,
+            alpha=0.5,
+            label='Center',
+        )
+
         # Add center coordinates text
         ax.text(
             center_2d[0], center_2d[1],
-            f"Center: ({center_2d[0]:.2f}, {center_2d[1]:.2f})",
+            f"({center_2d[0]:.2f}, {center_2d[1]:.2f})",
             fontsize=fontsize,
             ha="center",
             va="bottom",
@@ -177,6 +184,7 @@ class AppActionsShowInitData:
                 plane_points_2d[:, 0],
                 plane_points_2d[:, 1],
                 color=VisualizationParams.carbon.color_bonds,
+                alpha=0.5,
                 label='Plane',
             )
 
@@ -267,15 +275,21 @@ class AppActionsShowInitData:
                         va="bottom" if point[1] > center_2d[1] else "top",
                     )
 
-        # # Calculate the distance from the center to the planes
-        # distances_from_center_to_planes: list[float] = [
-        #     DistanceMeasure.calculate_distance_from_plane(np.array([center_2d]), *plane.get_plane_params())
-        #     for plane in planes
-        # ]
+        # Set equal scale for the plot
+        x_min, x_max = carbon_channel.points[:, 0].min(), carbon_channel.points[:, 0].max()
+        y_min, y_max = carbon_channel.points[:, 1].min(), carbon_channel.points[:, 1].max()
+
+        print(x_min, x_max, y_min, y_max)
+
+        min_lim = np.abs(np.min([x_min, y_min]))
+        max_lim = np.abs(np.max([x_max, y_max]))
+
+        delta = (max_lim + min_lim) / 2 * 1.2
+
+        x_mid = (x_max + x_min) / 2
+        y_mid = (y_max + y_min) / 2
+
+        ax.set_xlim(x_mid - delta, x_mid + delta)
+        ax.set_ylim(y_mid - delta, y_mid + delta)
 
         plt.show()
-
-        # for plane in planes:
-        # plane_params: tuple[float, float, float, float] = plane.get_plane_params()
-        # distance: float = DistanceMeasure.calculate_distance_from_plane(np.array([center]), *plane_params)
-        # print(f"Distance from center to plane: {distance}")
