@@ -120,7 +120,12 @@ class StructureVisualizer:
         # Plot points
         x: np.ndarray = coordinates[:, 0]
         y: np.ndarray = coordinates[:, 1]
-        ax.scatter(x, y, color=visual_params.color_atoms, label='Points')
+        ax.scatter(
+            x, y,
+            color=visual_params.color_atoms,
+            label='Points',
+            alpha=visual_params.transparency,
+        )
 
         if show_coordinates:
             # Show coordinates near each point
@@ -259,4 +264,8 @@ class StructureVisualizer:
 
         ax.set_xlim(x_mid - delta_plus, x_mid + delta_plus)
         ax.set_ylim(y_mid - delta_plus, y_mid + delta_plus)
-        ax.set_zlim(z_mid - delta, z_mid + delta)  # type: ignore
+
+        try:
+            ax.set_zlim(z_mid - delta, z_mid + delta)  # type: ignore
+        except Exception:
+            pass
