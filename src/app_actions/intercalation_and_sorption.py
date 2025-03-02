@@ -4,8 +4,9 @@ import pandas as pd
 
 from src.utils import Constants, PathBuilder, FileReader, FileWriter, Logger, Inputs
 from src.base_structure_classes import AlLatticeType, Points, CoordinateLimits
-from src.structure_visualizer import StructureVisualizer
+from src.structure_visualizer import StructureVisualizer, VisualizationParams
 from src.data_preparation import StructureSettings
+from src.coordinate_operations import DistanceMeasure
 from src.projects import (
     IntercalatedChannelBuilder,
     # AlAtomsFilter,
@@ -71,8 +72,8 @@ class AppActionsIntercalationAndSorption:
 
         FileWriter.write_dat_file(upd_al_points, structure_folder=structure_folder, filename="al_in_all_channels.dat")
 
-    @staticmethod
-    def update_al_coordinates_tbl(structure_folder: str, to_set: bool) -> None:
+    @classmethod
+    def update_al_coordinates_tbl(cls, structure_folder: str, to_set: bool) -> None:
         """
         Run in loop:
         1) read Excel file to get Al atoms;
@@ -97,18 +98,26 @@ class AppActionsIntercalationAndSorption:
             env_id="number_of_min_distances",
         ))
 
+        show_al_layers: bool = Inputs.bool_input(
+            to_set,
+            default_value=False,
+            text="Show AL layers in different colors",
+            env_id="show_al_layers",
+        )
+
         while True:
             al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(
                 structure_folder, carbon_channel, number_of_planes)
 
             plane_points: np.ndarray = np.vstack([carbon_channel.planes[i].points for i in range(number_of_planes)])
 
-            StructureVisualizer.show_two_structures(
-                coordinates_first=plane_points,
-                coordinates_second=al_plane_coordinates.points,
+            cls._show_structures(
+                carbon_channel_points=plane_points,
+                al_points=al_plane_coordinates.points,
                 to_build_bonds=to_build_bonds,
                 title=structure_folder,
                 num_of_min_distances=num_of_min_distances,
+                show_al_layers=show_al_layers,
                 # skip_first_distances=0,
                 # show_coordinates=False,
                 # show_indexes=True,
@@ -128,8 +137,8 @@ class AppActionsIntercalationAndSorption:
                 if file_is_closed is False:
                     raise
 
-    @staticmethod
-    def translate_al_to_other_planes(structure_folder: str, to_set: bool) -> None:
+    @classmethod
+    def translate_al_to_other_planes(cls, structure_folder: str, to_set: bool) -> None:
         """
         Read Al coordinates from the Excel table and translate the structure to other planes.
         """
@@ -157,15 +166,23 @@ class AppActionsIntercalationAndSorption:
             env_id="try_to_reflect_al_atoms",
         )
 
+        show_al_layers: bool = Inputs.bool_input(
+            to_set,
+            default_value=False,
+            text="Show AL layers in different colors",
+            env_id="show_al_layers",
+        )
+
         al_coordinates: Points = AtomsParser.get_al_channel_coordinates(
             structure_folder, carbon_channel, number_of_planes, try_to_reflect_al_atoms)
 
-        StructureVisualizer.show_two_structures(
-            coordinates_first=carbon_channel.points,
-            coordinates_second=al_coordinates.points,
+        cls._show_structures(
+            carbon_channel_points=carbon_channel.points,
+            al_points=al_coordinates.points,
             to_build_bonds=to_build_bonds,
             title=structure_folder,
             num_of_min_distances=num_of_min_distances,
+            show_al_layers=show_al_layers,
             # show_coordinates=False,
             # show_indexes=True,
         )
@@ -196,6 +213,13 @@ class AppActionsIntercalationAndSorption:
             text="Number of min distances for bonds to show on plot",
             env_id="number_of_min_distances",
         ))
+
+        show_al_layers: bool = Inputs.bool_input(
+            to_set,
+            default_value=False,
+            text="Show AL layers in different colors",
+            env_id="show_al_layers",
+        )
 
         while True:
             al_full_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
@@ -243,12 +267,13 @@ class AppActionsIntercalationAndSorption:
                     is_init_data_dir=False,
                 )
 
-            StructureVisualizer.show_two_structures(
-                coordinates_first=carbon_channel.points,
-                coordinates_second=al_full_channel_coordinates.points,
+            cls._show_structures(
+                carbon_channel_points=carbon_channel.points,
+                al_points=al_full_channel_coordinates.points,
                 to_build_bonds=to_build_bonds,
                 title=structure_folder,
                 num_of_min_distances=num_of_min_distances,
+                show_al_layers=show_al_layers,
                 # show_coordinates=False,
                 # show_indexes=True,
             )
@@ -267,8 +292,8 @@ class AppActionsIntercalationAndSorption:
                 if file_is_closed is False:
                     raise
 
-    @staticmethod
-    def translate_al_to_all_channels(structure_folder: str, to_set: bool) -> None:
+    @classmethod
+    def translate_al_to_all_channels(cls, structure_folder: str, to_set: bool) -> None:
         """
         Read Al plane coordinates from the Excel table and translate the structure to other planes.
         """
@@ -298,6 +323,14 @@ class AppActionsIntercalationAndSorption:
             text="Try to reflect aluminum atoms for other planes",
             env_id="try_to_reflect_al_atoms",
         )
+
+        show_al_layers: bool = Inputs.bool_input(
+            to_set,
+            default_value=False,
+            text="Show AL layers in different colors",
+            env_id="show_al_layers",
+        )
+
         al_channel_coordinates: Points = AtomsParser.get_al_channel_coordinates(
             structure_folder, carbon_channels.pop(0), number_of_planes, try_to_reflect_al_atoms)
 
@@ -309,12 +342,13 @@ class AppActionsIntercalationAndSorption:
 
         to_build_bonds = True
 
-        StructureVisualizer.show_two_structures(
-            coordinates_first=coordinates_carbon.points,
-            coordinates_second=al_coordinates.points,
+        cls._show_structures(
+            carbon_channel_points=coordinates_carbon.points,
+            al_points=al_coordinates.points,
             to_build_bonds=to_build_bonds,
             title=structure_folder,
             num_of_min_distances=num_of_min_distances,
+            show_al_layers=show_al_layers,
             # show_coordinates=False,
             # show_indexes=False,
         )
@@ -384,6 +418,64 @@ class AppActionsIntercalationAndSorption:
             structure_settings=structure_settings,
             to_filter_al_atoms=to_filter_al_atoms,
             equidistant_al_points=equidistant_al_points)
+
+    @staticmethod
+    def _show_structures(
+        carbon_channel_points: np.ndarray,
+        al_points: np.ndarray,
+        to_build_bonds: bool = False,
+        title: str | None = None,
+        show_coordinates: bool | None = None,
+        show_indexes: bool | None = None,
+        show_al_layers: bool | None = None,
+        num_of_min_distances: int = 2,
+        skip_first_distances: int = 0,
+    ) -> None:
+
+        if show_al_layers:
+            # Split al points into layers by the min dists to Al
+            min_dists: np.ndarray = DistanceMeasure.calculate_min_distances(al_points, carbon_channel_points)
+
+            min_dist = np.min(min_dists)
+            min_dist_with_threshold = min_dist * 1.2
+
+            first_layer_points: np.ndarray = al_points[min_dists <= min_dist_with_threshold]
+            other_layers_points: np.ndarray = al_points[min_dists > min_dist_with_threshold]
+
+            StructureVisualizer.show_structures(
+                coordinates_list=[
+                    carbon_channel_points,
+                    first_layer_points,
+                    other_layers_points,
+                ],
+                visual_params_list=[
+                    VisualizationParams.carbon,
+                    VisualizationParams.al,
+                    VisualizationParams.al_2,
+                ],
+                to_build_bonds_list=[
+                    to_build_bonds,
+                    False,
+                    False,
+                ],
+                title=title,
+                num_of_min_distances=num_of_min_distances,
+                skip_first_distances=skip_first_distances,
+                show_coordinates=show_coordinates,
+                show_indexes=show_indexes,
+            )
+
+        else:
+            StructureVisualizer.show_two_structures(
+                coordinates_first=carbon_channel_points,
+                coordinates_second=al_points,
+                to_build_bonds=to_build_bonds,
+                title=title,
+                num_of_min_distances=num_of_min_distances,
+                skip_first_distances=skip_first_distances,
+                show_coordinates=show_coordinates,
+                show_indexes=show_indexes,
+            )
 
     @classmethod
     def full_flow(cls, structure_folder: str, to_set: bool) -> None:

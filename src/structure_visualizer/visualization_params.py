@@ -35,3 +35,14 @@ class VisualizationParams:
         show_coordinates=False,
         show_indexes=True,
     )
+
+    al_2 = StructureVisualParams(
+        label="Aluminum",
+        color_atoms="#00d11d",
+        color_bonds="#004309 ",
+        transparency=0.5,
+        set_equal_scale=False,
+        size=400,
+        show_coordinates=False,
+        show_indexes=True,
+    )

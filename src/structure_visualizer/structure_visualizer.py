@@ -105,6 +105,51 @@ class StructureVisualizer:
 
         plt.show()
 
+    @classmethod
+    def show_structures(
+        cls,
+        coordinates_list: list[np.ndarray],
+        visual_params_list: list[StructureVisualParams],
+        to_build_bonds_list: list[bool],
+        title: str | None = None,
+        show_coordinates: bool | None = None,
+        show_indexes: bool | None = None,
+        num_of_min_distances: int = 2,
+        skip_first_distances: int = 0,
+    ) -> None:
+        """ Show 3D plot with 2 structures (by default there are carbon and aluminium) """
+
+        if len(coordinates_list) != len(visual_params_list) != len(to_build_bonds_list):
+            raise ValueError("len(coordinates_list) != len(visual_params_list) != len(to_build_bonds_list)")
+
+        # Prepare to visualize
+        fig: Figure = plt.figure()
+        ax: Axes = fig.add_subplot(111, projection='3d')
+
+        for coordinates, visual_params, to_build_bonds in zip(
+                coordinates_list, visual_params_list, to_build_bonds_list):
+            # Plot first structure atoms (carbon by default)
+            cls._plot_atoms_3d(
+                ax=ax,
+                coordinates=coordinates,
+                visual_params=visual_params,
+                to_build_bonds=to_build_bonds,
+                num_of_min_distances=num_of_min_distances,
+                skip_first_distances=skip_first_distances,
+                show_coordinates=show_coordinates,
+                show_indexes=show_indexes,
+            )
+
+        ax.set_xlabel('X')
+        ax.set_ylabel('Y')
+        ax.set_zlabel('Z')  # type: ignore
+        ax.legend()
+
+        if title is not None:
+            ax.set_title(title)
+
+        plt.show()
+
     @staticmethod
     def get_2d_plot(
         coordinates: np.ndarray,
