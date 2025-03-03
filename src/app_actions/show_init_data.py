@@ -279,8 +279,6 @@ class AppActionsShowInitData:
         x_min, x_max = carbon_channel.points[:, 0].min(), carbon_channel.points[:, 0].max()
         y_min, y_max = carbon_channel.points[:, 1].min(), carbon_channel.points[:, 1].max()
 
-        print(x_min, x_max, y_min, y_max)
-
         min_lim = np.abs(np.min([x_min, y_min]))
         max_lim = np.abs(np.max([x_max, y_max]))
 
