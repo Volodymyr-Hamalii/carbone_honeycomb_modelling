@@ -419,8 +419,9 @@ class AppActionsIntercalationAndSorption:
             to_filter_al_atoms=to_filter_al_atoms,
             equidistant_al_points=equidistant_al_points)
 
-    @staticmethod
+    @classmethod
     def _show_structures(
+        cls,
         carbon_channel_points: np.ndarray,
         al_points: np.ndarray,
         to_build_bonds: bool = False,
@@ -433,20 +434,32 @@ class AppActionsIntercalationAndSorption:
     ) -> None:
 
         if show_al_layers:
-            # Split al points into layers by the min dists to Al
-            min_dists: np.ndarray = DistanceMeasure.calculate_min_distances(al_points, carbon_channel_points)
+            # # Split al points into layers by the min dists to Al
+            # min_dists: np.ndarray = DistanceMeasure.calculate_min_distances(al_points, carbon_channel_points)
 
-            min_dist = np.min(min_dists)
-            min_dist_with_threshold = min_dist * 1.2
+            # min_dist = np.min(min_dists)
+            # min_dist_with_threshold = min_dist * 1.2
 
-            first_layer_points: np.ndarray = al_points[min_dists <= min_dist_with_threshold]
-            other_layers_points: np.ndarray = al_points[min_dists > min_dist_with_threshold]
+            # first_layer_points: np.ndarray = al_points[min_dists <= min_dist_with_threshold]
+            # other_layers_points: np.ndarray = al_points[min_dists > min_dist_with_threshold]
 
+            # Split the al_points by layers along Oz (by rounded z coordinate)
+            al_groups: list[np.ndarray] = cls._split_atoms_along_z_axis(al_points)
+
+            a_layers_points = []
+            b_layers_points = []
+
+            for i, group in enumerate(al_groups):
+                if i % 2 == 0:
+                    a_layers_points.extend(group)
+                else:
+                    b_layers_points.extend(group)
+                    
             StructureVisualizer.show_structures(
                 coordinates_list=[
                     carbon_channel_points,
-                    first_layer_points,
-                    other_layers_points,
+                    np.array(a_layers_points),
+                    np.array(b_layers_points),
                 ],
                 visual_params_list=[
                     VisualizationParams.carbon,
@@ -476,6 +489,21 @@ class AppActionsIntercalationAndSorption:
                 show_coordinates=show_coordinates,
                 show_indexes=show_indexes,
             )
+
+    @staticmethod
+    def _split_atoms_along_z_axis(coordinates: np.ndarray) -> list[np.ndarray]:
+        """ Returns grouped coordinates with the same rounded Z coordinate (without real coordinate changes). """
+
+        # Round Z values to the nearest integer or a desired precision
+        rounded_z_values: np.ndarray = np.round(coordinates[:, 2], decimals=1)
+
+        # Get unique rounded Z values
+        unique_z_values: np.ndarray = np.unique(rounded_z_values)
+
+        # Group points by their rounded Z coordinate
+        grouped_coordinates: list[np.ndarray] = [coordinates[rounded_z_values == z] for z in unique_z_values]
+
+        return grouped_coordinates
 
     @classmethod
     def full_flow(cls, structure_folder: str, to_set: bool) -> None:
