@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from matplotlib.pyplot import Figure, Axes  # type: ignore
 from matplotlib.collections import PathCollection
 
+# from src.coordinate_operations import DistanceMeasure
 from .lines_builder import LinesBuilder
 from .visualization_params import VisualizationParams, StructureVisualParams
 from ..utils import Logger
@@ -324,8 +325,21 @@ class StructureVisualizer:
 
         if interactive_mode:
             def on_pick(event) -> None:
-                ind = event.ind[0]
-                logger.info(f"Selected point index: {ind}, coordinates: {coordinates[ind]}")
+                try:
+                    ind: int = event.ind[0]
+                except Exception:
+                    return
+
+                while True:
+                    try:
+                        result: str = input(
+                            f"Update coordinates for point with coordinates={coordinates[ind]}? (y/n): ")
+                        if result == "y":
+                            break
+                        else:
+                            return
+                    except Exception:
+                        return
 
                 new_x = float(input(f"Enter new X ({coordinates[ind][0]:.2f}): ") or coordinates[ind][0])
                 new_y = float(input(f"Enter new Y ({coordinates[ind][1]:.2f}): ") or coordinates[ind][1])
@@ -337,7 +351,11 @@ class StructureVisualizer:
                 scatter._offsets3d = (coordinates[:, 0], coordinates[:, 1], coordinates[:, 2])  # type: ignore
                 plt.draw()
 
-                logger.info(f"Updated point index: {ind}, coordinates: {coordinates[ind]}")
+                logger.info(f"Updated point coordinates: {coordinates[ind]}")
+
+                # min_dists: np.ndarray = DistanceMeasure.calculate_min_distances(coordinates, np.array([upd_point]))
+                # min_dist: float = np.min(min_dists[min_dists > 0])
+                # logger.info(f"Distance to the nearest atom: {min_dist}")
 
             fig.canvas.mpl_connect('pick_event', on_pick)
 
