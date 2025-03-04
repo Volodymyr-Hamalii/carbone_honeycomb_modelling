@@ -15,6 +15,8 @@ def _clear_env_cache() -> None:
         "number_of_planes",
         "number_of_min_distances",
         "try_to_reflect_al_atoms",
+        "show_al_layers",
+        "interactive_mode",
     ]
 
     for var in env_vars_to_clear:

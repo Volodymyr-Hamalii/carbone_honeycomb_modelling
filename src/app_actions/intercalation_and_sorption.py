@@ -105,6 +105,13 @@ class AppActionsIntercalationAndSorption:
             env_id="show_al_layers",
         )
 
+        interactive_mode: bool = Inputs.bool_input(
+            to_set,
+            default_value=False,
+            text="Interactive mode to update point coordinates",
+            env_id="interactive_mode",
+        )
+
         while True:
             al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(
                 structure_folder, carbon_channel, number_of_planes)
@@ -118,6 +125,7 @@ class AppActionsIntercalationAndSorption:
                 title=structure_folder,
                 num_of_min_distances=num_of_min_distances,
                 show_al_layers=show_al_layers,
+                interactive_mode=interactive_mode,
                 # skip_first_distances=0,
                 # show_coordinates=False,
                 # show_indexes=True,
@@ -173,6 +181,13 @@ class AppActionsIntercalationAndSorption:
             env_id="show_al_layers",
         )
 
+        interactive_mode: bool = Inputs.bool_input(
+            to_set,
+            default_value=False,
+            text="Interactive mode to update point coordinates",
+            env_id="interactive_mode",
+        )
+
         al_coordinates: Points = AtomsParser.get_al_channel_coordinates(
             structure_folder, carbon_channel, number_of_planes, try_to_reflect_al_atoms)
 
@@ -183,6 +198,7 @@ class AppActionsIntercalationAndSorption:
             title=structure_folder,
             num_of_min_distances=num_of_min_distances,
             show_al_layers=show_al_layers,
+            interactive_mode=interactive_mode,
             # show_coordinates=False,
             # show_indexes=True,
         )
@@ -219,6 +235,13 @@ class AppActionsIntercalationAndSorption:
             default_value=False,
             text="Show AL layers in different colors",
             env_id="show_al_layers",
+        )
+
+        interactive_mode: bool = Inputs.bool_input(
+            to_set,
+            default_value=False,
+            text="Interactive mode to update point coordinates",
+            env_id="interactive_mode",
         )
 
         while True:
@@ -274,6 +297,7 @@ class AppActionsIntercalationAndSorption:
                 title=structure_folder,
                 num_of_min_distances=num_of_min_distances,
                 show_al_layers=show_al_layers,
+                interactive_mode=interactive_mode,
                 # show_coordinates=False,
                 # show_indexes=True,
             )
@@ -331,6 +355,13 @@ class AppActionsIntercalationAndSorption:
             env_id="show_al_layers",
         )
 
+        interactive_mode: bool = Inputs.bool_input(
+            to_set,
+            default_value=False,
+            text="Interactive mode to update point coordinates",
+            env_id="interactive_mode",
+        )
+
         al_channel_coordinates: Points = AtomsParser.get_al_channel_coordinates(
             structure_folder, carbon_channels.pop(0), number_of_planes, try_to_reflect_al_atoms)
 
@@ -349,6 +380,7 @@ class AppActionsIntercalationAndSorption:
             title=structure_folder,
             num_of_min_distances=num_of_min_distances,
             show_al_layers=show_al_layers,
+            interactive_mode=interactive_mode,
             # show_coordinates=False,
             # show_indexes=False,
         )
@@ -431,6 +463,7 @@ class AppActionsIntercalationAndSorption:
         show_al_layers: bool | None = None,
         num_of_min_distances: int = 2,
         skip_first_distances: int = 0,
+        interactive_mode: bool = False,
     ) -> None:
 
         if show_al_layers:
@@ -446,15 +479,15 @@ class AppActionsIntercalationAndSorption:
             # Split the al_points by layers along Oz (by rounded z coordinate)
             al_groups: list[np.ndarray] = cls._split_atoms_along_z_axis(al_points)
 
-            a_layers_points = []
-            b_layers_points = []
+            a_layers_points: list[np.ndarray] = []
+            b_layers_points: list[np.ndarray] = []
 
             for i, group in enumerate(al_groups):
                 if i % 2 == 0:
                     a_layers_points.extend(group)
                 else:
                     b_layers_points.extend(group)
-                    
+
             StructureVisualizer.show_structures(
                 coordinates_list=[
                     carbon_channel_points,
@@ -476,6 +509,7 @@ class AppActionsIntercalationAndSorption:
                 skip_first_distances=skip_first_distances,
                 show_coordinates=show_coordinates,
                 show_indexes=show_indexes,
+                interactive_mode=interactive_mode,
             )
 
         else:
@@ -488,6 +522,7 @@ class AppActionsIntercalationAndSorption:
                 skip_first_distances=skip_first_distances,
                 show_coordinates=show_coordinates,
                 show_indexes=show_indexes,
+                interactive_mode=interactive_mode,
             )
 
     @staticmethod

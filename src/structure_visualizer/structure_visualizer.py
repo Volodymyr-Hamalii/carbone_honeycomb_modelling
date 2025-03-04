@@ -3,6 +3,7 @@ from numpy import ndarray
 
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import Figure, Axes  # type: ignore
+from matplotlib.collections import PathCollection
 
 from .lines_builder import LinesBuilder
 from .visualization_params import VisualizationParams, StructureVisualParams
@@ -24,6 +25,7 @@ class StructureVisualizer:
             set_equal_scale: bool | None = None,
             title: str | None = None,
             show_coordinates=False,
+            interactive_mode: bool = False,
     ) -> None:
         """ Show 3D plot with 1 structure. """
 
@@ -32,6 +34,7 @@ class StructureVisualizer:
         ax: Axes = fig.add_subplot(111, projection='3d')
 
         cls._plot_atoms_3d(
+            fig=fig,
             ax=ax,
             coordinates=coordinates,
             visual_params=visual_params,
@@ -40,6 +43,7 @@ class StructureVisualizer:
             skip_first_distances=skip_first_distances,
             set_equal_scale=set_equal_scale,
             show_coordinates=show_coordinates,
+            interactive_mode=interactive_mode,
         )
 
         ax.set_xlabel('X')
@@ -53,17 +57,18 @@ class StructureVisualizer:
 
     @classmethod
     def show_two_structures(
-        cls,
-        coordinates_first: ndarray,
-        coordinates_second: ndarray,
-        to_build_bonds: bool = False,
-        visual_params_first: StructureVisualParams = VisualizationParams.carbon,
-        visual_params_second: StructureVisualParams = VisualizationParams.al,
-        title: str | None = None,
-        show_coordinates: bool | None = None,
-        show_indexes: bool | None = None,
-        num_of_min_distances: int = 2,
-        skip_first_distances: int = 0,
+            cls,
+            coordinates_first: ndarray,
+            coordinates_second: ndarray,
+            to_build_bonds: bool = False,
+            visual_params_first: StructureVisualParams = VisualizationParams.carbon,
+            visual_params_second: StructureVisualParams = VisualizationParams.al,
+            title: str | None = None,
+            show_coordinates: bool | None = None,
+            show_indexes: bool | None = None,
+            num_of_min_distances: int = 2,
+            skip_first_distances: int = 0,
+            interactive_mode: bool = False,
     ) -> None:
         """ Show 3D plot with 2 structures (by default there are carbon and aluminium) """
 
@@ -71,8 +76,9 @@ class StructureVisualizer:
         fig: Figure = plt.figure()
         ax: Axes = fig.add_subplot(111, projection='3d')
 
-        # Plot first structure atoms (carbon by default)
+        # Plot first structure atoms (not interactive)
         cls._plot_atoms_3d(
+            fig=fig,
             ax=ax,
             coordinates=coordinates_first,
             visual_params=visual_params_first,
@@ -81,10 +87,12 @@ class StructureVisualizer:
             skip_first_distances=skip_first_distances,
             show_coordinates=show_coordinates,
             show_indexes=show_indexes,
+            interactive_mode=False,
         )
 
-        # Plot second structure atoms (al by default)
+        # Plot second structure atoms (interactive if enabled)
         cls._plot_atoms_3d(
+            fig=fig,
             ax=ax,
             coordinates=coordinates_second,
             visual_params=visual_params_second,
@@ -93,6 +101,7 @@ class StructureVisualizer:
             skip_first_distances=0,
             show_coordinates=show_coordinates,
             show_indexes=show_indexes,
+            interactive_mode=interactive_mode,
         )
 
         ax.set_xlabel('X')
@@ -107,15 +116,16 @@ class StructureVisualizer:
 
     @classmethod
     def show_structures(
-        cls,
-        coordinates_list: list[np.ndarray],
-        visual_params_list: list[StructureVisualParams],
-        to_build_bonds_list: list[bool],
-        title: str | None = None,
-        show_coordinates: bool | None = None,
-        show_indexes: bool | None = None,
-        num_of_min_distances: int = 2,
-        skip_first_distances: int = 0,
+            cls,
+            coordinates_list: list[np.ndarray],
+            visual_params_list: list[StructureVisualParams],
+            to_build_bonds_list: list[bool],
+            title: str | None = None,
+            show_coordinates: bool | None = None,
+            show_indexes: bool | None = None,
+            num_of_min_distances: int = 2,
+            skip_first_distances: int = 0,
+            interactive_mode: bool = False,
     ) -> None:
         """ Show 3D plot with 2 structures (by default there are carbon and aluminium) """
 
@@ -128,8 +138,8 @@ class StructureVisualizer:
 
         for coordinates, visual_params, to_build_bonds in zip(
                 coordinates_list, visual_params_list, to_build_bonds_list):
-            # Plot first structure atoms (carbon by default)
             cls._plot_atoms_3d(
+                fig=fig,
                 ax=ax,
                 coordinates=coordinates,
                 visual_params=visual_params,
@@ -138,6 +148,7 @@ class StructureVisualizer:
                 skip_first_distances=skip_first_distances,
                 show_coordinates=show_coordinates,
                 show_indexes=show_indexes,
+                interactive_mode=interactive_mode if visual_params.label != "Carbon" else False,
             )
 
         ax.set_xlabel('X')
@@ -226,6 +237,7 @@ class StructureVisualizer:
     @classmethod
     def _plot_atoms_3d(
             cls,
+            fig: Figure,
             ax: Axes,
             coordinates: ndarray,
             visual_params: StructureVisualParams,
@@ -235,8 +247,8 @@ class StructureVisualizer:
             skip_first_distances: int = 0,
             show_coordinates: bool | None = None,
             show_indexes: bool | None = None,
-    ) -> None:
-
+            interactive_mode: bool = False,
+    ) -> PathCollection | None:
         if coordinates.size == 0:
             logger.warning(f"No points to plot for {visual_params.label}.")
             return
@@ -245,12 +257,14 @@ class StructureVisualizer:
         y: ndarray = coordinates[:, 1]
         z: ndarray = coordinates[:, 2]
 
-        ax.scatter(
+        scatter: PathCollection = ax.scatter(
             x, y, z,
             c=visual_params.color_atoms,
             label=visual_params.label,
             s=visual_params.size,  # type: ignore
-            alpha=visual_params.transparency)
+            alpha=visual_params.transparency,
+            picker=True if interactive_mode else False,
+        )
 
         if set_equal_scale is None:
             set_equal_scale = visual_params.set_equal_scale
@@ -269,6 +283,7 @@ class StructureVisualizer:
                     ha="center",
                     va="center",
                 )
+
         if show_indexes is not False and visual_params.show_indexes:
             # Show coordinates near each point
             for xx, yy, zz, i in zip(x, y, z, range(len(coordinates))):
@@ -288,6 +303,27 @@ class StructureVisualizer:
                 color_bonds=visual_params.color_bonds,
                 num_of_min_distances=num_of_min_distances,
                 skip_first_distances=skip_first_distances)
+
+        if interactive_mode:
+            def on_pick(event) -> None:
+                ind = event.ind[0]
+                logger.info(f"Selected point index: {ind}, coordinates: {coordinates[ind]}")
+
+                new_x = float(input(f"Enter new X ({coordinates[ind][0]:.2f}): ") or coordinates[ind][0])
+                new_y = float(input(f"Enter new Y ({coordinates[ind][1]:.2f}): ") or coordinates[ind][1])
+                new_z = float(input(f"Enter new Z ({coordinates[ind][2]:.2f}): ") or coordinates[ind][2])
+
+                upd_point: list[float] = [new_x, new_y, new_z]
+
+                coordinates[ind] = upd_point
+                scatter._offsets3d = (coordinates[:, 0], coordinates[:, 1], coordinates[:, 2])  # type: ignore
+                plt.draw()
+
+                logger.info(f"Updated point index: {ind}, coordinates: {coordinates[ind]}")
+
+            fig.canvas.mpl_connect('pick_event', on_pick)
+
+        return scatter
 
     @staticmethod
     def _set_equal_scale(ax: Axes, x_coor: ndarray, y_coor: ndarray, z_coor: ndarray) -> None:
