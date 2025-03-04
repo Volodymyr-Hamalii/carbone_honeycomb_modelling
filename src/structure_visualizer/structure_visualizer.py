@@ -126,18 +126,23 @@ class StructureVisualizer:
             num_of_min_distances: int = 2,
             skip_first_distances: int = 0,
             interactive_mode: bool = False,
+            custom_indices_list: list[list[int] | None] | None = None,
     ) -> None:
-        """ Show 3D plot with 2 structures (by default there are carbon and aluminium) """
+        """ Show 3D plot with multiple structures """
 
         if len(coordinates_list) != len(visual_params_list) != len(to_build_bonds_list):
             raise ValueError("len(coordinates_list) != len(visual_params_list) != len(to_build_bonds_list)")
+
+        if custom_indices_list and len(custom_indices_list) != len(coordinates_list):
+            raise ValueError("len(custom_indices_list) != len(coordinates_list)")
 
         # Prepare to visualize
         fig: Figure = plt.figure()
         ax: Axes = fig.add_subplot(111, projection='3d')
 
-        for coordinates, visual_params, to_build_bonds in zip(
-                coordinates_list, visual_params_list, to_build_bonds_list):
+        for i, (coordinates, visual_params, to_build_bonds) in enumerate(zip(
+                coordinates_list, visual_params_list, to_build_bonds_list)):
+            custom_indices = custom_indices_list[i] if custom_indices_list else []
             cls._plot_atoms_3d(
                 fig=fig,
                 ax=ax,
@@ -149,6 +154,7 @@ class StructureVisualizer:
                 show_coordinates=show_coordinates,
                 show_indexes=show_indexes,
                 interactive_mode=interactive_mode if visual_params.label != "Carbon" else False,
+                custom_indexes=custom_indices if custom_indices else [],
             )
 
         ax.set_xlabel('X')
@@ -248,6 +254,7 @@ class StructureVisualizer:
             show_coordinates: bool | None = None,
             show_indexes: bool | None = None,
             interactive_mode: bool = False,
+            custom_indexes: list[int] = [],
     ) -> PathCollection | None:
         if coordinates.size == 0:
             logger.warning(f"No points to plot for {visual_params.label}.")
@@ -286,15 +293,26 @@ class StructureVisualizer:
 
         if show_indexes is not False and visual_params.show_indexes:
             # Show coordinates near each point
-            for xx, yy, zz, i in zip(x, y, z, range(len(coordinates))):
-                ax.text(
-                    xx, yy, zz,
-                    str(i),  # type: ignore
-                    fontsize=10,
-                    color="black",
-                    ha="center",
-                    va="center",
-                )
+            if len(custom_indexes) > 0:
+                for i, (xx, yy, zz) in enumerate(coordinates):
+                    ax.text(
+                        xx, yy, zz,
+                        str(custom_indexes[i]),  # type: ignore
+                        fontsize=10,
+                        color="black",
+                        ha="center",
+                        va="center",
+                    )
+            else:
+                for i, (xx, yy, zz) in enumerate(coordinates):
+                    ax.text(
+                        xx, yy, zz,
+                        str(i),  # type: ignore
+                        fontsize=10,
+                        color="black",
+                        ha="center",
+                        va="center",
+                    )
 
         if to_build_bonds:
             # Carbon

@@ -477,22 +477,22 @@ class AppActionsIntercalationAndSorption:
             # other_layers_points: np.ndarray = al_points[min_dists > min_dist_with_threshold]
 
             # Split the al_points by layers along Oz (by rounded z coordinate)
-            al_groups: list[np.ndarray] = cls._split_atoms_along_z_axis(al_points)
+            al_groups_with_indices: list[tuple[np.ndarray, np.ndarray]] = cls._split_atoms_along_z_axis(al_points)
 
-            a_layers_points: list[np.ndarray] = []
-            b_layers_points: list[np.ndarray] = []
+            a_layer_indices: list[int] = []
+            b_layer_indices: list[int] = []
 
-            for i, group in enumerate(al_groups):
+            for i, (group, indices) in enumerate(al_groups_with_indices):
                 if i % 2 == 0:
-                    a_layers_points.extend(group)
+                    a_layer_indices.extend(indices)
                 else:
-                    b_layers_points.extend(group)
+                    b_layer_indices.extend(indices)
 
             StructureVisualizer.show_structures(
                 coordinates_list=[
                     carbon_channel_points,
-                    np.array(a_layers_points),
-                    np.array(b_layers_points),
+                    al_points[a_layer_indices],
+                    al_points[b_layer_indices],
                 ],
                 visual_params_list=[
                     VisualizationParams.carbon,
@@ -510,6 +510,7 @@ class AppActionsIntercalationAndSorption:
                 show_coordinates=show_coordinates,
                 show_indexes=show_indexes,
                 interactive_mode=interactive_mode,
+                custom_indices_list=[None, a_layer_indices, b_layer_indices],
             )
 
         else:
@@ -526,17 +527,19 @@ class AppActionsIntercalationAndSorption:
             )
 
     @staticmethod
-    def _split_atoms_along_z_axis(coordinates: np.ndarray) -> list[np.ndarray]:
-        """ Returns grouped coordinates with the same rounded Z coordinate (without real coordinate changes). """
-
+    def _split_atoms_along_z_axis(coordinates: np.ndarray) -> list[tuple[np.ndarray, np.ndarray]]:
+        """ Returns grouped coordinates with their original indices, grouped by rounded Z coordinate. """
         # Round Z values to the nearest integer or a desired precision
         rounded_z_values: np.ndarray = np.round(coordinates[:, 2], decimals=1)
 
         # Get unique rounded Z values
         unique_z_values: np.ndarray = np.unique(rounded_z_values)
 
-        # Group points by their rounded Z coordinate
-        grouped_coordinates: list[np.ndarray] = [coordinates[rounded_z_values == z] for z in unique_z_values]
+        # Group points and their indices by their rounded Z coordinate
+        grouped_coordinates: list[tuple[np.ndarray, np.ndarray]] = [
+            (coordinates[rounded_z_values == z], np.where(rounded_z_values == z)[0])
+            for z in unique_z_values
+        ]
 
         return grouped_coordinates
 
