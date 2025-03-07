@@ -65,15 +65,6 @@ class LinesBuilder:
             num_of_values=num_of_min_distances,
             skip_first_values=skip_first_distances)
 
-        # Find the nearest neighbors for all atoms
-        # nearest_neighbors = cls._find_nearest_neighbors(distances_matrix, num_neighbors)
-
-        # Prepare the lines for the nearest neighbors
-        # for i, neighbors in enumerate(nearest_neighbors):
-        #    for neighbor in neighbors:
-        #        # Append the lines between atoms
-        #        lines.append([coordinates[i], coordinates[neighbor]])
-
         # Iterate over the distance matrix to find atom pairs with distances in min_distances
         for i in range(len(coordinates)):
             for j in range(i + 1, len(coordinates)):
@@ -82,11 +73,6 @@ class LinesBuilder:
                     lines.append([coordinates[i], coordinates[j]])
 
         return lines
-
-    @staticmethod
-    def _find_nearest_neighbors(distances_matrix: ndarray, num_neighbors: int) -> ndarray:
-        """ Find the indices of the nearest neighbors """
-        return np.argsort(distances_matrix, axis=1)[:, :num_neighbors]
 
     @staticmethod
     def _find_min_unique_values(arr: ndarray, num_of_values: int, skip_first_values: int = 0) -> ndarray:
