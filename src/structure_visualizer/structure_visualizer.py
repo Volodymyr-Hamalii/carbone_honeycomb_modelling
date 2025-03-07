@@ -319,7 +319,7 @@ class StructureVisualizer:
             # Carbon
             LinesBuilder.add_lines(
                 coordinates=coordinates, ax=ax,
-                color_bonds=visual_params.color_bonds,
+                visual_params=visual_params,
                 num_of_min_distances=num_of_min_distances,
                 skip_first_distances=skip_first_distances)
 

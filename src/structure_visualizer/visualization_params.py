@@ -6,14 +6,16 @@ class StructureVisualParams:
     color_atoms: str
     color_bonds: str
     size: int
+    bonds_width: float
     transparency: float
+    transparency_bonds: float
     set_equal_scale: bool
     label: str
     show_coordinates: bool
     show_indexes: bool
 
 
-class ColorParams:
+class Colors:
     carbon_atoms: str = "#0500a4"
     carbon_bonds: str = "#00065f"
     aluminum_atoms: str = "#e00000"
@@ -25,33 +27,48 @@ class ColorParams:
 class VisualizationParams:
     carbon = StructureVisualParams(
         label="Carbon",
-        color_atoms=ColorParams.carbon_atoms,
-        color_bonds=ColorParams.carbon_bonds,
+
+        color_atoms=Colors.carbon_atoms,
         transparency=0.25,
-        set_equal_scale=True,
         size=200,
+
+        color_bonds=Colors.carbon_bonds,
+        transparency_bonds=1,
+        bonds_width=0.5,
+
+        set_equal_scale=True,
         show_coordinates=False,
         show_indexes=False,
     )
 
     al = StructureVisualParams(
         label="Aluminum",
-        color_atoms=ColorParams.aluminum_atoms,
-        color_bonds=ColorParams.aluminum_bonds,
+
+        color_atoms=Colors.aluminum_atoms,
         transparency=0.5,
-        set_equal_scale=False,
         size=400,
+
+        color_bonds=Colors.aluminum_bonds,
+        transparency_bonds=1,
+        bonds_width=1,
+
+        set_equal_scale=False,
         show_coordinates=False,
         show_indexes=True,
     )
 
     al_2 = StructureVisualParams(
         label="Aluminum",
-        color_atoms=ColorParams.aluminum_2_atoms,
-        color_bonds=ColorParams.aluminum_2_bonds,
+
+        color_atoms=Colors.aluminum_2_atoms,
         transparency=0.5,
-        set_equal_scale=False,
         size=400,
+
+        color_bonds=Colors.aluminum_2_bonds,
+        transparency_bonds=1,
+        bonds_width=1,
+
+        set_equal_scale=False,
         show_coordinates=False,
         show_indexes=True,
     )

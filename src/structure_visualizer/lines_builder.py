@@ -2,8 +2,9 @@ import numpy as np
 from numpy import ndarray
 from matplotlib.pyplot import Axes  # type: ignore
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
-
 from scipy.spatial.distance import pdist, squareform
+
+from .visualization_params import VisualizationParams, StructureVisualParams
 
 
 class LinesBuilder:
@@ -14,7 +15,7 @@ class LinesBuilder:
         ax: Axes,
         num_of_min_distances: int,
         skip_first_distances: int = 0,
-        color_bonds: str = "black",
+        visual_params: StructureVisualParams = VisualizationParams.carbon,
     ) -> None:
         """
         Add lines to the axis.
@@ -24,16 +25,21 @@ class LinesBuilder:
         skip_first_distances: int - set it if have to build the bonds not for all minimal distances.
         """
 
-        lines: list[list[ndarray]] = LinesBuilder.build_lines(
+        lines: list[list[ndarray]] = cls._build_lines(
             coordinates=coordinates,
             num_of_min_distances=num_of_min_distances,
             skip_first_distances=skip_first_distances)
 
-        lc = Line3DCollection(lines, colors=color_bonds, linewidths=1)
+        lc = Line3DCollection(
+            lines,
+            colors=visual_params.color_bonds,
+            linewidths=visual_params.bonds_width,
+            alpha=visual_params.transparency_bonds,
+        )
         ax.add_collection3d(lc)  # type: ignore
 
     @classmethod
-    def build_lines(
+    def _build_lines(
             cls,
             coordinates: ndarray,
             num_of_min_distances: int,
