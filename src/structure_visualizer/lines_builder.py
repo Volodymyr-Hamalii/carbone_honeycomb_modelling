@@ -38,6 +38,28 @@ class LinesBuilder:
         )
         ax.add_collection3d(lc)  # type: ignore
 
+        # To highlight the front plane (uncomment and ajust if needed)
+
+        # Split coordinates into two groups: with x>5 & y<5.5 and the rest
+        # x_min_limit: float = 5.0
+        # y_max_limit: float = 5.5
+        # coordinates_group_1: ndarray = coordinates[
+        #     (coordinates[:, 0] > x_min_limit) & (coordinates[:, 1] < y_max_limit)
+        # ]
+
+        # lines_group_1: list[list[ndarray]] = cls._build_lines(
+        #     coordinates=coordinates_group_1,
+        #     num_of_min_distances=num_of_min_distances,
+        #     skip_first_distances=skip_first_distances)
+
+        # lc = Line3DCollection(
+        #     lines_group_1,
+        #     colors=visual_params.color_bonds,
+        #     linewidths=1,
+        #     alpha=visual_params.transparency_bonds,
+        # )
+        # ax.add_collection3d(lc)  # type: ignore
+
     @classmethod
     def _build_lines(
             cls,
