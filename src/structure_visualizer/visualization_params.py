@@ -23,6 +23,19 @@ class Colors:
     aluminum_2_atoms: str = "#00d11d"
     aluminum_2_bonds: str = "#004309"
 
+    black: str = "#000000"
+    gray100: str = "#454545"
+    gray200: str = "#6a6a6a"
+    gray300: str = "#919191"
+    gray400: str = "#afafaf"
+
+    # carbon_atoms: str = black
+    # carbon_bonds: str = black
+    # aluminum_atoms: str = gray100
+    # aluminum_bonds: str = gray100
+    # aluminum_2_atoms: str = gray300
+    # aluminum_2_bonds: str = gray300
+
 
 class VisualizationParams:
     carbon = StructureVisualParams(
