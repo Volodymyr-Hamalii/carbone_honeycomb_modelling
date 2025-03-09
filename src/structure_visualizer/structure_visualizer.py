@@ -144,6 +144,12 @@ class StructureVisualizer:
         for i, (coordinates, visual_params, to_build_bonds) in enumerate(zip(
                 coordinates_list, visual_params_list, to_build_bonds_list)):
             custom_indices = custom_indices_list[i] if custom_indices_list else []
+
+            # if i == 1:
+            #     num_of_min_distances=3
+            # elif i == 2:
+            #     num_of_min_distances=3
+
             cls._plot_atoms_3d(
                 fig=fig,
                 ax=ax,

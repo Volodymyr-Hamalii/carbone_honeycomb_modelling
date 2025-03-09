@@ -4,7 +4,11 @@ from matplotlib.pyplot import Axes  # type: ignore
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
 from scipy.spatial.distance import pdist, squareform
 
+from src.utils import Logger
 from .visualization_params import VisualizationParams, StructureVisualParams
+
+
+logger = Logger("LinesBuilder")
 
 
 class LinesBuilder:
@@ -38,27 +42,32 @@ class LinesBuilder:
         )
         ax.add_collection3d(lc)  # type: ignore
 
-        # To highlight the front plane (uncomment and ajust if needed)
+        # To highlight the front plane (uncomment and ajust limits if needed)
 
-        # Split coordinates into two groups: with x>5 & y<5.5 and the rest
+        # # Split coordinates into two groups: with x>5 & y<5.5 and the rest
         # x_min_limit: float = 5.0
         # y_max_limit: float = 5.5
         # coordinates_group_1: ndarray = coordinates[
         #     (coordinates[:, 0] > x_min_limit) & (coordinates[:, 1] < y_max_limit)
         # ]
 
-        # lines_group_1: list[list[ndarray]] = cls._build_lines(
-        #     coordinates=coordinates_group_1,
-        #     num_of_min_distances=num_of_min_distances,
-        #     skip_first_distances=skip_first_distances)
+        # if len(coordinates_group_1) > 0:
+        #     lines_group_1: list[list[ndarray]] = cls._build_lines(
+        #         coordinates=coordinates_group_1,
+        #         num_of_min_distances=num_of_min_distances,
+        #         skip_first_distances=skip_first_distances)
 
-        # lc = Line3DCollection(
-        #     lines_group_1,
-        #     colors=visual_params.color_bonds,
-        #     linewidths=1,
-        #     alpha=visual_params.transparency_bonds,
-        # )
-        # ax.add_collection3d(lc)  # type: ignore
+        #     lc = Line3DCollection(
+        #         lines_group_1,
+        #         colors=visual_params.color_bonds,
+        #         linewidths=1,
+        #         alpha=visual_params.transparency_bonds,
+        #     )
+        #     ax.add_collection3d(lc)  # type: ignore
+        # else:
+        #     logger.warning(
+        #         f"No coordinates to build lines for x_min_limit={x_min_limit} and y_max_limit={y_max_limit}"
+        #     )
 
     @classmethod
     def _build_lines(
