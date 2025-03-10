@@ -171,9 +171,13 @@ class AlAtomsTranslator:
                     DistanceMeasure.calculate_min_distances(
                         plane_group_map[plane_i], plane.points
                     )
-                ) * 0.95
-                if min_dist < min_allowed_dist:
+                )
+                if min_dist * 0.98 < min_allowed_dist:
                     min_allowed_dist = min_dist
+                    logger.warning(
+                        "Min allowed distance between Al and C atoms "
+                        f"is less than {Constants.phys.al.DIST_BETWEEN_ATOMS:.2f}: {min_allowed_dist:.2f}"
+                    )
 
             # Get the index of the related plane
             group_i: int = plane_i % len(plane_group_map)
