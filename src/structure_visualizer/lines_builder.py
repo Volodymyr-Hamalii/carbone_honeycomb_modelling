@@ -69,6 +69,32 @@ class LinesBuilder:
         #         f"No coordinates to build lines for x_min_limit={x_min_limit} and y_max_limit={y_max_limit}"
         #     )
 
+        #########################################################################################
+        # # To build additional dotted vertical lines (uncomment and ajust limits if needed)
+
+        # # Get 2 points from coordinates_group_1: first with max X and second with min X
+        # # and with max Z coordinate:
+        # max_x_mask: np.ndarray = coordinates_group_1[:, 0] == coordinates_group_1[:, 0].max()
+        # max_x_points: np.ndarray = coordinates_group_1[max_x_mask]
+        # point_1: np.ndarray = max_x_points[max_x_points[:, 2].argmax()]
+
+        # min_x_mask: np.ndarray = coordinates_group_1[:, 0] == coordinates_group_1[:, 0].min()
+        # min_x_points: np.ndarray = coordinates_group_1[min_x_mask]
+        # point_2: np.ndarray = min_x_points[min_x_points[:, 2].argmax()]
+
+        # z_max: float = 16.
+        # line1: list[list[float]] = [[point_1[0], point_1[1], 0], [point_1[0], point_1[1], z_max]]
+        # line2: list[list[float]] = [[point_2[0], point_2[1], 0], [point_2[0], point_2[1], z_max]]
+
+        # lc = Line3DCollection(
+        #     [line1, line2],
+        #     colors=visual_params.color_bonds,
+        #     linewidths=1.75,
+        #     alpha=visual_params.transparency_bonds,
+        #     linestyles='dotted',
+        # )
+        # ax.add_collection3d(lc)  # type: ignore
+
     @classmethod
     def _build_lines(
             cls,
