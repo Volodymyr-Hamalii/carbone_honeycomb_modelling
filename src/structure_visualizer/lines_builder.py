@@ -60,7 +60,7 @@ class LinesBuilder:
         #     lc = Line3DCollection(
         #         lines_group_1,
         #         colors=visual_params.color_bonds,
-        #         linewidths=1,
+        #         linewidths=1.25,
         #         alpha=visual_params.transparency_bonds,
         #     )
         #     ax.add_collection3d(lc)  # type: ignore
