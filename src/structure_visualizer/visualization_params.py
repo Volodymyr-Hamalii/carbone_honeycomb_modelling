@@ -42,8 +42,8 @@ class VisualizationParams:
         label="Carbon",
 
         color_atoms=Colors.carbon_atoms,
-        transparency=0.25,
-        size=200,
+        transparency=0.2,
+        size=100,
 
         color_bonds=Colors.carbon_bonds,
         transparency_bonds=1,

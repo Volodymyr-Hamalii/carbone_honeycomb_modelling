@@ -108,7 +108,10 @@ class StructureVisualizer:
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')  # type: ignore
-        ax.legend()
+        ax.legend(
+            # fontsize=16,
+            labelspacing=1.1,
+        )
 
         if title is not None:
             ax.set_title(title)
@@ -167,7 +170,10 @@ class StructureVisualizer:
         ax.set_xlabel('X')
         ax.set_ylabel('Y')
         ax.set_zlabel('Z')  # type: ignore
-        ax.legend()
+        ax.legend(
+            # fontsize=12,
+            labelspacing=1.1
+        )
 
         if title is not None:
             ax.set_title(title)
