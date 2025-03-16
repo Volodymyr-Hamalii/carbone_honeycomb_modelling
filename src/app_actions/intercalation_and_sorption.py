@@ -365,7 +365,7 @@ class AppActionsIntercalationAndSorption:
 
             # Collect data for each Al coordinate
             data.append({
-                ("Al_atom", "index"): index,
+                # ("Al_atom", "index"): index,
                 ("Al_atom", "X"): np.round(al_coordinate[0], 2),
                 ("Al_atom", "Y"): np.round(al_coordinate[1], 2),
                 ("Al_atom", "Z"): np.round(al_coordinate[2], 2),
