@@ -2,6 +2,8 @@ from pathlib import Path
 
 from numpy import ndarray
 import pandas as pd
+from openpyxl.worksheet.worksheet import Worksheet
+from openpyxl.styles import Alignment
 
 from ..constants import Constants
 from ..logger import Logger
@@ -139,8 +141,34 @@ class FileWriter(FileManager):
         path_to_file.parent.mkdir(parents=True, exist_ok=True)
 
         try:
-            # Write the DataFrame to an Excel file
-            df.to_excel(path_to_file, sheet_name=sheet_name, index=False, engine="openpyxl")
+            if isinstance(df.columns, pd.MultiIndex):
+                # Handle MultiIndex columns
+                with pd.ExcelWriter(path_to_file, engine='openpyxl') as writer:
+                    # Write the DataFrame to the Excel file
+                    df.to_excel(writer, sheet_name=sheet_name, startrow=1, header=False)
+
+                    # Access the workbook and the sheet
+                    worksheet: Worksheet = writer.sheets[sheet_name]
+
+                    # Write the MultiIndex header
+                    for idx, col in enumerate(df.columns):
+                        worksheet.cell(row=1, column=idx + 1, value=col[0])
+                        worksheet.cell(row=2, column=idx + 1, value=col[1])
+
+                    # Merge cells for the top-level headers
+                    for col in df.columns.levels[0]:
+                        col_indices: list[int] = [i for i, c in enumerate(df.columns) if c[0] == col]
+                        if col_indices:
+                            worksheet.merge_cells(
+                                start_row=1, start_column=col_indices[0] + 1,
+                                end_row=1, end_column=col_indices[-1] + 1,
+                            )
+                            # Center align the merged cells
+                            worksheet.cell(row=1, column=col_indices[0] + 1).alignment = Alignment(horizontal='center')
+            else:
+                # Write the DataFrame to an Excel file
+                df.to_excel(path_to_file, sheet_name=sheet_name, index=False, engine="openpyxl")
+
             logger.info(f"Data successfully written to {path_to_file}")
 
         except Exception as e:
