@@ -22,12 +22,14 @@ class DistanceMeasure:
         return sqrt((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2 + (p1[2] - p2[2])**2)
 
     @staticmethod
-    def calculate_distance_from_plane(points: ndarray, A: float, B: float, C: float, D: float) -> float:
-        """ Calculate the distance of each point from the plane. """
+    def calculate_distance_from_line(points: ndarray, line_params: tuple[float, float, float, float]) -> float:
+        """ Calculate the distance of each point from the line. """
         # Convert 2D to 3D if no z coordinate
         if points.shape[1] == 2:
             points = np.hstack((points, np.zeros((points.shape[0], 1))))
-        
+
+        A, B, C, D = line_params
+
         numerator: ndarray = np.abs(A * points[:, 0] + B * points[:, 1] + C * points[:, 2] + D)
         denominator = np.sqrt(A**2 + B**2 + C**2)
         return numerator / denominator
