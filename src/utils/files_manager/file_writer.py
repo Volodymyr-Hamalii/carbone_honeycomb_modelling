@@ -145,26 +145,26 @@ class FileWriter(FileManager):
                 # Handle MultiIndex columns
                 with pd.ExcelWriter(path_to_file, engine='openpyxl') as writer:
                     # Write the DataFrame to the Excel file
-                    df.to_excel(writer, sheet_name=sheet_name, startrow=1, header=False)
+                    df.to_excel(writer, sheet_name=sheet_name, startrow=1, header=False, index=True)
 
                     # Access the workbook and the sheet
                     worksheet: Worksheet = writer.sheets[sheet_name]
 
                     # Write the MultiIndex header
                     for idx, col in enumerate(df.columns):
-                        worksheet.cell(row=1, column=idx + 1, value=col[0])
-                        worksheet.cell(row=2, column=idx + 1, value=col[1])
+                        worksheet.cell(row=1, column=idx + 2, value=col[0])
+                        worksheet.cell(row=2, column=idx + 2, value=col[1])
 
                     # Merge cells for the top-level headers
                     for col in df.columns.levels[0]:
                         col_indices: list[int] = [i for i, c in enumerate(df.columns) if c[0] == col]
                         if col_indices:
                             worksheet.merge_cells(
-                                start_row=1, start_column=col_indices[0] + 1,
-                                end_row=1, end_column=col_indices[-1] + 1,
+                                start_row=1, start_column=col_indices[0] + 2,
+                                end_row=1, end_column=col_indices[-1] + 2,
                             )
                             # Center align the merged cells
-                            worksheet.cell(row=1, column=col_indices[0] + 1).alignment = Alignment(horizontal='center')
+                            worksheet.cell(row=1, column=col_indices[0] + 2).alignment = Alignment(horizontal='center')
             else:
                 # Write the DataFrame to an Excel file
                 df.to_excel(path_to_file, sheet_name=sheet_name, index=False, engine="openpyxl")
