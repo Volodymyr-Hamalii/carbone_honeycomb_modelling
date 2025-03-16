@@ -34,37 +34,44 @@ class AtomsParser:
         """ Read Al coordinates from the Excel file or build them if there is no Excel file. """
 
         # Try to read the full channel coordinates
+        file_name: str = Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE
         al_full_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
             structure_folder=structure_folder,
-            file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
+            file_name=file_name,
             is_init_data_dir=False,
+            to_print_warning=False,
         )
-
         if al_full_channel_coordinates_df is not None:
+            logger.info(f"Read {file_name} file.")
             return cls._parse_al_coordinates_df(al_full_channel_coordinates_df)
 
         # Try to read the channel Al plane coordinates
+        file_name: str = Constants.filenames.AL_CHANNEL_COORDINATES_XLSX_FILE
         al_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
             structure_folder=structure_folder,
-            file_name=Constants.filenames.AL_CHANNEL_COORDINATES_XLSX_FILE,
+            file_name=file_name,
             is_init_data_dir=False,
+            to_print_warning=False,
         )
-
         if al_channel_coordinates_df is not None:
+            logger.info(f"Read {file_name} file.")
             return cls._parse_al_coordinates_df(al_channel_coordinates_df)
 
         # logger.warning(f"Excel table with Al atoms for {structure_folder} structure not found. Al atoms builder.")
 
+        file_name: str = Constants.filenames.AL_PLANE_COORDINATES_XLSX_FILE
         al_plane_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
             structure_folder=structure_folder,
-            file_name=Constants.filenames.AL_PLANE_COORDINATES_XLSX_FILE,
+            file_name=file_name,
             is_init_data_dir=False,
+            to_print_warning=False,
         )
-
         if al_plane_coordinates_df is not None:
+            logger.info(f"Read {file_name} file.")
             al_plane_coordinates: Points = cls._parse_al_coordinates_df(al_plane_coordinates_df)
         else:
             # Build atoms
+            logger.info(f"Building Al atoms for {structure_folder} structure...")
             al_plane_coordinates: Points = cls._build_al_plane_coordinates(
                 carbon_channel, num_of_planes=number_of_planes)
 

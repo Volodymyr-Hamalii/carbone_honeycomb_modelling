@@ -67,6 +67,7 @@ class FileReader(FileManager):
             folder_path: Path | str | None = None,
             sheet_name: str | int = 0,
             is_init_data_dir: bool = True,
+            to_print_warning: bool = True,
     ) -> pd.DataFrame | None:
         """
         Read an Excel file.
@@ -86,7 +87,8 @@ class FileReader(FileManager):
 
         # Check if the file exists
         if not path_to_file.exists():
-            logger.warning(f"File not found at {path_to_file}")
+            if to_print_warning:
+                logger.warning(f"File not found at {path_to_file}")
             return None
 
         try:
@@ -97,7 +99,8 @@ class FileReader(FileManager):
             return df
 
         except FileNotFoundError:
-            logger.warning(f"File {path_to_file} not exists.")
+            if to_print_warning:
+                logger.warning(f"File {path_to_file} not exists.")
 
         except Exception as e:
             logger.error(f"Failed to read file {path_to_file}: {e}")
