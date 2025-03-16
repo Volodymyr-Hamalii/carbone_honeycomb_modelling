@@ -381,12 +381,14 @@ class AppActionsIntercalationAndSorption:
         # Set multi-level columns
         df.columns = pd.MultiIndex.from_tuples(df.columns)
 
+        file_name: str = f"{structure_folder}_{Constants.filenames.AL_CHANNEL_DETAILS_XLSX_FILE}"
+
         # Write DataFrame to Excel file
         FileWriter.write_excel_file(
             df=df,
             structure_folder=structure_folder,
             sheet_name="Al atoms in channel details",
-            file_name=Constants.filenames.AL_CHANNEL_DETAILS_XLSX_FILE,
+            file_name=file_name,
             is_init_data_dir=False,
         )
 
