@@ -119,11 +119,20 @@ class AppActionsShowInitData:
             text="To build bonds between atoms",
             env_id="to_build_bonds",
         )
+
+        to_show_coordinates: bool = Inputs.bool_input(
+            to_set,
+            default_value=True,
+            text="To show coordinates",
+            env_id="to_show_coordinates",
+        )
+
         StructureVisualizer.show_structure(
             coordinates=carbon_channel.points,
             # coordinates=carbon_channel.planes[0].points,
             to_build_bonds=to_build_bonds,
             title=structure_folder,
+            show_coordinates=to_show_coordinates,
             # show_coordinates=True,
             # num_of_min_distances=2,
         )
@@ -137,6 +146,13 @@ class AppActionsShowInitData:
 
         And shows the details in the console and on the 2D graph.
         """
+
+        to_show_coordinates: bool = Inputs.bool_input(
+            to_set,
+            default_value=True,
+            text="To show coordinates",
+            env_id="to_show_coordinates",
+        )
 
         fontsize: int = 8
 
@@ -272,6 +288,17 @@ class AppActionsShowInitData:
                         ha="center",
                         va="bottom" if point[1] > center_2d[1] else "top",
                     )
+
+        if to_show_coordinates:
+            # Show coordinates near each point
+            for xx, yy in zip(carbon_channel.points[:, 0], carbon_channel.points[:, 1]):
+                ax.annotate(
+                    f"({xx:.2f}, {yy:.2f})",
+                    (xx, yy),
+                    textcoords="offset points",
+                    xytext=(5, 5),  # Offset from the point
+                    fontsize=6,
+                )
 
         # Set equal scale for the plot
         x_min, x_max = carbon_channel.points[:, 0].min(), carbon_channel.points[:, 0].max()
