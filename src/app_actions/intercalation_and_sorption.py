@@ -191,8 +191,19 @@ class AppActionsIntercalationAndSorption:
         al_coordinates: Points = AtomsParser.get_al_channel_coordinates(
             structure_folder, carbon_channel, number_of_planes, try_to_reflect_al_atoms)
 
+        if number_of_planes > 1:
+            # Build only specified planes
+            carbon_channel_points: np.ndarray = np.vstack(
+                [carbon_channel.planes[i].points for i in range(number_of_planes)])
+        else:
+            # Build all planes
+            carbon_channel_points: np.ndarray = carbon_channel.points
+
+        # min_dists: np.ndarray = DistanceMeasure.calculate_min_distances(al_coordinates.points, carbon_channel_points)
+        # DistanceMeasure.calculate_min_distances_between_points()
+
         cls._show_structures(
-            carbon_channel_points=carbon_channel.points,
+            carbon_channel_points=carbon_channel_points,
             al_points=al_coordinates.points,
             to_build_bonds=to_build_bonds,
             title=structure_folder,
