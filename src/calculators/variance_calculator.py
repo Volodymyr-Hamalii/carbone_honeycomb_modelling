@@ -3,7 +3,7 @@ from numpy import ndarray
 from numpy import ndarray, floating
 from scipy.spatial.distance import cdist
 
-from .distance_calculator import DistanceCalculator
+from src.coordinate_operations import DistanceMeasure
 
 class VarianceCalculator:
     @classmethod
@@ -29,7 +29,7 @@ class VarianceCalculator:
         # variance: floating = np.var(min_distances)
 
         # TO CHECK ValueError: The user-provided objective function must return a scalar value.
-        return -DistanceCalculator.calculate_min_distance_sum(translated_inner_points, channel_points)
+        return -DistanceMeasure.calculate_min_distance_sum(translated_inner_points, channel_points)
 
 
     @staticmethod
