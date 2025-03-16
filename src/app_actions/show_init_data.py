@@ -194,7 +194,7 @@ class AppActionsShowInitData:
 
             line_equation: tuple[float, float, float, float] = LinesOperations.get_line_equation(min_point, max_point)
 
-            distance_from_center_to_plane: float = DistanceMeasure.calculate_distance_from_line(
+            distance_from_center_to_plane: float = DistanceMeasure.calculate_distance_from_plane(
                 np.array([center_2d]), line_equation)[0]  # type: ignore
             # distances_from_center_to_planes.append(distance_from_center_to_plane)
 

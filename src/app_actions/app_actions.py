@@ -78,6 +78,10 @@ class AppActions:
         return AppActionsIntercalationAndSorption.translate_al_to_other_planes(structure_folder, to_set)
 
     @staticmethod
+    def get_al_in_channel_details(structure_folder: str, to_set: bool) -> None:
+        return AppActionsIntercalationAndSorption.get_al_in_channel_details(structure_folder, to_set)
+
+    @staticmethod
     def translate_al_to_all_channels(structure_folder: str, to_set: bool) -> None:
         return AppActionsIntercalationAndSorption.translate_al_to_all_channels(structure_folder, to_set)
 

@@ -328,6 +328,69 @@ class AppActionsIntercalationAndSorption:
                     raise
 
     @classmethod
+    def get_al_in_channel_details(cls, structure_folder: str, to_set: bool) -> None:
+        """
+        Get details of Al atoms in the channel.
+        """
+        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
+
+        number_of_planes: int = int(Inputs.text_input(
+            to_set,
+            default_value="1",
+            text="Number of planes to translate",
+            env_id="number_of_planes",
+        ))
+
+        al_coordinates: Points = AtomsParser.get_al_channel_coordinates(
+            structure_folder, carbon_channel, number_of_planes=number_of_planes, try_to_reflect_al_atoms=True)
+
+        # Prepare data for DataFrame
+        data: list[dict] = []
+
+        for index, al_coordinate in enumerate(al_coordinates.points):
+            min_dist_to_plane: float = float("inf")
+            min_dist_to_carbon: float = np.min(DistanceMeasure.calculate_min_distances(
+                np.array([al_coordinate]), carbon_channel.points))
+
+            for plane in carbon_channel.planes:
+                dist: float = DistanceMeasure.calculate_distance_from_plane(
+                    np.array([al_coordinate]), plane.plane_params)
+
+                if dist < min_dist_to_plane:
+                    min_dist_to_plane = dist
+
+            dists_to_al: np.ndarray = DistanceMeasure.calculate_min_distances(
+                al_coordinates.points, np.array([al_coordinate]))
+            min_dist_to_al: float = np.min(dists_to_al[dists_to_al > 0])  # Exclude self-distance
+
+            # Collect data for each Al coordinate
+            data.append({
+                ("Al_atom", "index"): index,
+                ("Al_atom", "X"): np.round(al_coordinate[0], 2),
+                ("Al_atom", "Y"): np.round(al_coordinate[1], 2),
+                ("Al_atom", "Z"): np.round(al_coordinate[2], 2),
+                ("min_dist", "to_plane"): np.round(min_dist_to_plane, 2),
+                ("min_dist", "to_C"): np.round(min_dist_to_carbon, 2),
+                ("min_dist", "to_Al"): np.round(min_dist_to_al, 2),
+                **{("dists_to_Al", f"{i}"): np.round(dist, 2) for i, dist in enumerate(dists_to_al)}
+            })
+
+        # Create DataFrame with multi-level columns
+        df: pd.DataFrame = pd.DataFrame(data)
+
+        # Set multi-level columns
+        df.columns = pd.MultiIndex.from_tuples(df.columns)
+
+        # Write DataFrame to Excel file
+        FileWriter.write_excel_file(
+            df=df,
+            structure_folder=structure_folder,
+            sheet_name="Al atoms in channel details",
+            file_name=Constants.filenames.AL_CHANNEL_DETAILS_XLSX_FILE,
+            is_init_data_dir=False,
+        )
+
+    @classmethod
     def translate_al_to_all_channels(cls, structure_folder: str, to_set: bool) -> None:
         """
         Read Al plane coordinates from the Excel table and translate the structure to other planes.
