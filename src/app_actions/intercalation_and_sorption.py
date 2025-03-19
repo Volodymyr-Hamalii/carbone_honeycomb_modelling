@@ -129,6 +129,7 @@ class AppActionsIntercalationAndSorption:
                 # skip_first_distances=0,
                 # show_coordinates=False,
                 # show_indexes=True,
+                to_set=to_set,
             )
 
             try:
@@ -212,6 +213,7 @@ class AppActionsIntercalationAndSorption:
             interactive_mode=interactive_mode,
             # show_coordinates=False,
             # show_indexes=True,
+            to_set=to_set,
         )
 
         FileWriter.write_excel_file(
@@ -311,6 +313,7 @@ class AppActionsIntercalationAndSorption:
                 interactive_mode=interactive_mode,
                 # show_coordinates=False,
                 # show_indexes=True,
+                to_set=to_set,
             )
 
             try:
@@ -459,6 +462,7 @@ class AppActionsIntercalationAndSorption:
             interactive_mode=interactive_mode,
             # show_coordinates=False,
             # show_indexes=False,
+            to_set=to_set,
         )
 
         FileWriter.write_excel_file(
@@ -540,9 +544,17 @@ class AppActionsIntercalationAndSorption:
         num_of_min_distances: int = 2,
         skip_first_distances: int = 0,
         interactive_mode: bool = False,
+        to_set: bool = False,
     ) -> None:
 
         if show_al_layers:
+            number_of_layers: int = int(Inputs.text_input(
+                to_set,
+                default_value="2",
+                text="Number of layers to translate",
+                env_id="number_of_layers",
+            ))
+
             # # Split al points into layers by the min dists to Al
             # min_dists: np.ndarray = DistanceMeasure.calculate_min_distances(al_points, carbon_channel_points)
 
@@ -553,41 +565,87 @@ class AppActionsIntercalationAndSorption:
             # other_layers_points: np.ndarray = al_points[min_dists > min_dist_with_threshold]
 
             # Split the al_points by layers along Oz (by rounded z coordinate)
-            al_groups_with_indices: list[tuple[np.ndarray, np.ndarray]] = cls._split_atoms_along_z_axis(al_points)
+            if number_of_layers == 2:
+                al_groups_with_indices: list[tuple[np.ndarray, np.ndarray]] = cls._split_atoms_along_z_axis(al_points)
 
-            a_layer_indices: list[int] = []
-            b_layer_indices: list[int] = []
+                a_layer_indices: list[int] = []
+                b_layer_indices: list[int] = []
 
-            for i, (group, indices) in enumerate(al_groups_with_indices):
-                if i % 2 == 0:
-                    a_layer_indices.extend(indices)
-                else:
-                    b_layer_indices.extend(indices)
+                for i, (group, indices) in enumerate(al_groups_with_indices):
+                    if i % number_of_layers == 0:
+                        a_layer_indices.extend(indices)
+                    else:
+                        b_layer_indices.extend(indices)
 
-            StructureVisualizer.show_structures(
-                coordinates_list=[
-                    carbon_channel_points,
-                    al_points[a_layer_indices],
-                    al_points[b_layer_indices],
-                ],
-                visual_params_list=[
-                    VisualizationParams.carbon,
-                    VisualizationParams.al,
-                    VisualizationParams.al_2,
-                ],
-                to_build_bonds_list=[
-                    to_build_bonds,
-                    False,
-                    False,
-                ],
-                title=title,
-                num_of_min_distances=num_of_min_distances,
-                skip_first_distances=skip_first_distances,
-                show_coordinates=show_coordinates,
-                show_indexes=show_indexes,
-                interactive_mode=interactive_mode,
-                custom_indices_list=[None, a_layer_indices, b_layer_indices],
-            )
+                StructureVisualizer.show_structures(
+                    coordinates_list=[
+                        carbon_channel_points,
+                        al_points[a_layer_indices],
+                        al_points[b_layer_indices],
+                    ],
+                    visual_params_list=[
+                        VisualizationParams.carbon,
+                        VisualizationParams.al,
+                        VisualizationParams.al_2,
+                    ],
+                    to_build_bonds_list=[
+                        to_build_bonds,
+                        False,
+                        False,
+                    ],
+                    title=title,
+                    num_of_min_distances=num_of_min_distances,
+                    skip_first_distances=skip_first_distances,
+                    show_coordinates=show_coordinates,
+                    show_indexes=show_indexes,
+                    interactive_mode=interactive_mode,
+                    custom_indices_list=[None, a_layer_indices, b_layer_indices],
+                )
+
+            elif number_of_layers == 3:
+                al_groups_with_indices: list[tuple[np.ndarray, np.ndarray]] = cls._split_atoms_along_z_axis(al_points)
+
+                a_layer_indices: list[int] = []
+                b_layer_indices: list[int] = []
+                c_layer_indices: list[int] = []
+
+                for i, (group, indices) in enumerate(al_groups_with_indices):
+                    if i % number_of_layers == 0:
+                        a_layer_indices.extend(indices)
+                    elif i % number_of_layers == 1:
+                        b_layer_indices.extend(indices)
+                    else:
+                        c_layer_indices.extend(indices)
+
+                StructureVisualizer.show_structures(
+                    coordinates_list=[
+                        carbon_channel_points,
+                        al_points[a_layer_indices],
+                        al_points[b_layer_indices],
+                        al_points[c_layer_indices],
+                    ],
+                    visual_params_list=[
+                        VisualizationParams.carbon,
+                        VisualizationParams.al,
+                        VisualizationParams.al_2,
+                        VisualizationParams.al_3,
+                    ],
+                    to_build_bonds_list=[
+                        to_build_bonds,
+                        False,
+                        False,
+                        False,
+                    ],
+                    title=title,
+                    num_of_min_distances=num_of_min_distances,
+                    skip_first_distances=skip_first_distances,
+                    show_coordinates=show_coordinates,
+                    show_indexes=show_indexes,
+                    interactive_mode=interactive_mode,
+                    custom_indices_list=[None, a_layer_indices, b_layer_indices, c_layer_indices],
+                )
+            else:
+                raise NotImplementedError(f"Number of layers {number_of_layers} is not implemented")
 
         else:
             StructureVisualizer.show_two_structures(
