@@ -13,6 +13,7 @@ def _clear_env_cache() -> None:
         "set_equidistant",
         "al_lattice_type",
         "number_of_planes",
+        "number_of_layers",
         "number_of_min_distances",
         "try_to_reflect_al_atoms",
         "show_al_layers",
