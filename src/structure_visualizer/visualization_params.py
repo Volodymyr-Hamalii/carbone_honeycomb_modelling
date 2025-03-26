@@ -18,17 +18,13 @@ class StructureVisualParams:
 class Colors:
     carbon_atoms: str = "#0500a4"
     carbon_bonds: str = "#00065f"
-    # aluminum_atoms: str = "#e00000"
-    # aluminum_bonds: str = "#500000"
-    # aluminum_2_atoms: str = "#00d11d"
-    # aluminum_2_bonds: str = "#004309"
 
-    aluminum_atoms: str = "#1b9afa"
-    aluminum_bonds: str = "##0062ad"
+    aluminum_1_atoms: str = "#e00000"
+    aluminum_1_bonds: str = "#500000"
     aluminum_2_atoms: str = "#00d11d"
     aluminum_2_bonds: str = "#004309"
-    aluminum_3_atoms: str = "#e00000"
-    aluminum_3_bonds: str = "#500000"
+    aluminum_3_atoms: str = "#1b9afa"
+    aluminum_3_bonds: str = "##0062ad"
 
     black: str = "#000000"
     gray100: str = "#454545"
@@ -36,6 +32,7 @@ class Colors:
     gray300: str = "#919191"
     gray400: str = "#afafaf"
 
+    # # Uncomment to use B&W colors
     # carbon_atoms: str = black
     # carbon_bonds: str = black
     # aluminum_atoms: str = gray100
@@ -64,11 +61,11 @@ class VisualizationParams:
     al = StructureVisualParams(
         label="Aluminum",
 
-        color_atoms=Colors.aluminum_atoms,
+        color_atoms=Colors.aluminum_1_atoms,
         transparency=0.5,
         size=400,
 
-        color_bonds=Colors.aluminum_bonds,
+        color_bonds=Colors.aluminum_1_bonds,
         transparency_bonds=1,
         bonds_width=1,
 
