@@ -103,6 +103,8 @@ class _ConstantsAlParams:
 class _ConstantsPhys:
     al = _ConstantsAlParams
 
+    MIN_ALLOWED_DIST_BETWEEN_AL_C: float = 2.15
+
 
 class Constants:
     path = _ConstantsPath
