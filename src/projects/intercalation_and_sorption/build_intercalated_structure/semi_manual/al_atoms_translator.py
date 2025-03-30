@@ -158,7 +158,7 @@ class AlAtomsTranslator:
         planes: list[CarbonHoneycombPlane] = carbon_channel.planes
         # channel_center: np.ndarray = carbon_channel.center
         all_al_points: list[np.ndarray] = []
-        min_allowed_dist: float = Constants.phys.al.DIST_BETWEEN_ATOMS
+        min_allowed_dist: float = Constants.phys.MIN_ALLOWED_DIST_BETWEEN_AL_C
 
         for plane_i, plane in enumerate(planes):
             if plane_i in plane_group_map:
