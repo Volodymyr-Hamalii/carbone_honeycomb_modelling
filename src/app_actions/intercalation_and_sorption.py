@@ -585,7 +585,7 @@ class AppActionsIntercalationAndSorption:
                     ],
                     visual_params_list=[
                         VisualizationParams.carbon,
-                        VisualizationParams.al_3,
+                        VisualizationParams.al,
                         VisualizationParams.al_2,
                     ],
                     to_build_bonds_list=[
