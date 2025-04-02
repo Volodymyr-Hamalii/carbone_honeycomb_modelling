@@ -676,12 +676,3 @@ class AppActionsIntercalationAndSorption:
         ]
 
         return grouped_coordinates
-
-    @classmethod
-    def full_flow(cls, structure_folder: str, to_set: bool) -> None:
-        """ Run all actions to intercalate (sorp) Al into carbon channel. """
-
-        AppActionsInitDataParsing.convert_init_dat_to_pdb(structure_folder, to_set)
-        AppActionsShowInitData.show_init_structure(structure_folder, to_set)
-        AppActionsShowInitData.show_one_channel_structure(structure_folder, to_set)
-        # cls.show_filtered_al_one_channel_structure(structure_folder, to_set)
