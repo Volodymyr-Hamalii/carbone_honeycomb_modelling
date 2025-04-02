@@ -6,6 +6,7 @@ RasMol
 .DS_Store
 venv_carbone_honeycomb_modelling
 __pycache__
+.databases/*
 
 # Test data
 # !init_data/A1-7_h3

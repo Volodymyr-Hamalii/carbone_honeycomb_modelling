@@ -63,6 +63,8 @@ class _ConstantsPath:
     UTILS_DIR_PATH: Path = Path(__file__).resolve().parent
     ROOT_DIR_PATH: Path = UTILS_DIR_PATH.parent.parent
 
+    DATABASES_PATH: Path = ROOT_DIR_PATH / ".databases"
+
     INIT_DATA_PATH: Path = ROOT_DIR_PATH / _ConstantsFilenames.INIT_DATA_DIR
     RESULT_DATA_PATH: Path = ROOT_DIR_PATH / _ConstantsFilenames.RESULT_DATA_DIR
 
