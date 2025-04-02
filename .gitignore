@@ -8,5 +8,5 @@ venv_carbone_honeycomb_modelling
 __pycache__
 
 # Test data
-!init_data/A1-7_h3
-!result_data/A1-7_h3
+# !init_data/A1-7_h3
+# !result_data/A1-7_h3
