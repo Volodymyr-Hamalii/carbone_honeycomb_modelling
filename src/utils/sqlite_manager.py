@@ -40,7 +40,7 @@ class SQLiteManager:
         structure_type: str | None = None,
         index: int | None = None
     ) -> None:
-        coords_blob = coordinates.tobytes()
+        coords_blob: bytes = coordinates.tobytes()
         with self.conn:
             self.conn.execute("""
                 INSERT INTO coordinates (project, element, structure_folder, structure_type, idx, coordinates)
