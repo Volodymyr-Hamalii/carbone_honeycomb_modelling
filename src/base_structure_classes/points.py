@@ -1,10 +1,14 @@
 from dataclasses import dataclass, replace
 from functools import cached_property
+from typing import TypeVar
 
 import numpy as np
 import pandas as pd
 
 from .coordinate_limits import CoordinateLimits
+
+
+T = TypeVar("T", bound="Points")
 
 
 @dataclass(frozen=True)
@@ -66,6 +70,6 @@ class Points:
         }
         return pd.DataFrame(data)
 
-    def copy(self) -> "Points":
+    def copy(self: T) -> T:
         """ Returns a new Points instance. """
         return replace(self, points=self.points.copy())
