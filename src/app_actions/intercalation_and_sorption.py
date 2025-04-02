@@ -461,7 +461,7 @@ class AppActionsIntercalationAndSorption:
             show_al_layers=show_al_layers,
             interactive_mode=interactive_mode,
             # show_coordinates=False,
-            # show_indexes=False,
+            show_indexes=False,
             to_set=to_set,
         )
 
@@ -477,6 +477,12 @@ class AppActionsIntercalationAndSorption:
             al_coordinates.points,
             structure_folder=structure_folder,
             filename=Constants.filenames.AL_ALL_CHANNELS_COORDINATES_DAT_FILE,
+        )
+
+        FileWriter.write_dat_file(
+            coordinates_carbon.points,
+            structure_folder=structure_folder,
+            filename=Constants.filenames.C_ALL_CHANNELS_COORDINATES_DAT_FILE,
         )
 
     @staticmethod
@@ -676,12 +682,3 @@ class AppActionsIntercalationAndSorption:
         ]
 
         return grouped_coordinates
-
-    @classmethod
-    def full_flow(cls, structure_folder: str, to_set: bool) -> None:
-        """ Run all actions to intercalate (sorp) Al into carbon channel. """
-
-        AppActionsInitDataParsing.convert_init_dat_to_pdb(structure_folder, to_set)
-        AppActionsShowInitData.show_init_structure(structure_folder, to_set)
-        AppActionsShowInitData.show_one_channel_structure(structure_folder, to_set)
-        # cls.show_filtered_al_one_channel_structure(structure_folder, to_set)
