@@ -461,7 +461,7 @@ class AppActionsIntercalationAndSorption:
             show_al_layers=show_al_layers,
             interactive_mode=interactive_mode,
             # show_coordinates=False,
-            # show_indexes=False,
+            show_indexes=False,
             to_set=to_set,
         )
 
@@ -477,6 +477,12 @@ class AppActionsIntercalationAndSorption:
             al_coordinates.points,
             structure_folder=structure_folder,
             filename=Constants.filenames.AL_ALL_CHANNELS_COORDINATES_DAT_FILE,
+        )
+
+        FileWriter.write_dat_file(
+            coordinates_carbon.points,
+            structure_folder=structure_folder,
+            filename=Constants.filenames.C_ALL_CHANNELS_COORDINATES_DAT_FILE,
         )
 
     @staticmethod
