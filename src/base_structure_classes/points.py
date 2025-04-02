@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from functools import cached_property
 
 import numpy as np
@@ -68,4 +68,4 @@ class Points:
 
     def copy(self) -> "Points":
         """ Returns a new Points instance. """
-        return Points(points=self.points.copy())
+        return replace(self, points=self.points.copy())
