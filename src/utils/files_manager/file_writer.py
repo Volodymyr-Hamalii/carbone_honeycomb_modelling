@@ -2,6 +2,7 @@ from pathlib import Path
 
 from numpy import ndarray
 import pandas as pd
+import MDAnalysis as mda
 from openpyxl.worksheet.worksheet import Worksheet
 from openpyxl.styles import Alignment
 
@@ -173,3 +174,8 @@ class FileWriter(FileManager):
 
         except Exception as e:
             logger.error(f"Failed to write file {path_to_file}: {e}")
+
+    @staticmethod
+    def write_pdb_from_mda(output_pdb_file: Path, atoms) -> None:
+        with mda.Writer(output_pdb_file, n_atoms=atoms.n_atoms) as PDB:
+            PDB.write(atoms)
