@@ -15,6 +15,13 @@ logger = Logger("FileReader")
 
 class FileReader(FileManager):
     @staticmethod
+    def read_list_of_dirs(
+            folder_path: Path | str = Constants.path.INIT_DATA_PATH,
+    ) -> list[str]:
+        """ Read a list of directories in the given folder path. By default uses 'init_data' folder. """
+        return sorted([dir.name for dir in Path(folder_path).iterdir() if dir.is_dir()])
+
+    @staticmethod
     def read_json_file(
             folder_path: Path | str,
             file_name: str = Constants.filenames.STRUCTURE_SETTINGS_FILE,
