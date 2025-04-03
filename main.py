@@ -4,7 +4,7 @@ from src import (
     Constants,
     Logger,
     CommandLineArgsHandler,
-    AppActions,
+    cli,
 )
 
 
@@ -18,14 +18,14 @@ def run_action() -> None:
     args: list[str] = sys.argv[4:]
 
     if action == "help":
-        AppActions.help(structure_folder)
+        cli.AppActions.help(structure_folder)
         return
 
     try:
         logger.info(f"Run '{action}' for '{structure_folder}' structure.")
 
         # Get the method from the AppActions class
-        method: Callable = getattr(AppActions, action)
+        method: Callable = getattr(cli.AppActions, action)
 
         if args:
             # Call the method with the structure_folder and other parameters
@@ -40,11 +40,11 @@ def run_action() -> None:
 
     except AttributeError:
         logger.error(f"Action '{action}' is not available.")
-        AppActions.help(structure_folder)
+        cli.AppActions.help(structure_folder)
 
     except TypeError as e:
         logger.error(f"Parameters error:", e)
-        AppActions.help(structure_folder)
+        cli.AppActions.help(structure_folder)
 
 
 if __name__ == "__main__":
