@@ -38,7 +38,7 @@ class AppActionsShowInitData:
             env_id="to_build_bonds",
         )
         StructureVisualizer.show_structure(
-            carbon_points.points, to_build_bonds=to_build_bonds, set_equal_scale=False, title=structure_folder)
+            carbon_points.points, to_build_bonds=to_build_bonds, to_set_equal_scale=False, title=structure_folder)
 
     @staticmethod
     def show_init_al_structure(structure_folder: str, to_set: bool) -> None:
@@ -132,7 +132,7 @@ class AppActionsShowInitData:
             # coordinates=carbon_channel.planes[0].points,
             to_build_bonds=to_build_bonds,
             title=structure_folder,
-            show_coordinates=to_show_coordinates,
+            to_show_coordinates=to_show_coordinates,
             # show_coordinates=True,
             # num_of_min_distances=2,
         )

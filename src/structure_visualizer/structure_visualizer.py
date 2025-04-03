@@ -20,13 +20,14 @@ class StructureVisualizer:
             cls,
             coordinates: ndarray,
             to_build_bonds: bool = True,
+            to_set_equal_scale: bool | None = None,
+            to_show_coordinates: bool | None = None,
+            to_show_indexes: bool | None = None,
             visual_params: StructureVisualParams = VisualizationParams.carbon,
             num_of_min_distances: int = 2,
             skip_first_distances: int = 0,
-            set_equal_scale: bool | None = None,
             title: str | None = None,
-            show_coordinates=False,
-            interactive_mode: bool = False,
+            is_interactive_mode: bool = False,
     ) -> None:
         """ Show 3D plot with 1 structure. """
 
@@ -40,11 +41,12 @@ class StructureVisualizer:
             coordinates=coordinates,
             visual_params=visual_params,
             to_build_bonds=to_build_bonds,
+            to_set_equal_scale=to_set_equal_scale,
+            to_show_coordinates=to_show_coordinates,
+            to_show_indexes=to_show_indexes,
             num_of_min_distances=num_of_min_distances,
             skip_first_distances=skip_first_distances,
-            set_equal_scale=set_equal_scale,
-            show_coordinates=show_coordinates,
-            interactive_mode=interactive_mode,
+            is_interactive_mode=is_interactive_mode,
         )
 
         ax.set_xlabel('X')
@@ -61,15 +63,15 @@ class StructureVisualizer:
             cls,
             coordinates_first: ndarray,
             coordinates_second: ndarray,
-            to_build_bonds: bool = False,
             visual_params_first: StructureVisualParams = VisualizationParams.carbon,
             visual_params_second: StructureVisualParams = VisualizationParams.al,
+            to_build_bonds: bool = False,
+            to_show_coordinates: bool | None = None,
+            to_show_indexes: bool | None = None,
             title: str | None = None,
-            show_coordinates: bool | None = None,
-            show_indexes: bool | None = None,
+            is_interactive_mode: bool = False,
             num_of_min_distances: int = 2,
             skip_first_distances: int = 0,
-            interactive_mode: bool = False,
     ) -> None:
         """ Show 3D plot with 2 structures (by default there are carbon and aluminium) """
 
@@ -86,9 +88,9 @@ class StructureVisualizer:
             to_build_bonds=to_build_bonds,
             num_of_min_distances=num_of_min_distances,
             skip_first_distances=skip_first_distances,
-            show_coordinates=show_coordinates,
-            show_indexes=show_indexes,
-            interactive_mode=False,
+            to_show_coordinates=to_show_coordinates,
+            to_show_indexes=to_show_indexes,
+            is_interactive_mode=False,
         )
 
         # Plot second structure atoms (interactive if enabled)
@@ -100,9 +102,9 @@ class StructureVisualizer:
             to_build_bonds=False,
             num_of_min_distances=1,
             skip_first_distances=0,
-            show_coordinates=show_coordinates,
-            show_indexes=show_indexes,
-            interactive_mode=interactive_mode,
+            to_show_coordinates=to_show_coordinates,
+            to_show_indexes=to_show_indexes,
+            is_interactive_mode=is_interactive_mode,
         )
 
         ax.set_xlabel('X')
@@ -125,11 +127,11 @@ class StructureVisualizer:
             visual_params_list: list[StructureVisualParams],
             to_build_bonds_list: list[bool],
             title: str | None = None,
-            show_coordinates: bool | None = None,
-            show_indexes: bool | None = None,
+            to_show_coordinates: bool | None = None,
+            to_show_indexes: bool | None = None,
             num_of_min_distances: int = 2,
             skip_first_distances: int = 0,
-            interactive_mode: bool = False,
+            is_interactive_mode: bool = False,
             custom_indices_list: list[list[int] | None] | None = None,
     ) -> None:
         """ Show 3D plot with multiple structures """
@@ -161,9 +163,9 @@ class StructureVisualizer:
                 to_build_bonds=to_build_bonds,
                 num_of_min_distances=num_of_min_distances,
                 skip_first_distances=skip_first_distances,
-                show_coordinates=show_coordinates,
-                show_indexes=show_indexes,
-                interactive_mode=interactive_mode if visual_params.label != "Carbon" else False,
+                to_show_coordinates=to_show_coordinates,
+                to_show_indexes=to_show_indexes,
+                is_interactive_mode=is_interactive_mode if visual_params.label != "Carbon" else False,
                 custom_indexes=custom_indices if custom_indices else [],
             )
 
@@ -185,8 +187,8 @@ class StructureVisualizer:
         coordinates: np.ndarray,
         title: str | None = None,
         visual_params: StructureVisualParams = VisualizationParams.carbon,
-        show_coordinates: bool | None = None,
-        show_indexes: bool | None = None,
+        to_show_coordinates: bool | None = None,
+        to_show_indexes: bool | None = None,
     ) -> Axes:
         # Prepare to visualize in 2D
         fig: Figure = plt.figure()
@@ -202,7 +204,7 @@ class StructureVisualizer:
             alpha=visual_params.transparency,
         )
 
-        if show_coordinates:
+        if to_show_coordinates:
             # Show coordinates near each point
             for xx, yy in zip(x, y):
                 ax.annotate(
@@ -213,7 +215,7 @@ class StructureVisualizer:
                     fontsize=6,
                 )
 
-        if show_indexes:
+        if to_show_indexes:
             # Show coordinates near each point
             for xx, yy, i in zip(x, y, range(len(coordinates))):
                 ax.annotate(
@@ -241,15 +243,15 @@ class StructureVisualizer:
         coordinates: np.ndarray,
         title: str | None = None,
         visual_params: StructureVisualParams = VisualizationParams.carbon,
-        show_coordinates: bool | None = None,
-        show_indexes: bool | None = None,
+        to_show_coordinates: bool | None = None,
+        to_show_indexes: bool | None = None,
     ) -> None:
         cls.get_2d_plot(
             coordinates,
             title,
             visual_params,
-            show_coordinates,
-            show_indexes
+            to_show_coordinates,
+            to_show_indexes
         )
         plt.show()
 
@@ -260,13 +262,13 @@ class StructureVisualizer:
             ax: Axes,
             coordinates: ndarray,
             visual_params: StructureVisualParams,
-            set_equal_scale: bool | None = None,
+            to_set_equal_scale: bool | None = None,
             to_build_bonds: bool = True,
             num_of_min_distances: int = 2,
             skip_first_distances: int = 0,
-            show_coordinates: bool | None = None,
-            show_indexes: bool | None = None,
-            interactive_mode: bool = False,
+            to_show_coordinates: bool | None = None,
+            to_show_indexes: bool | None = None,
+            is_interactive_mode: bool = False,
             custom_indexes: list[int] = [],
     ) -> PathCollection | None:
         if coordinates.size == 0:
@@ -283,16 +285,16 @@ class StructureVisualizer:
             label=visual_params.label,
             s=visual_params.size,  # type: ignore
             alpha=visual_params.transparency,
-            picker=True if interactive_mode else False,
+            picker=True if is_interactive_mode else False,
         )
 
-        if set_equal_scale is None:
-            set_equal_scale = visual_params.set_equal_scale
+        if to_set_equal_scale is None:
+            to_set_equal_scale = visual_params.to_set_equal_scale
 
-        if set_equal_scale:
+        if to_set_equal_scale:
             cls._set_equal_scale(ax, x, y, z)
 
-        if show_coordinates is True or (show_coordinates is None and visual_params.show_coordinates):
+        if to_show_coordinates is True or (to_show_coordinates is None and visual_params.to_show_coordinates):
             # Show coordinates near each point
             for xx, yy, zz in zip(x, y, z):
                 ax.text(
@@ -304,7 +306,7 @@ class StructureVisualizer:
                     va="center",
                 )
 
-        if show_indexes is not False and visual_params.show_indexes:
+        if to_show_indexes is not False and visual_params.to_show_indexes:
             # Show coordinates near each point
             if len(custom_indexes) > 0:
                 for i, (xx, yy, zz) in enumerate(coordinates):
@@ -335,7 +337,7 @@ class StructureVisualizer:
                 num_of_min_distances=num_of_min_distances,
                 skip_first_distances=skip_first_distances)
 
-        if interactive_mode:
+        if is_interactive_mode:
             def on_pick(event) -> None:
                 try:
                     ind: int = event.ind[0]

@@ -9,10 +9,10 @@ class StructureVisualParams:
     bonds_width: float
     transparency: float
     transparency_bonds: float
-    set_equal_scale: bool
     label: str
-    show_coordinates: bool
-    show_indexes: bool
+    to_set_equal_scale: bool
+    to_show_coordinates: bool
+    to_show_indexes: bool
 
 
 class Colors:
@@ -53,9 +53,9 @@ class VisualizationParams:
         transparency_bonds=1,
         bonds_width=0.5,
 
-        set_equal_scale=True,
-        show_coordinates=False,
-        show_indexes=False,
+        to_set_equal_scale=True,
+        to_show_coordinates=False,
+        to_show_indexes=False,
     )
 
     al = StructureVisualParams(
@@ -69,9 +69,9 @@ class VisualizationParams:
         transparency_bonds=1,
         bonds_width=1,
 
-        set_equal_scale=False,
-        show_coordinates=False,
-        show_indexes=True,
+        to_set_equal_scale=False,
+        to_show_coordinates=False,
+        to_show_indexes=True,
     )
 
     al_2 = StructureVisualParams(
@@ -85,9 +85,9 @@ class VisualizationParams:
         transparency_bonds=1,
         bonds_width=1,
 
-        set_equal_scale=False,
-        show_coordinates=False,
-        show_indexes=True,
+        to_set_equal_scale=False,
+        to_show_coordinates=False,
+        to_show_indexes=True,
     )
 
     al_3 = StructureVisualParams(
@@ -101,7 +101,7 @@ class VisualizationParams:
         transparency_bonds=1,
         bonds_width=1,
 
-        set_equal_scale=False,
-        show_coordinates=False,
-        show_indexes=True,
+        to_set_equal_scale=False,
+        to_show_coordinates=False,
+        to_show_indexes=True,
     )
