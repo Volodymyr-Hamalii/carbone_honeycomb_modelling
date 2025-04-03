@@ -1,3 +1,3 @@
 from .utils import *
 from .structure_visualizer import *
-from .interface import cli
+from .interface import AppActions, AppGui
