@@ -12,7 +12,8 @@ class ChannelDetailsWindow:
     def create_window(self) -> None:
         self.input_window = ctk.CTkToplevel()
         self.input_window.title("Show channel parameters")
-        self.input_window.geometry("300x200")
+        self.input_window.pack_propagate(False)
+        self.input_window.grid_propagate(False)
 
         # Checkbox for to_show_coordinates
         self.to_show_coordinates_checkbox = CheckBox(
@@ -20,7 +21,7 @@ class ChannelDetailsWindow:
             command=self.update_to_show_coordinates,
             default=self.view_model.to_show_coordinates,
         )
-        self.to_show_coordinates_checkbox.pack(pady=10)
+        self.to_show_coordinates_checkbox.pack(pady=10, padx=10)
 
         # Button to proceed to the next step
         self.next_btn = Button(
