@@ -306,7 +306,7 @@ class StructureVisualizer:
                     va="center",
                 )
 
-        if to_show_indexes is not False and visual_params.to_show_indexes:
+        if to_show_indexes or (to_show_indexes is None and visual_params.to_show_indexes):
             # Show coordinates near each point
             if len(custom_indexes) > 0:
                 for i, (xx, yy, zz) in enumerate(coordinates):
@@ -386,17 +386,17 @@ class StructureVisualizer:
         min_lim = np.min([x_min, y_min, z_min])
         max_lim = np.max([x_max, y_max, z_max])
 
-        delta = (max_lim + min_lim) / 2
-        delta_plus = delta * 1.25  # to stretch specific axis
+        delta = (max_lim - min_lim) / 2
+        delta_minus = delta * 0.8
 
         x_mid = (x_max + x_min) / 2
         y_mid = (y_max + y_min) / 2
         z_mid = (z_max + z_min) / 2
 
-        ax.set_xlim(x_mid - delta_plus, x_mid + delta_plus)
-        ax.set_ylim(y_mid - delta_plus, y_mid + delta_plus)
+        ax.set_xlim(x_mid - delta, x_mid + delta)
+        ax.set_ylim(y_mid - delta, y_mid + delta)
 
         try:
-            ax.set_zlim(z_mid - delta, z_mid + delta)  # type: ignore
+            ax.set_zlim(z_mid - delta_minus, z_mid + delta_minus)  # type: ignore
         except Exception:
             pass

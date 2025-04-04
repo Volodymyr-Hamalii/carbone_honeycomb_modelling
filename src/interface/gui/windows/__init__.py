@@ -1,0 +1,2 @@
+from .channel_details_window import ChannelDetailsWindow
+from .structure_window import StructureWindow
