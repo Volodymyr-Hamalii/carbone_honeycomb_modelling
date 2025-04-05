@@ -22,7 +22,7 @@ logger = Logger("Actions")
 
 
 class ViewModelShowInitData(ViewModelParamsSetter):
-    def show_init_structure(self) -> None:
+    def show_init_structure(self, structure_folder: str) -> None:
         """
         Show 3D model of result_data/{structure_folder}/ljout-from-init-dat.pdb
 
@@ -33,7 +33,7 @@ class ViewModelShowInitData(ViewModelParamsSetter):
         to_show_indexes: bool
         """
 
-        path_to_init_pdb_file: Path = PathBuilder.build_path_to_result_data_file(self.structure_folder)
+        path_to_init_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_folder)
         carbon_points: Points = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
 
         # to_build_bonds: bool = Inputs.bool_input(
@@ -48,7 +48,7 @@ class ViewModelShowInitData(ViewModelParamsSetter):
             to_build_bonds=self.to_build_bonds,
             to_show_coordinates=self.to_show_coordinates,
             to_show_indexes=self.to_show_indexes,
-            title=self.structure_folder,
+            title=structure_folder,
             to_set_equal_scale=True,
         )
 
@@ -113,7 +113,7 @@ class ViewModelShowInitData(ViewModelParamsSetter):
     #         skip_first_distances=skip_first_distances,
     #         title="Aluminium")
 
-    def show_one_channel_structure(self) -> None:
+    def show_one_channel_structure(self, structure_folder: str) -> None:
         """
         Build one channel model from result_data/{structure_folder}/ljout-from-init-dat.pdb atoms
         based on result_data/{structure_folder}/structure_settings.json channel limits.
@@ -127,7 +127,7 @@ class ViewModelShowInitData(ViewModelParamsSetter):
         to_show_indexes: bool
         """
 
-        path_to_init_pdb_file: Path = PathBuilder.build_path_to_result_data_file(self.structure_folder)
+        path_to_init_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_folder)
 
         coordinates_carbon: Points = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
 
@@ -153,13 +153,13 @@ class ViewModelShowInitData(ViewModelParamsSetter):
             coordinates=carbon_channel.points,
             # coordinates=carbon_channel.planes[0].points,
             to_build_bonds=self.to_build_bonds,
-            title=self.structure_folder,
+            title=structure_folder,
             to_show_coordinates=self.to_show_coordinates,
             to_show_indexes=self.to_show_indexes,
             # num_of_min_distances=2,
         )
 
-    def get_channel_details(self) -> None:
+    def get_channel_details(self, structure_folder: str) -> None:
         """
         Get details of the channel from result_data/{structure_folder}/structure_settings.json:
         - distance from the channel centet to the planes and to the connection edges,
@@ -181,7 +181,7 @@ class ViewModelShowInitData(ViewModelParamsSetter):
 
         fontsize: int = 8
 
-        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(self.structure_folder)
+        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
 
         center_2d: np.ndarray = carbon_channel.center[:2]
         planes: list[CarbonHoneycombPlane] = carbon_channel.planes
@@ -192,7 +192,7 @@ class ViewModelShowInitData(ViewModelParamsSetter):
 
         ax: Axes = StructureVisualizer.get_2d_plot(
             np.concatenate(planes_points_2d),
-            title=self.structure_folder,
+            title=structure_folder,
             visual_params=VisualizationParams.carbon,
         )
 

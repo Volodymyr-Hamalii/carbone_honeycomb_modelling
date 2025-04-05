@@ -16,7 +16,7 @@ class AppGui(ctk.CTk):
         self.structure_folder: str = structure_folders[0]
 
         # Initialize ViewModel
-        self.view_model = ViewModelShowInitData(self.structure_folder)
+        self.view_model = ViewModelShowInitData()
 
         # Create GUI components
         self.create_widgets(structure_folders)
@@ -50,7 +50,6 @@ class AppGui(ctk.CTk):
 
     def set_structure_folder(self, value: str) -> None:
         self.structure_folder: str = value
-        self.view_model.set_structure_folder(value)
 
     def open_show_init_structure_window(self) -> None:
         StructureWindow(self.view_model, self.structure_folder)
@@ -59,4 +58,4 @@ class AppGui(ctk.CTk):
         StructureWindow(self.view_model, self.structure_folder, one_channel=True)
 
     def open_get_channel_details_window(self) -> None:
-        ChannelDetailsWindow(self.view_model)
+        ChannelDetailsWindow(self.view_model, self.structure_folder)

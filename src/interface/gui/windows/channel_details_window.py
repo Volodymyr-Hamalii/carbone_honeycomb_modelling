@@ -5,15 +5,17 @@ from ..components import Button, CheckBox, PlotWindow
 
 
 class ChannelDetailsWindow:
-    def __init__(self, view_model: ViewModelShowInitData) -> None:
+    def __init__(self, view_model: ViewModelShowInitData, structure_folder: str) -> None:
+        self.structure_folder: str = structure_folder
         self.view_model: ViewModelShowInitData = view_model
         self.create_window()
 
     def create_window(self) -> None:
         self.input_window = ctk.CTkToplevel()
-        self.input_window.title("Show channel parameters")
-        self.input_window.pack_propagate(False)
-        self.input_window.grid_propagate(False)
+        self.input_window.title(f"Show channel parameters ({self.structure_folder})")
+        # self.input_window.pack_propagate(False)
+        # self.input_window.grid_propagate(False)
+        self.input_window.geometry("600x300")
 
         # Checkbox for to_show_coordinates
         self.to_show_coordinates_checkbox = CheckBox(
@@ -31,7 +33,7 @@ class ChannelDetailsWindow:
         self.next_btn.pack(pady=10)
 
     def get_channel_details(self) -> None:
-        self.view_model.get_channel_details()
+        self.view_model.get_channel_details(self.structure_folder)
         self.show_plot_window()
 
     def update_to_show_coordinates(self) -> None:
