@@ -91,18 +91,19 @@ class AtomsParser:
             structure_folder: str,
             carbon_channel: CarbonHoneycombChannel,
             number_of_planes: int,
-
+            file_name: str | None = None,
     ) -> Points:
         """ Read Al coordinates from the file or build them if there is no Excel file. """
 
-        al_plane_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
-            structure_folder=structure_folder,
-            file_name=Constants.filenames.AL_PLANE_COORDINATES_XLSX_FILE,
-            is_init_data_dir=False,
-        )
+        if file_name and file_name != "None":
+            al_plane_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
+                structure_folder=structure_folder,
+                file_name=file_name,
+                is_init_data_dir=False,
+            )
 
-        if al_plane_coordinates_df is not None:
-            return cls._parse_al_coordinates_df(al_plane_coordinates_df)
+            if al_plane_coordinates_df is not None:
+                return cls._parse_al_coordinates_df(al_plane_coordinates_df)
 
         # logger.warning(f"Excel table with Al atoms for {structure_folder} structure not found. Al atoms builder.")
 

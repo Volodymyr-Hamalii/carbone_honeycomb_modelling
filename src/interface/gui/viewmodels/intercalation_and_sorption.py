@@ -17,61 +17,72 @@ from src.projects import (
     AlAtomsTranslator,
     FullChannelBuilder,
 )
+from .view_model_params_setter import VMParamsSetter
 
 
 logger = Logger("Actions")
 
 
-class VMIntercalationAndSorption:
-    @staticmethod
-    def fill_all_channels(structure_folder: str, to_set: bool) -> None:
-        """
-        Reads .dat files with carbon and built Al in one channel coordinates,
-        translates these Al coordinates through all channels, shows and writes results.
-        """
+class VMIntercalationAndSorption(VMParamsSetter):
+    # def fill_all_channels(self, structure_folder: str) -> None:
+    #     """
+    #     Reads .dat files with carbon and built Al in one channel coordinates,
+    #     translates these Al coordinates through all channels, shows and writes results.
+    #     """
 
-        folder_path: Path = PathBuilder.build_path_to_result_data_dir()
+    #     folder_path: Path = PathBuilder.build_path_to_result_data_dir()
 
-        al_points: np.ndarray = FileReader.read_dat_file(
-            structure_folder=structure_folder,
-            folder_path=folder_path,
-        )
+    #     al_points: np.ndarray = FileReader.read_dat_file(
+    #         structure_folder=structure_folder,
+    #         folder_path=folder_path,
+    #     )
 
-        coordinates_carbon: Points = IntercalatedChannelBuilder.build_carbon_coordinates(
-            structure_folder=structure_folder)
+    #     coordinates_carbon: Points = IntercalatedChannelBuilder.build_carbon_coordinates(
+    #         structure_folder=structure_folder)
 
-        carbon_channels: list[CarbonHoneycombChannel] = CarbonHoneycombActions.split_init_structure_into_separate_channels(
-            coordinates_carbon=coordinates_carbon)
+    #     carbon_channels: list[CarbonHoneycombChannel] = CarbonHoneycombActions.split_init_structure_into_separate_channels(
+    #         coordinates_carbon=coordinates_carbon)
 
-        upd_al_points: np.ndarray = IntercalatedChannelBuilder.translate_al_points_through_channels(
-            al_points, carbon_channels)
+    #     upd_al_points: np.ndarray = IntercalatedChannelBuilder.translate_al_points_through_channels(
+    #         al_points, carbon_channels)
 
-        to_build_bonds: bool = Inputs.bool_input(
-            to_set,
-            default_value=True,
-            text="To build bonds between atoms",
-            env_id="to_build_bonds",
-        )
+    #     to_build_bonds: bool = Inputs.bool_input(
+    #         to_set,
+    #         default_value=True,
+    #         text="To build bonds between atoms",
+    #         env_id="to_build_bonds",
+    #     )
 
-        num_of_min_distances: int = int(Inputs.text_input(
-            to_set,
-            default_value="2",
-            text="Number of min distances for bonds to show on plot",
-            env_id="number_of_min_distances",
-        ))
+    #     num_of_min_distances: int = int(Inputs.text_input(
+    #         to_set,
+    #         default_value="2",
+    #         text="Number of min distances for bonds to show on plot",
+    #         env_id="number_of_min_distances",
+    #     ))
 
-        StructureVisualizer.show_two_structures(
-            coordinates_first=coordinates_carbon.points,
-            coordinates_second=upd_al_points,
-            to_build_bonds=to_build_bonds,
-            title=structure_folder,
-            num_of_min_distances=num_of_min_distances,
-        )
+    #     StructureVisualizer.show_two_structures(
+    #         coordinates_first=coordinates_carbon.points,
+    #         coordinates_second=upd_al_points,
+    #         to_build_bonds=to_build_bonds,
+    #         title=structure_folder,
+    #         num_of_min_distances=num_of_min_distances,
+    #     )
 
-        FileWriter.write_dat_file(upd_al_points, structure_folder=structure_folder, filename="al_in_all_channels.dat")
+    #     FileWriter.write_dat_file(upd_al_points, structure_folder=structure_folder, filename="al_in_all_channels.dat")
 
-    @classmethod
-    def update_al_coordinates_tbl(cls, structure_folder: str, to_set: bool) -> None:
+    def update_plane_tbl_excel_file(self, structure_folder: str) -> None:
+        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
+
+        try:
+            CoordinatesTableManager.update_plane_tbl_file(structure_folder, carbon_channel, self.number_of_planes)
+
+        except IOError as e:
+            logger.warning(e)
+            raise IOError(
+                f"Error updating plane table file for {structure_folder} (possible reason: Excel file is blocked)"
+            ) from e
+
+    def update_al_coordinates_tbl(self, structure_folder: str) -> None:
         """
         Run in loop:
         1) read Excel file to get Al atoms;
@@ -80,120 +91,32 @@ class VMIntercalationAndSorption:
         4) after closing the plot go to 1).
         """
         carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
-        to_build_bonds: bool = True
 
-        number_of_planes: int = int(Inputs.text_input(
-            to_set,
-            default_value="1",
-            text="Number of planes to translate",
-            env_id="number_of_planes",
-        ))
+        al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(
+            structure_folder, carbon_channel, self.number_of_planes, self.file_name)
 
-        num_of_min_distances: int = int(Inputs.text_input(
-            to_set,
-            default_value="2",
-            text="Number of min distances for bonds to show on plot",
-            env_id="number_of_min_distances",
-        ))
+        plane_points: np.ndarray = np.vstack(
+            [carbon_channel.planes[i].points for i in range(self.number_of_planes)])
 
-        show_al_layers: bool = Inputs.bool_input(
-            to_set,
-            default_value=False,
-            text="Show AL layers in different colors",
-            env_id="show_al_layers",
+        self._show_structures(
+            carbon_channel_points=plane_points,
+            al_points=al_plane_coordinates.points,
+            title=structure_folder,
         )
 
-        interactive_mode: bool = Inputs.bool_input(
-            to_set,
-            default_value=False,
-            text="Interactive mode to update point coordinates",
-            env_id="interactive_mode",
-        )
-
-        while True:
-            al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(
-                structure_folder, carbon_channel, number_of_planes)
-
-            plane_points: np.ndarray = np.vstack([carbon_channel.planes[i].points for i in range(number_of_planes)])
-
-            cls._show_structures(
-                carbon_channel_points=plane_points,
-                al_points=al_plane_coordinates.points,
-                to_build_bonds=to_build_bonds,
-                title=structure_folder,
-                num_of_min_distances=num_of_min_distances,
-                show_al_layers=show_al_layers,
-                interactive_mode=interactive_mode,
-                # skip_first_distances=0,
-                # show_coordinates=False,
-                # show_indexes=True,
-                to_set=to_set,
-            )
-
-            try:
-                CoordinatesTableManager.update_plane_tbl_file(structure_folder, carbon_channel, number_of_planes)
-
-            except IOError as e:
-                logger.warning(e)
-                file_is_closed: bool = Inputs.bool_input(
-                    to_set,
-                    default_value=True,
-                    text="Did you save and close Excel file?",
-                )
-
-                if file_is_closed is False:
-                    raise
-
-    @classmethod
-    def translate_al_to_other_planes(cls, structure_folder: str, to_set: bool) -> None:
+    def translate_al_to_other_planes(self, structure_folder: str) -> Path:
         """
         Read Al coordinates from the Excel table and translate the structure to other planes.
         """
         carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
-        to_build_bonds: bool = True
-
-        number_of_planes: int = int(Inputs.text_input(
-            to_set,
-            default_value="1",
-            text="Number of planes to translate",
-            env_id="number_of_planes",
-        ))
-
-        num_of_min_distances: int = int(Inputs.text_input(
-            to_set,
-            default_value="2",
-            text="Number of min distances for bonds to show on plot",
-            env_id="number_of_min_distances",
-        ))
-
-        try_to_reflect_al_atoms: bool = Inputs.bool_input(
-            to_set,
-            default_value=True,
-            text="Try to reflect aluminum atoms for other planes",
-            env_id="try_to_reflect_al_atoms",
-        )
-
-        show_al_layers: bool = Inputs.bool_input(
-            to_set,
-            default_value=False,
-            text="Show AL layers in different colors",
-            env_id="show_al_layers",
-        )
-
-        interactive_mode: bool = Inputs.bool_input(
-            to_set,
-            default_value=False,
-            text="Interactive mode to update point coordinates",
-            env_id="interactive_mode",
-        )
 
         al_coordinates: Points = AtomsParser.get_al_channel_coordinates(
-            structure_folder, carbon_channel, number_of_planes, try_to_reflect_al_atoms)
+            structure_folder, carbon_channel, self.number_of_planes, self.to_try_to_reflect_al_atoms)
 
-        if number_of_planes > 1:
+        if self.number_of_planes > 1:
             # Build only specified planes
             carbon_channel_points: np.ndarray = np.vstack(
-                [carbon_channel.planes[i].points for i in range(number_of_planes)])
+                [carbon_channel.planes[i].points for i in range(self.number_of_planes)])
         else:
             # Build all planes
             carbon_channel_points: np.ndarray = carbon_channel.points
@@ -201,20 +124,13 @@ class VMIntercalationAndSorption:
         # min_dists: np.ndarray = DistanceMeasure.calculate_min_distances(al_coordinates.points, carbon_channel_points)
         # DistanceMeasure.calculate_min_distances_between_points()
 
-        cls._show_structures(
+        self._show_structures(
             carbon_channel_points=carbon_channel_points,
             al_points=al_coordinates.points,
-            to_build_bonds=to_build_bonds,
             title=structure_folder,
-            num_of_min_distances=num_of_min_distances,
-            show_al_layers=show_al_layers,
-            interactive_mode=interactive_mode,
-            # show_coordinates=False,
-            # show_indexes=True,
-            to_set=to_set,
         )
 
-        FileWriter.write_excel_file(
+        path_to_file: Path | None = FileWriter.write_excel_file(
             df=al_coordinates.to_df(columns=["i", "x_Al", "y_Al", "z_Al"]),
             structure_folder=structure_folder,
             sheet_name="Al atoms for the channel",
@@ -222,8 +138,12 @@ class VMIntercalationAndSorption:
             is_init_data_dir=False,
         )
 
-    @classmethod
-    def update_al_full_channel_coordinates_tbl(cls, structure_folder: str, to_set: bool) -> None:
+        if path_to_file is None:
+            raise ValueError("Failed to write Excel file")
+
+        return path_to_file
+
+    def update_al_full_channel_coordinates_tbl(self, structure_folder: str) -> None:
         """
         Run in loop:
         1) read Excel file to get Al atoms for the full channel;
@@ -231,6 +151,7 @@ class VMIntercalationAndSorption:
         3) show current structure based on the coordinates from the file;
         4) after closing the plot go to 1).
         """
+        return
         carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
         to_build_bonds: bool = True
 
@@ -269,7 +190,7 @@ class VMIntercalationAndSorption:
                 logger.warning(
                     f"Excel file with Al atoms for the full channel not found in {structure_folder}; building full channel.")
 
-                al_bulk: Points = cls._build_al_atoms(
+                al_bulk: Points = self._build_al_atoms(
                     to_set, carbon_channel.coordinate_limits)
 
                 # number_of_planes: int = int(Inputs.text_input(
@@ -301,7 +222,7 @@ class VMIntercalationAndSorption:
                     is_init_data_dir=False,
                 )
 
-            cls._show_structures(
+            self._show_structures(
                 carbon_channel_points=carbon_channel.points,
                 al_points=al_full_channel_coordinates.points,
                 to_build_bonds=to_build_bonds,
@@ -328,11 +249,11 @@ class VMIntercalationAndSorption:
                 if file_is_closed is False:
                     raise
 
-    @classmethod
-    def get_al_in_channel_details(cls, structure_folder: str, to_set: bool) -> None:
+    def get_al_in_channel_details(self, structure_folder: str) -> None:
         """
         Get details of Al atoms in the channel.
         """
+        return
         carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
 
         number_of_planes: int = int(Inputs.text_input(
@@ -393,11 +314,11 @@ class VMIntercalationAndSorption:
             is_init_data_dir=False,
         )
 
-    @classmethod
-    def translate_al_to_all_channels(cls, structure_folder: str, to_set: bool) -> None:
+    def translate_al_to_all_channels(self, structure_folder: str) -> None:
         """
         Read Al plane coordinates from the Excel table and translate the structure to other planes.
         """
+        return
         coordinates_carbon: Points = IntercalatedChannelBuilder.build_carbon_coordinates(
             structure_folder=structure_folder)
 
@@ -450,7 +371,7 @@ class VMIntercalationAndSorption:
 
         to_build_bonds = True
 
-        cls._show_structures(
+        self._show_structures(
             carbon_channel_points=coordinates_carbon.points,
             al_points=al_coordinates.points,
             to_build_bonds=to_build_bonds,
@@ -483,26 +404,16 @@ class VMIntercalationAndSorption:
             filename=Constants.filenames.C_ALL_CHANNELS_COORDINATES_DAT_FILE,
         )
 
-    @staticmethod
     def _build_al_atoms(
-            to_set: bool, coordinate_limits: CoordinateLimits
+            self,
+            coordinate_limits: CoordinateLimits,
     ) -> Points:
-        to_translate_al: bool = Inputs.bool_input(
-            to_set, default_value=True, text="To translate AL atomes to fill full volume")
-
-        al_lattice_type_str: str = Inputs.text_input(
-            to_set,
-            default_value="FCC",
-            text=AlLatticeType.get_info(),
-            available_values=AlLatticeType.get_available_types(),
-            env_id="al_lattice_type")
-        al_lattice_type = AlLatticeType(al_lattice_type_str)
+        al_lattice_type = AlLatticeType(self.al_lattice_type)
 
         if al_lattice_type.is_cell:
-            al_file: str = Inputs.text_input(to_set, default_value=Constants.filenames.AL_FILE, text="Init AL file")
             return IntercalatedChannelBuilder.build_al_coordinates_for_cell(
-                to_translate_al=to_translate_al,
-                al_file=al_file,
+                to_translate_al=self.to_translate_al,
+                al_file=self.file_name,
                 coordinate_limits=coordinate_limits,
             )
 
@@ -513,156 +424,109 @@ class VMIntercalationAndSorption:
                 coordinate_limits=coordinate_limits,
             )
 
-    @classmethod
-    def _calculate_al_points(
-            cls, to_set: bool, structure_settings: StructureSettings, carbon_channel: CarbonHoneycombChannel
-    ) -> Points:
-        """ Calculate Al points inside channel from coordinates_carbon. """
-
-        coordinates_al: Points = cls._build_al_atoms(to_set, carbon_channel.coordinate_limits)
-
-        to_filter_al_atoms: bool = Inputs.bool_input(
-            to_set, default_value=True, text="To filter AL atomes relative honeycomd bondaries")
-
-        equidistant_al_points: bool = Inputs.bool_input(
-            to_set=to_set, default_value=True, text="Set Al atoms maximally equidistant from the channel atoms",
-            env_id="set_equidistant")
-
-        return IntercalatedChannelBuilder.build_al_in_carbon(
-            carbon_channel=carbon_channel,
-            coordinates_al=coordinates_al,
-            structure_settings=structure_settings,
-            to_filter_al_atoms=to_filter_al_atoms,
-            equidistant_al_points=equidistant_al_points)
-
-    @classmethod
     def _show_structures(
-        cls,
+        self,
         carbon_channel_points: np.ndarray,
         al_points: np.ndarray,
-        to_build_bonds: bool = False,
         title: str | None = None,
-        show_coordinates: bool | None = None,
-        show_indexes: bool | None = None,
-        show_al_layers: bool | None = None,
-        num_of_min_distances: int = 2,
-        skip_first_distances: int = 0,
-        interactive_mode: bool = False,
-        to_set: bool = False,
     ) -> None:
+        # TODO: refactor
 
-        if show_al_layers:
-            number_of_layers: int = int(Inputs.text_input(
-                to_set,
-                default_value="2",
-                text="Number of layers to translate",
-                env_id="number_of_layers",
-            ))
-
-            # # Split al points into layers by the min dists to Al
-            # min_dists: np.ndarray = DistanceMeasure.calculate_min_distances(al_points, carbon_channel_points)
-
-            # min_dist = np.min(min_dists)
-            # min_dist_with_threshold = min_dist * 1.2
-
-            # first_layer_points: np.ndarray = al_points[min_dists <= min_dist_with_threshold]
-            # other_layers_points: np.ndarray = al_points[min_dists > min_dist_with_threshold]
-
-            # Split the al_points by layers along Oz (by rounded z coordinate)
-            if number_of_layers == 2:
-                al_groups_with_indices: list[tuple[np.ndarray, np.ndarray]] = cls._split_atoms_along_z_axis(al_points)
-
-                a_layer_indices: list[int] = []
-                b_layer_indices: list[int] = []
-
-                for i, (group, indices) in enumerate(al_groups_with_indices):
-                    if i % number_of_layers == 0:
-                        a_layer_indices.extend(indices)
-                    else:
-                        b_layer_indices.extend(indices)
-
-                StructureVisualizer.show_structures(
-                    coordinates_list=[
-                        carbon_channel_points,
-                        al_points[a_layer_indices],
-                        al_points[b_layer_indices],
-                    ],
-                    visual_params_list=[
-                        VisualizationParams.carbon,
-                        VisualizationParams.al,
-                        VisualizationParams.al_2,
-                    ],
-                    to_build_bonds_list=[
-                        to_build_bonds,
-                        False,
-                        False,
-                    ],
-                    title=title,
-                    num_of_min_distances=num_of_min_distances,
-                    skip_first_distances=skip_first_distances,
-                    to_show_coordinates=show_coordinates,
-                    to_show_indexes=show_indexes,
-                    is_interactive_mode=interactive_mode,
-                    custom_indices_list=[None, a_layer_indices, b_layer_indices],
-                )
-
-            elif number_of_layers == 3:
-                al_groups_with_indices: list[tuple[np.ndarray, np.ndarray]] = cls._split_atoms_along_z_axis(al_points)
-
-                a_layer_indices: list[int] = []
-                b_layer_indices: list[int] = []
-                c_layer_indices: list[int] = []
-
-                for i, (group, indices) in enumerate(al_groups_with_indices):
-                    if i % number_of_layers == 0:
-                        a_layer_indices.extend(indices)
-                    elif i % number_of_layers == 1:
-                        b_layer_indices.extend(indices)
-                    else:
-                        c_layer_indices.extend(indices)
-
-                StructureVisualizer.show_structures(
-                    coordinates_list=[
-                        carbon_channel_points,
-                        al_points[a_layer_indices],
-                        al_points[b_layer_indices],
-                        al_points[c_layer_indices],
-                    ],
-                    visual_params_list=[
-                        VisualizationParams.carbon,
-                        VisualizationParams.al,
-                        VisualizationParams.al_2,
-                        VisualizationParams.al_3,
-                    ],
-                    to_build_bonds_list=[
-                        to_build_bonds,
-                        False,
-                        False,
-                        False,
-                    ],
-                    title=title,
-                    num_of_min_distances=num_of_min_distances,
-                    skip_first_distances=skip_first_distances,
-                    to_show_coordinates=show_coordinates,
-                    to_show_indexes=show_indexes,
-                    is_interactive_mode=interactive_mode,
-                    custom_indices_list=[None, a_layer_indices, b_layer_indices, c_layer_indices],
-                )
-            else:
-                raise NotImplementedError(f"Number of layers {number_of_layers} is not implemented")
-
-        else:
+        if self.num_of_al_layers == 1:
             StructureVisualizer.show_two_structures(
                 coordinates_first=carbon_channel_points,
                 coordinates_second=al_points,
-                to_build_bonds=to_build_bonds,
                 title=title,
-                num_of_min_distances=num_of_min_distances,
-                skip_first_distances=skip_first_distances,
-                to_show_coordinates=show_coordinates,
-                to_show_indexes=show_indexes,
-                is_interactive_mode=interactive_mode,
+                to_build_bonds=self.to_build_bonds,
+                num_of_min_distances=self.bonds_num_of_min_distances,
+                skip_first_distances=self.bonds_skip_first_distances,
+                to_show_coordinates=self.to_show_coordinates,
+                to_show_indexes=self.to_show_indexes,
+                # is_interactive_mode=self.interactive_mode,
             )
+
+        elif self.num_of_al_layers == 2:
+            # Split the al_points by layers along Oz (by rounded z coordinate)
+            al_groups_with_indices: list[tuple[np.ndarray, np.ndarray]] = self._split_atoms_along_z_axis(al_points)
+
+            a_layer_indices: list[int] = []
+            b_layer_indices: list[int] = []
+
+            for i, (group, indices) in enumerate(al_groups_with_indices):
+                if i % self.num_of_al_layers == 0:
+                    a_layer_indices.extend(indices)
+                else:
+                    b_layer_indices.extend(indices)
+
+            StructureVisualizer.show_structures(
+                coordinates_list=[
+                    carbon_channel_points,
+                    al_points[a_layer_indices],
+                    al_points[b_layer_indices],
+                ],
+                visual_params_list=[
+                    VisualizationParams.carbon,
+                    VisualizationParams.al,
+                    VisualizationParams.al_2,
+                ],
+                to_build_bonds_list=[
+                    self.to_build_bonds,
+                    False,
+                    False,
+                ],
+                title=title,
+                num_of_min_distances=self.bonds_num_of_min_distances,
+                skip_first_distances=self.bonds_skip_first_distances,
+                to_show_coordinates=self.to_show_coordinates,
+                to_show_indexes=self.to_show_indexes,
+                # is_interactive_mode=self.interactive_mode,
+                custom_indices_list=[None, a_layer_indices, b_layer_indices],
+            )
+
+        elif self.num_of_al_layers == 3:
+            al_groups_with_indices: list[tuple[np.ndarray, np.ndarray]] = self._split_atoms_along_z_axis(al_points)
+
+            a_layer_indices: list[int] = []
+            b_layer_indices: list[int] = []
+            c_layer_indices: list[int] = []
+
+            for i, (group, indices) in enumerate(al_groups_with_indices):
+                if i % self.num_of_al_layers == 0:
+                    a_layer_indices.extend(indices)
+                elif i % self.num_of_al_layers == 1:
+                    b_layer_indices.extend(indices)
+                else:
+                    c_layer_indices.extend(indices)
+
+            StructureVisualizer.show_structures(
+                coordinates_list=[
+                    carbon_channel_points,
+                    al_points[a_layer_indices],
+                    al_points[b_layer_indices],
+                    al_points[c_layer_indices],
+                ],
+                visual_params_list=[
+                    VisualizationParams.carbon,
+                    VisualizationParams.al,
+                    VisualizationParams.al_2,
+                    VisualizationParams.al_3,
+                ],
+                to_build_bonds_list=[
+                    self.to_build_bonds,
+                    False,
+                    False,
+                    False,
+                ],
+                title=title,
+                num_of_min_distances=self.bonds_num_of_min_distances,
+                skip_first_distances=self.bonds_skip_first_distances,
+                to_show_coordinates=self.to_show_coordinates,
+                to_show_indexes=self.to_show_indexes,
+                # is_interactive_mode=self.interactive_mode,
+                custom_indices_list=[None, a_layer_indices, b_layer_indices, c_layer_indices],
+            )
+        else:
+            raise NotImplementedError(f"Number of layers {self.num_of_al_layers} is not implemented")
 
     @staticmethod
     def _split_atoms_along_z_axis(coordinates: np.ndarray) -> list[tuple[np.ndarray, np.ndarray]]:

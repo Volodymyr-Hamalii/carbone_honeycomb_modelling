@@ -26,6 +26,15 @@ class VMParamsSetter:
         self.dat_file_name: str = Constants.filenames.AL_ALL_CHANNELS_COORDINATES_DAT_FILE
         self.pdb_file_name: str = Constants.filenames.PDB_FILE_ONE_CHANNEL
 
+        # Intercalation and sorption
+        self.number_of_planes: int = 1
+        self.num_of_al_layers: int = 1
+        self.to_translate_al: bool = True
+        self.to_try_to_reflect_al_atoms: bool = True
+        self.to_equidistant_al_points: bool = True
+        self.to_filter_al_atoms: bool = True
+        self.al_lattice_type: str = "FCC"
+
     ######### Plot details #########
 
     def set_to_build_bonds(self, value: bool) -> None:
@@ -78,3 +87,23 @@ class VMParamsSetter:
 
     def set_pdb_file_name(self, value: str) -> None:
         self.pdb_file_name: str = value
+
+    ######### Intercalation and sorption #########
+
+    def set_number_of_planes(self, value: int) -> None:
+        self.number_of_planes: int = value
+
+    def set_num_of_al_layers(self, value: int) -> None:
+        self.num_of_al_layers: int = value
+
+    def set_to_try_to_reflect_al_atoms(self, value: bool) -> None:
+        self.to_try_to_reflect_al_atoms: bool = value
+
+    def set_to_equidistant_al_points(self, value: bool) -> None:
+        self.to_equidistant_al_points: bool = value
+
+    def set_to_filter_al_atoms(self, value: bool) -> None:
+        self.to_filter_al_atoms: bool = value
+
+    def set_al_lattice_type(self, value: str) -> None:
+        self.al_lattice_type: str = value

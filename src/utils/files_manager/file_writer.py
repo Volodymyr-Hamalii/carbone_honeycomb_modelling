@@ -127,7 +127,7 @@ class FileWriter(FileManager):
             file_name: str,
             folder_path: Path | str | None = None,
             is_init_data_dir: bool = True,
-    ) -> None:
+    ) -> Path | None:
         """
         Write a pandas DataFrame to an Excel file.
 
@@ -175,6 +175,7 @@ class FileWriter(FileManager):
                 df.to_excel(path_to_file, sheet_name=sheet_name, index=False, engine="openpyxl")
 
             logger.info(f"Data successfully written to {path_to_file}")
+            return path_to_file
 
         except Exception as e:
             logger.error(f"Failed to write file {path_to_file}: {e}")

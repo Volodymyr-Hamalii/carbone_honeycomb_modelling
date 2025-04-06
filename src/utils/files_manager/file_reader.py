@@ -19,12 +19,19 @@ class FileReader(FileManager):
             folder_path: Path | str = Constants.path.INIT_DATA_PATH,
     ) -> list[str]:
         """ Read a list of directories in the given folder path. By default uses 'init_data' folder. """
-        return sorted(
-            [
-                dir.name for dir in Path(folder_path).iterdir()
-                if dir.is_dir()
-            ]
-        )
+        try:
+            return sorted(
+                [
+                    dir.name for dir in Path(folder_path).iterdir()
+                    if dir.is_dir()
+                ]
+            )
+        except FileNotFoundError:
+            logger.error(f"Folder {folder_path} not found.")
+            return []
+        except Exception as e:
+            logger.error(f"Failed to read list of directories in {folder_path}: {e}")
+            return []
 
     @staticmethod
     def read_list_of_files(
@@ -32,14 +39,21 @@ class FileReader(FileManager):
             format: str | None = None,
     ) -> list[str]:
         """ Read a list of files in the given folder path. By default uses '.xlsx' format. """
-        return sorted(
-            [
-                file.name for file in Path(folder_path).iterdir()
-                if file.is_file() and (
-                    file.name.endswith(format) if format else True
-                )
-            ]
-        )
+        try:
+            return sorted(
+                [
+                    file.name for file in Path(folder_path).iterdir()
+                    if file.is_file() and (
+                        file.name.endswith(format) if format else True
+                    )
+                ]
+            )
+        except FileNotFoundError:
+            logger.error(f"Folder {folder_path} not found.")
+            return []
+        except Exception as e:
+            logger.error(f"Failed to read list of files in {folder_path}: {e}")
+            return []
 
     @staticmethod
     def read_json_file(
