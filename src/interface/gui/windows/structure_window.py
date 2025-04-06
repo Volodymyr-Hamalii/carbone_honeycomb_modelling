@@ -17,7 +17,7 @@ class StructureWindow:
 
         # self.input_window.pack_propagate(False)
         # self.input_window.grid_propagate(False)
-        self.input_window.geometry("600x300")
+        self.input_window.geometry("400x400")
 
         # Checkbox for to_build_bonds
         self.to_build_bonds_checkbox = CheckBox(
