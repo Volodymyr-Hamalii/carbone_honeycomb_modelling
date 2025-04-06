@@ -1,24 +1,29 @@
+from pathlib import Path
 from src.utils import Constants
 
 
 class VMParamsSetter:
     def __init__(self) -> None:
-        # self.structure_folder: str = structure_folder
-
+        # Plot details
         self.to_build_bonds: bool = False
         self.to_show_coordinates: bool = False
         self.to_show_indexes: bool = False
 
         # Channel details
         self.to_show_dists_to_plane: bool = True
-        self.to_show_dists_to_edges: bool = False
+        self.to_show_dists_to_edges: bool = True
         self.to_show_channel_angles: bool = True
 
+        # Files and paths
+        self.data_dir: Path = Constants.path.RESULT_DATA_PATH
+        self.file_name: str = "None"
+        self.file_format: str = "None"  # "xlsx", "dat", "pdb"
+        self.available_formats: list[str] = ["xlsx", "dat", "pdb"]
         self.excel_file_name: str = Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE
-        self.dat_file_name: str = Constants.filenames.INIT_DAT_FILE
+        self.dat_file_name: str = Constants.filenames.AL_ALL_CHANNELS_COORDINATES_DAT_FILE
+        self.pdb_file_name: str = Constants.filenames.PDB_FILE_ONE_CHANNEL
 
-    # def set_structure_folder(self, value: str) -> None:
-    #     self.structure_folder: str = value
+    ######### Plot details #########
 
     def set_to_build_bonds(self, value: bool) -> None:
         self.to_build_bonds: bool = value
@@ -29,11 +34,7 @@ class VMParamsSetter:
     def set_to_show_indexes(self, value: bool) -> None:
         self.to_show_indexes: bool = value
 
-    def set_excel_file_name(self, value: str) -> None:
-        self.excel_file_name: str = value
-
-    def set_dat_file_name(self, value: str) -> None:
-        self.dat_file_name: str = value
+    ######### Channel details #########
 
     def set_to_show_dists_to_plane(self, value: bool) -> None:
         self.to_show_dists_to_plane: bool = value
@@ -43,3 +44,28 @@ class VMParamsSetter:
 
     def set_to_show_channel_angles(self, value: bool) -> None:
         self.to_show_channel_angles: bool = value
+
+    ######### Files and paths #########
+
+    def set_data_dir(self, value: str) -> None:
+        if value == Constants.filenames.INIT_DATA_DIR:
+            self.data_dir: Path = Constants.path.INIT_DATA_PATH
+        elif value == Constants.filenames.RESULT_DATA_DIR:
+            self.data_dir: Path = Constants.path.RESULT_DATA_PATH
+        else:
+            raise ValueError(f"Invalid data directory: {value}")
+
+    def set_file_name(self, value: str) -> None:
+        self.file_name: str = value
+
+    def set_file_format(self, value: str) -> None:
+        self.file_format: str = value
+
+    def set_excel_file_name(self, value: str) -> None:
+        self.excel_file_name: str = value
+
+    def set_dat_file_name(self, value: str) -> None:
+        self.dat_file_name: str = value
+
+    def set_pdb_file_name(self, value: str) -> None:
+        self.pdb_file_name: str = value

@@ -18,8 +18,8 @@ logger = Logger("FileWriter")
 
 
 class FileWriter(FileManager):
-    dat_file_first_lines: str = "        210         150           3  1.000000000000000E-002       10000\n" + \
-                                "   5.00000000000000             3023   1.00000000000000\n"
+    # dat_file_first_lines: str = "        210         150           3  1.000000000000000E-002       10000\n" + \
+    #                             "   5.00000000000000             3023   1.00000000000000\n"
 
     @classmethod
     def write_dat_file(
@@ -32,6 +32,7 @@ class FileWriter(FileManager):
     ) -> None:
         """For the path you can provide either path_to_file or structure_folder."""
 
+        # TODO: refactor to use DataConverter.convert_ndarray_to_dat
         try:
             if len(data_lines) == 0:
                 logger.warning("No data for .dat file.")
@@ -55,10 +56,12 @@ class FileWriter(FileManager):
                 data_lines = [f"{i[0]}\t{i[1]}\t{i[2]}" for i in data_lines]
 
             with Path(path_to_file).open("w") as dat_file:
-                dat_file.write(cls.dat_file_first_lines)
+                # dat_file.write(cls.dat_file_first_lines)
 
                 for line in data_lines:
-                    dat_file.write(line + "\n")
+                    if "\n" not in line:
+                        line += "\n"
+                    dat_file.write(line)
 
             logger.info(f"File saved: {path_to_file}")
 
@@ -74,6 +77,7 @@ class FileWriter(FileManager):
     ) -> None:
         """For the path you can provide either path_to_file or structure_folder."""
 
+        # TODO: refactor to use DataConverter.convert_ndarray_to_pdb
         try:
             if len(data_lines) == 0:
                 logger.warning("No data for .dat file.")

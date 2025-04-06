@@ -1,5 +1,5 @@
 import customtkinter as ctk
-from ..viewmodels.show_init_data import VMShowInitData
+from ..viewmodels import VMShowInitData
 from ..components import Button, CheckBox, PlotWindow
 
 
