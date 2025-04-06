@@ -5,7 +5,7 @@ from tkinter import messagebox
 from src.utils import Logger, Constants, FileReader
 
 from ..viewmodels import VMDataConverter
-from ..components import Button, CheckBox, DropdownList
+from ..components import Button, DropdownList
 
 
 logger = Logger("DataOperationsWindow")
@@ -19,14 +19,14 @@ class DataConverterWindow:
         # self.excel_file_names: list[str] = ["None"]
         # self.dat_file_names: list[str] = ["None"]
         # self.pdb_file_names: list[str] = ["None"]
-        self.file_names: list[str] = ["None"]
+        self.file_names: list[str] = []
         self._refresh_file_name_lists()
 
         self.create_window()
 
     def create_window(self) -> None:
         self.input_window = ctk.CTkToplevel()
-        title: str = f"Data operations ({self.structure_folder})"
+        title: str = f"Data converter ({self.structure_folder})"
         self.input_window.title(title)
 
         # self.input_window.pack_propagate(False)
@@ -113,7 +113,7 @@ class DataConverterWindow:
         # self.pdb_file_names: list[str] = FileReader.read_list_of_files(path, ".pdb") or ["None"]
         self.file_names: list[str] = FileReader.read_list_of_files(path) or ["None"]
 
-        if self.view_model.file_name == "None":
+        if self.view_model.file_name == "None" and self.file_names:
             self.view_model.set_file_name(self.file_names[0])
 
         if self.view_model.file_format == "None":
