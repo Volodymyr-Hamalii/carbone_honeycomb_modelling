@@ -1,10 +1,15 @@
-class ViewModelParamsSetter:
+from src.utils import Constants
+
+class VMParamsSetter:
     def __init__(self) -> None:
         # self.structure_folder: str = structure_folder
 
         self.to_build_bonds: bool = False
         self.to_show_coordinates: bool = False
         self.to_show_indexes: bool = False
+
+        self.excel_file_name: str = Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE
+        self.dat_file_name: str = Constants.filenames.INIT_DAT_FILE
 
     # def set_structure_folder(self, value: str) -> None:
     #     self.structure_folder: str = value
@@ -17,3 +22,9 @@ class ViewModelParamsSetter:
 
     def set_to_show_indexes(self, value: bool) -> None:
         self.to_show_indexes: bool = value
+
+    def set_excel_file_name(self, value: str) -> None:
+        self.excel_file_name: str = value
+
+    def set_dat_file_name(self, value: str) -> None:
+        self.dat_file_name: str = value

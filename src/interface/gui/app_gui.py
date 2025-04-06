@@ -2,9 +2,10 @@ import customtkinter as ctk
 
 from src.utils import FileReader
 
-from .viewmodels.show_init_data import ViewModelShowInitData
+from .viewmodels import VMShowInitData, VMDataOperations
 from .components import Button, DropdownList
 from .windows import StructureWindow, ChannelDetailsWindow
+
 
 class AppGui(ctk.CTk):
     def __init__(self):
@@ -15,8 +16,9 @@ class AppGui(ctk.CTk):
         structure_folders: list[str] = FileReader.read_list_of_dirs()
         self.structure_folder: str = structure_folders[0]
 
-        # Initialize ViewModel
-        self.view_model = ViewModelShowInitData()
+        # Initialize ViewModels
+        self.view_model_show_init_data = VMShowInitData()
+        self.view_model_data_operations = VMDataOperations()
 
         # Create GUI components
         self.create_widgets(structure_folders)
@@ -52,10 +54,10 @@ class AppGui(ctk.CTk):
         self.structure_folder: str = value
 
     def open_show_init_structure_window(self) -> None:
-        StructureWindow(self.view_model, self.structure_folder)
+        StructureWindow(self.view_model_show_init_data, self.structure_folder)
 
     def open_show_one_channel_structure_window(self) -> None:
-        StructureWindow(self.view_model, self.structure_folder, one_channel=True)
+        StructureWindow(self.view_model_show_init_data, self.structure_folder, one_channel=True)
 
     def open_get_channel_details_window(self) -> None:
-        ChannelDetailsWindow(self.view_model, self.structure_folder)
+        ChannelDetailsWindow(self.view_model_show_init_data, self.structure_folder)

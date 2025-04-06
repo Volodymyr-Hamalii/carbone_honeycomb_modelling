@@ -1,13 +1,13 @@
 import customtkinter as ctk
 
-from ..viewmodels.show_init_data import ViewModelShowInitData
+from ..viewmodels import VMShowInitData
 from ..components import Button, CheckBox, PlotWindow
 
 
 class ChannelDetailsWindow:
-    def __init__(self, view_model: ViewModelShowInitData, structure_folder: str) -> None:
+    def __init__(self, view_model: VMShowInitData, structure_folder: str) -> None:
         self.structure_folder: str = structure_folder
-        self.view_model: ViewModelShowInitData = view_model
+        self.view_model: VMShowInitData = view_model
         self.create_window()
 
     def create_window(self) -> None:

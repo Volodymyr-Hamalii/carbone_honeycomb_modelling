@@ -15,13 +15,13 @@ from src.projects import (
     AtomsParser,
     CarbonHoneycombPlane,
 )
-from .view_model_params_setter import ViewModelParamsSetter
+from .view_model_params_setter import VMParamsSetter
 
 
 logger = Logger("Actions")
 
 
-class ViewModelShowInitData(ViewModelParamsSetter):
+class VMShowInitData(VMParamsSetter):
     def show_init_structure(self, structure_folder: str) -> None:
         """
         Show 3D model of result_data/{structure_folder}/ljout-from-init-dat.pdb
