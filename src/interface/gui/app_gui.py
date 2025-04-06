@@ -32,21 +32,29 @@ class AppGui(ctk.CTk):
         )
         self.structure_folder_dropdown.pack(pady=10)
 
+        # Create a frame for "Init data info" section
+        init_data_info_frame = ctk.CTkFrame(self)
+        init_data_info_frame.pack(pady=10, fill="x")
+
+        # Add a label for the section
+        init_data_info_label = ctk.CTkLabel(init_data_info_frame, text="CH channel general info")
+        init_data_info_label.pack(pady=5)
+
         # Button to show init structure
         self.show_init_structure_btn = Button(
-            self, text="Show init CH structure", command=self.open_show_init_structure_window
+            init_data_info_frame, text="Show init CH structure", command=self.open_show_init_structure_window
         )
         self.show_init_structure_btn.pack(pady=10)
 
         # Button to show one channel structure
         self.show_one_channel_structure_btn = Button(
-            self, text="Show one channel structure", command=self.open_show_one_channel_structure_window
+            init_data_info_frame, text="Show one channel structure", command=self.open_show_one_channel_structure_window
         )
         self.show_one_channel_structure_btn.pack(pady=10)
 
         # Button to show channel parameters
         self.show_channel_parameters_btn = Button(
-            self, text="Show channel parameters", command=self.open_get_channel_details_window
+            init_data_info_frame, text="Show channel parameters", command=self.open_get_channel_details_window
         )
         self.show_channel_parameters_btn.pack(pady=10)
 
