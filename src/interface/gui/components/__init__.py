@@ -1,3 +1,4 @@
 from .buttons import Button
-from .option_checkbox import CheckBox, DropdownList
+from .checkbox import CheckBox
+from .dropdown_list import DropdownList
 from .plot import PlotWindow
