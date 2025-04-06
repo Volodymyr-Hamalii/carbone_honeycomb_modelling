@@ -242,77 +242,80 @@ class VMShowInitData(VMParamsSetter):
             # Center of the plane
             plane_center = np.mean(plane_points_2d, axis=0)
 
-            # Show the distance from the center to the plane
-            ax.text(
-                plane_center[0], plane_center[1],
-                f"Dist to plane: {distance_from_center_to_plane:.2f}",
-                # color="black",
-                fontsize=fontsize,
-                ha="center",
-                va="top" if plane_center[1] < center_2d[1] else "bottom",
-            )
+            if self.to_show_dists_to_plane:
+                # Show the distance from the center to the plane
+                ax.text(
+                    plane_center[0], plane_center[1],
+                    f"Dist to plane: {distance_from_center_to_plane:.2f}",
+                    # color="black",
+                    fontsize=fontsize,
+                    ha="center",
+                    va="top" if plane_center[1] < center_2d[1] else "bottom",
+                )
 
-            # Calculate the angle between the plane and the next plane
-            if i < len(planes_points_2d) - 1:
-                next_plane_points: np.ndarray = planes_points_2d[i + 1]
-            else:
-                next_plane_points: np.ndarray = planes_points_2d[0]
+            if self.to_show_channel_angles:
+                # Calculate the angle between the plane and the next plane
+                if i < len(planes_points_2d) - 1:
+                    next_plane_points: np.ndarray = planes_points_2d[i + 1]
+                else:
+                    next_plane_points: np.ndarray = planes_points_2d[0]
 
-            next_plane_line_equation: tuple[float, float, float, float] = LinesOperations.get_line_equation(
-                next_plane_points[0], next_plane_points[1])
+                next_plane_line_equation: tuple[float, float, float, float] = LinesOperations.get_line_equation(
+                    next_plane_points[0], next_plane_points[1])
 
-            # Calculate vectors along the lines
-            current_vector: np.ndarray = np.array(
-                [1.0, line_equation[1] / line_equation[0]]) if line_equation[0] != 0 else np.array([0.0, 1.0])
-            next_vector: np.ndarray = np.array(
-                [1.0, next_plane_line_equation[1] / next_plane_line_equation[0]]) if next_plane_line_equation[0] != 0 else np.array([0.0, 1.0])
+                # Calculate vectors along the lines
+                current_vector: np.ndarray = np.array(
+                    [1.0, line_equation[1] / line_equation[0]]) if line_equation[0] != 0 else np.array([0.0, 1.0])
+                next_vector: np.ndarray = np.array(
+                    [1.0, next_plane_line_equation[1] / next_plane_line_equation[0]]) if next_plane_line_equation[0] != 0 else np.array([0.0, 1.0])
 
-            # Normalize vectors
-            current_vector = current_vector / np.linalg.norm(current_vector)
-            next_vector = next_vector / np.linalg.norm(next_vector)
+                # Normalize vectors
+                current_vector = current_vector / np.linalg.norm(current_vector)
+                next_vector = next_vector / np.linalg.norm(next_vector)
 
-            # Calculate angle using dot product and handle the direction
-            dot_product: float = np.clip(np.dot(current_vector, next_vector), -1.0, 1.0)
-            angle: float = np.degrees(np.arccos(dot_product))
+                # Calculate angle using dot product and handle the direction
+                dot_product: float = np.clip(np.dot(current_vector, next_vector), -1.0, 1.0)
+                angle: float = np.degrees(np.arccos(dot_product))
 
-            # Ensure we get the smaller angle (should be ~120° not ~240°)
-            if angle > 180:
-                angle = 360 - angle
-            if angle < 90:
-                angle = 180 - angle
+                # Ensure we get the smaller angle (should be ~120° not ~240°)
+                if angle > 180:
+                    angle = 360 - angle
+                if angle < 90:
+                    angle = 180 - angle
 
-            # Get the point that is general for plane_points_2d and next_plane_points
-            general_planes_point: np.ndarray = next(
-                point for point in plane_points_2d
-                if any(np.array_equal(point, p) for p in next_plane_points)
-            )
+                # Get the point that is general for plane_points_2d and next_plane_points
+                general_planes_point: np.ndarray = next(
+                    point for point in plane_points_2d
+                    if any(np.array_equal(point, p) for p in next_plane_points)
+                )
 
-            ax.text(
-                general_planes_point[0], general_planes_point[1],
-                f"{round(angle, 1)}°",
-                # color="black",
-                fontsize=fontsize,
-                ha="left" if general_planes_point[0] < center_2d[0] else "right",
-                va="top" if general_planes_point[1] > center_2d[1] else "bottom",
-            )
+                ax.text(
+                    general_planes_point[0], general_planes_point[1],
+                    f"{round(angle, 1)}°",
+                    # color="black",
+                    fontsize=fontsize,
+                    ha="left" if general_planes_point[0] < center_2d[0] else "right",
+                    va="top" if general_planes_point[1] > center_2d[1] else "bottom",
+                )
 
-            for point in (min_point, max_point):
-                if not any(np.array_equal(point, p) for p in processed_points):
-                    processed_points.append(point)
+            if self.to_show_dists_to_edges:
+                for point in (min_point, max_point):
+                    if not any(np.array_equal(point, p) for p in processed_points):
+                        processed_points.append(point)
 
-                    distance_from_center_to_point: np.floating = np.linalg.norm(center_2d - point)
-                    # distances_from_center_to_edges.append(distance_from_center_to_point)
+                        distance_from_center_to_point: np.floating = np.linalg.norm(center_2d - point)
+                        # distances_from_center_to_edges.append(distance_from_center_to_point)
 
-                    # Show the distance from the center to the point
-                    ax.text(
-                        point[0], point[1],
-                        f"Dist to edge: {distance_from_center_to_point:.2f}",
-                        # color="black",
-                        fontsize=fontsize,
-                        # ha="left" if point[0] > center_2d[0] else "right",
-                        ha="center",
-                        va="bottom" if point[1] > center_2d[1] else "top",
-                    )
+                        # Show the distance from the center to the point
+                        ax.text(
+                            point[0], point[1],
+                            f"Dist to edge: {distance_from_center_to_point:.2f}",
+                            # color="black",
+                            fontsize=fontsize,
+                            # ha="left" if point[0] > center_2d[0] else "right",
+                            ha="center",
+                            va="bottom" if point[1] > center_2d[1] else "top",
+                        )
 
         if self.to_show_coordinates:
             # Show coordinates near each point

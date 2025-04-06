@@ -17,6 +17,30 @@ class ChannelDetailsWindow:
         # self.input_window.grid_propagate(False)
         self.input_window.geometry("600x300")
 
+        # Checkbox for to_show_channel_angles
+        self.to_show_channel_angles_checkbox = CheckBox(
+            self.input_window, text="Show channel angles",
+            command=self.update_to_show_channel_angles,
+            default=self.view_model.to_show_channel_angles,
+        )
+        self.to_show_channel_angles_checkbox.pack(pady=10, padx=10)
+
+        # Checkbox for to_show_dists_to_plane
+        self.to_show_dists_to_plane_checkbox = CheckBox(
+            self.input_window, text="Show distances to plane",
+            command=self.update_to_show_dists_to_plane,
+            default=self.view_model.to_show_dists_to_plane,
+        )
+        self.to_show_dists_to_plane_checkbox.pack(pady=10, padx=10)
+
+        # Checkbox for to_show_dists_to_edges
+        self.to_show_dists_to_edges_checkbox = CheckBox(
+            self.input_window, text="Show distances to edges",
+            command=self.update_to_show_dists_to_edges,
+            default=self.view_model.to_show_dists_to_edges,
+        )
+        self.to_show_dists_to_edges_checkbox.pack(pady=10, padx=10)
+
         # Checkbox for to_show_coordinates
         self.to_show_coordinates_checkbox = CheckBox(
             self.input_window, text="Show coordinates",
@@ -39,6 +63,18 @@ class ChannelDetailsWindow:
     def update_to_show_coordinates(self) -> None:
         value = bool(self.to_show_coordinates_checkbox.get())
         self.view_model.set_to_show_coordinates(value)
+
+    def update_to_show_dists_to_plane(self) -> None:
+        value = bool(self.to_show_dists_to_plane_checkbox.get())
+        self.view_model.set_to_show_dists_to_plane(value)
+
+    def update_to_show_dists_to_edges(self) -> None:
+        value = bool(self.to_show_dists_to_edges_checkbox.get())
+        self.view_model.set_to_show_dists_to_edges(value)
+
+    def update_to_show_channel_angles(self) -> None:
+        value = bool(self.to_show_channel_angles_checkbox.get())
+        self.view_model.set_to_show_channel_angles(value)
 
     def show_plot_window(self) -> None:
         plot_window = PlotWindow(self.input_window, title="Channel Details")
