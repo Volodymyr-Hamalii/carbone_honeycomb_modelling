@@ -5,9 +5,12 @@ from src.utils import Constants
 class VMParamsSetter:
     def __init__(self) -> None:
         # Plot details
-        self.to_build_bonds: bool = False
+        self.to_build_bonds: bool = True
         self.to_show_coordinates: bool = False
         self.to_show_indexes: bool = False
+
+        self.bonds_num_of_min_distances: int = 2
+        self.bonds_skip_first_distances: int = 0
 
         # Channel details
         self.to_show_dists_to_plane: bool = True
@@ -33,6 +36,12 @@ class VMParamsSetter:
 
     def set_to_show_indexes(self, value: bool) -> None:
         self.to_show_indexes: bool = value
+
+    def set_bonds_num_of_min_distances(self, value: int) -> None:
+        self.bonds_num_of_min_distances: int = value
+
+    def set_bonds_skip_first_distances(self, value: int) -> None:
+        self.bonds_skip_first_distances: int = value
 
     ######### Channel details #########
 

@@ -50,6 +50,8 @@ class VMShowInitData(VMParamsSetter):
             to_show_indexes=self.to_show_indexes,
             title=structure_folder,
             to_set_equal_scale=True,
+            num_of_min_distances=self.bonds_num_of_min_distances,
+            skip_first_distances=self.bonds_skip_first_distances,
         )
 
     # @staticmethod
@@ -156,7 +158,8 @@ class VMShowInitData(VMParamsSetter):
             title=structure_folder,
             to_show_coordinates=self.to_show_coordinates,
             to_show_indexes=self.to_show_indexes,
-            # num_of_min_distances=2,
+            num_of_min_distances=self.bonds_num_of_min_distances,
+            skip_first_distances=self.bonds_skip_first_distances,
         )
 
     def get_channel_details(self, structure_folder: str) -> None:

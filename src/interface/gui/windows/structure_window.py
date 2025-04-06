@@ -1,6 +1,6 @@
 import customtkinter as ctk
 from ..viewmodels import VMShowInitData
-from ..components import Button, CheckBox, PlotWindow
+from ..components import Button, CheckBox, PlotWindow, InputField
 
 
 class StructureWindow:
@@ -12,7 +12,8 @@ class StructureWindow:
 
     def create_window(self) -> None:
         self.input_window = ctk.CTkToplevel()
-        title: str = f"Show one channel structure ({self.structure_folder})" if self.one_channel else f"Show init full CH structure ({self.structure_folder})"
+        title: str = f"Show one channel structure ({self.structure_folder})" \
+            if self.one_channel else f"Show init full CH structure ({self.structure_folder}) "
         self.input_window.title(title)
 
         # self.input_window.pack_propagate(False)
@@ -43,6 +44,22 @@ class StructureWindow:
         )
         self.to_show_indexes_checkbox.pack(pady=10, padx=10)
 
+        # Input field for bonds_num_of_min_distances
+        self.bonds_num_of_min_distances_input_field = InputField(
+            self.input_window, text="Number of min distances for bonds",
+            command=self.update_bonds_num_of_min_distances,
+            default_value=self.view_model.bonds_num_of_min_distances,
+        )
+        self.bonds_num_of_min_distances_input_field.pack(pady=10, padx=10)
+
+        # Input field for bonds_skip_first_distances
+        self.bonds_skip_first_distances_input_field = InputField(
+            self.input_window, text="Skip first distances for bonds",
+            command=self.update_bonds_skip_first_distances,
+            default_value=self.view_model.bonds_skip_first_distances,
+        )
+        self.bonds_skip_first_distances_input_field.pack(pady=10, padx=10)
+
         # Button to proceed to the next step
         self.next_btn = Button(
             self.input_window, text="Show structure",
@@ -68,6 +85,14 @@ class StructureWindow:
     def update_to_show_indexes(self) -> None:
         value = bool(self.to_show_indexes_checkbox.get())
         self.view_model.set_to_show_indexes(value)
+
+    def update_bonds_num_of_min_distances(self) -> None:
+        value = int(self.bonds_num_of_min_distances_input_field.get())
+        self.view_model.set_bonds_num_of_min_distances(value)
+
+    def update_bonds_skip_first_distances(self) -> None:
+        value = int(self.bonds_skip_first_distances_input_field.get())
+        self.view_model.set_bonds_skip_first_distances(value)
 
     def show_plot_window(self) -> None:
         plot_window = PlotWindow(self.input_window, title=self.structure_folder)
