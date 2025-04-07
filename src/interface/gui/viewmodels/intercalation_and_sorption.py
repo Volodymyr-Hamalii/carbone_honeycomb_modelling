@@ -383,7 +383,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
                 num_of_min_distances=self.bonds_num_of_min_distances,
                 skip_first_distances=self.bonds_skip_first_distances,
                 to_show_coordinates=self.to_show_coordinates,
-                to_show_indexes=self.to_show_indexes,
+                to_show_indexes=self.to_show_al_indexes,
                 # is_interactive_mode=self.interactive_mode,
             )
 
@@ -420,7 +420,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
                 num_of_min_distances=self.bonds_num_of_min_distances,
                 skip_first_distances=self.bonds_skip_first_distances,
                 to_show_coordinates=self.to_show_coordinates,
-                to_show_indexes=self.to_show_indexes,
+                to_show_indexes=self.to_show_al_indexes,
                 # is_interactive_mode=self.interactive_mode,
                 custom_indices_list=[None, a_layer_indices, b_layer_indices],
             )
@@ -463,7 +463,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
                 num_of_min_distances=self.bonds_num_of_min_distances,
                 skip_first_distances=self.bonds_skip_first_distances,
                 to_show_coordinates=self.to_show_coordinates,
-                to_show_indexes=self.to_show_indexes,
+                to_show_indexes=self.to_show_al_indexes,
                 # is_interactive_mode=self.interactive_mode,
                 custom_indices_list=[None, a_layer_indices, b_layer_indices, c_layer_indices],
             )

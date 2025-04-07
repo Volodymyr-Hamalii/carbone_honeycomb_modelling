@@ -37,12 +37,12 @@ class StructureWindow:
         self.to_show_coordinates_checkbox.pack(pady=10, padx=10)
 
         # Checkbox for to_show_indexes
-        self.to_show_indexes_checkbox = CheckBox(
-            self.input_window, text="Show indexes",
-            command=self.update_to_show_indexes,
-            default=self.view_model.to_show_indexes,
+        self.to_show_c_indexes_checkbox = CheckBox(
+            self.input_window, text="Show C atoms indexes",
+            command=self.update_to_show_c_indexes,
+            default=self.view_model.to_show_c_indexes,
         )
-        self.to_show_indexes_checkbox.pack(pady=10, padx=10)
+        self.to_show_c_indexes_checkbox.pack(pady=10, padx=10)
 
         # Input field for bonds_num_of_min_distances
         self.bonds_num_of_min_distances_input_field = InputField(
@@ -82,9 +82,9 @@ class StructureWindow:
         value = bool(self.to_show_coordinates_checkbox.get())
         self.view_model.set_to_show_coordinates(value)
 
-    def update_to_show_indexes(self) -> None:
-        value = bool(self.to_show_indexes_checkbox.get())
-        self.view_model.set_to_show_indexes(value)
+    def update_to_show_c_indexes(self) -> None:
+        value = bool(self.to_show_c_indexes_checkbox.get())
+        self.view_model.set_to_show_c_indexes(value)
 
     def update_bonds_num_of_min_distances(self) -> None:
         value = int(self.bonds_num_of_min_distances_input_field.get())

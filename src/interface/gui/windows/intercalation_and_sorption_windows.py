@@ -88,6 +88,14 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils):
         )
         self.num_of_al_layers_input_field.pack(pady=10, padx=10)
 
+        # Checkbox for to_show_indexes
+        self.to_show_al_indexes_checkbox = CheckBox(
+            self.input_window, text="Show atoms indexes on the plot",
+            command=self.update_to_show_al_indexes,
+            default=self.view_model.to_show_al_indexes,
+        )
+        self.to_show_al_indexes_checkbox.pack(pady=10, padx=10)
+
         self.plot_btn: Button = Button(
             self.input_window,
             text="Build the model",
@@ -129,6 +137,10 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils):
 
     # def update_file_name(self, value: str) -> None:
     #     self.view_model.set_file_name(value)
+
+    def update_to_show_al_indexes(self) -> None:
+        value = bool(self.to_show_al_indexes_checkbox.get())
+        self.view_model.set_to_show_al_indexes(value)
 
     def update_number_of_planes(self) -> None:
         value = int(self.number_of_planes_input_field.get())
@@ -230,6 +242,14 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils):
         )
         self.num_of_al_layers_input_field.pack(pady=10, padx=10)
 
+        # Checkbox for to_show_indexes
+        self.to_show_al_indexes_checkbox = CheckBox(
+            self.input_window, text="Show atoms indexes on the plot",
+            command=self.update_to_show_al_indexes,
+            default=self.view_model.to_show_al_indexes,
+        )
+        self.to_show_al_indexes_checkbox.pack(pady=10, padx=10)
+
         self.translate_btn: Button = Button(
             self.input_window,
             text="Translate Al to other planes",
@@ -256,6 +276,10 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils):
 
     # def update_file_name(self, value: str) -> None:
     #     self.view_model.set_file_name(value)
+
+    def update_to_show_al_indexes(self) -> None:
+        value = bool(self.to_show_al_indexes_checkbox.get())
+        self.view_model.set_to_show_al_indexes(value)
 
     def update_number_of_planes(self) -> None:
         value = int(self.number_of_planes_input_field.get())
@@ -394,6 +418,14 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils):
         )
         self.num_of_al_layers_input_field.pack(pady=10, padx=10)
 
+        # Checkbox for to_show_indexes
+        self.to_show_al_indexes_checkbox = CheckBox(
+            self.input_window, text="Show atoms indexes on the plot",
+            command=self.update_to_show_al_indexes,
+            default=self.view_model.to_show_al_indexes,
+        )
+        self.to_show_al_indexes_checkbox.pack(pady=10, padx=10)
+
         self.translate_btn: Button = Button(
             self.input_window,
             text="Translate Al to all channels",
@@ -414,6 +446,10 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils):
     # def update_number_of_planes(self) -> None:
     #     value = int(self.number_of_planes_input_field.get())
     #     self.view_model.set_number_of_planes(value)
+
+    def update_to_show_al_indexes(self) -> None:
+        value = bool(self.to_show_al_indexes_checkbox.get())
+        self.view_model.set_to_show_al_indexes(value)
 
     def update_num_of_min_distances(self) -> None:
         value = int(self.num_of_min_distances_input_field.get())

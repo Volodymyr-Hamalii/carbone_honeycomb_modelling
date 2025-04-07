@@ -7,7 +7,8 @@ class VMParamsSetter:
         # Plot details
         self.to_build_bonds: bool = True
         self.to_show_coordinates: bool = False
-        self.to_show_indexes: bool = False
+        self.to_show_c_indexes: bool = False
+        self.to_show_al_indexes: bool = False
 
         self.x_min: float | None = None
         self.x_max: float | None = None
@@ -50,8 +51,11 @@ class VMParamsSetter:
     def set_to_show_coordinates(self, value: bool) -> None:
         self.to_show_coordinates: bool = value
 
-    def set_to_show_indexes(self, value: bool) -> None:
-        self.to_show_indexes: bool = value
+    def set_to_show_c_indexes(self, value: bool) -> None:
+        self.to_show_c_indexes: bool = value
+
+    def set_to_show_al_indexes(self, value: bool) -> None:
+        self.to_show_al_indexes: bool = value
 
     def set_x_min(self, value: float) -> None:
         self.x_min = value

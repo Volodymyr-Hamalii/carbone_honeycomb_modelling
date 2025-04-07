@@ -47,7 +47,7 @@ class VMShowInitData(VMParamsSetter):
             carbon_points.points,
             to_build_bonds=self.to_build_bonds,
             to_show_coordinates=self.to_show_coordinates,
-            to_show_indexes=self.to_show_indexes,
+            to_show_indexes=self.to_show_c_indexes,
             title=structure_folder,
             to_set_equal_scale=True,
             num_of_min_distances=self.bonds_num_of_min_distances,
@@ -157,7 +157,7 @@ class VMShowInitData(VMParamsSetter):
             to_build_bonds=self.to_build_bonds,
             title=structure_folder,
             to_show_coordinates=self.to_show_coordinates,
-            to_show_indexes=self.to_show_indexes,
+            to_show_indexes=self.to_show_c_indexes,
             num_of_min_distances=self.bonds_num_of_min_distances,
             skip_first_distances=self.bonds_skip_first_distances,
         )
