@@ -15,7 +15,7 @@ class ChannelDetailsWindow:
         self.input_window.title(f"Show channel parameters ({self.structure_folder})")
         # self.input_window.pack_propagate(False)
         # self.input_window.grid_propagate(False)
-        self.input_window.geometry("600x300")
+        self.input_window.geometry("300x300")
 
         # Checkbox for to_show_channel_angles
         self.to_show_channel_angles_checkbox = CheckBox(

@@ -43,7 +43,7 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils):
         self.input_window = ctk.CTkToplevel()
         title: str = f"Update Al coordinates table ({self.structure_folder})"
         self.input_window.title(title)
-        self.input_window.geometry("600x400")
+        self.input_window.geometry("450x600")
 
         self.file_names_dropdown: DropdownList = DropdownList(
             self.input_window,

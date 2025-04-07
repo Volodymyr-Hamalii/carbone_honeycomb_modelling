@@ -31,7 +31,7 @@ class DataConverterWindow:
 
         # self.input_window.pack_propagate(False)
         # self.input_window.grid_propagate(False)
-        self.input_window.geometry("600x400")
+        self.input_window.geometry("400x400")
 
         # Create dropdown lists
         # self.excel_file_names_dropdown: DropdownList = DropdownList(
