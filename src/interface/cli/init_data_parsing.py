@@ -1,7 +1,7 @@
 from pathlib import Path
 import pandas as pd
 
-from src.utils import Constants, Logger, Inputs, FileReader, FileConverter, FileWriter
+from src.utils import Constants, Logger, Inputs, FileReader, FileWriter
 
 
 logger = Logger("Actions")
@@ -15,7 +15,8 @@ class AppActionsInitDataParsing:
         Also create result_data/{structure_folder}/structure_settings.json template if it didn't exist.
         """
 
-        FileConverter.dat_to_pdb(structure_folder=structure_folder)
+        # FileConverter.dat_to_pdb(structure_folder=structure_folder)
+        pass
 
     @staticmethod
     def convert_excel_to_dat(structure_folder: str, to_set: bool) -> None:

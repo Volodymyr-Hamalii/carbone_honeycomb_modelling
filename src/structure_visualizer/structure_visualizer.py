@@ -6,6 +6,7 @@ from matplotlib.pyplot import Figure, Axes  # type: ignore
 from matplotlib.collections import PathCollection
 
 # from src.coordinate_operations import DistanceMeasure
+from src.base_structure_classes import CoordinateLimits
 from .lines_builder import LinesBuilder
 from .visualization_params import VisualizationParams, StructureVisualParams
 from ..utils import Logger
@@ -20,13 +21,15 @@ class StructureVisualizer:
             cls,
             coordinates: ndarray,
             to_build_bonds: bool = True,
+            to_set_equal_scale: bool | None = None,
+            to_show_coordinates: bool | None = None,
+            to_show_indexes: bool | None = None,
             visual_params: StructureVisualParams = VisualizationParams.carbon,
             num_of_min_distances: int = 2,
             skip_first_distances: int = 0,
-            set_equal_scale: bool | None = None,
             title: str | None = None,
-            show_coordinates=False,
-            interactive_mode: bool = False,
+            is_interactive_mode: bool = False,
+            coordinate_limits: CoordinateLimits | None = None,
     ) -> None:
         """ Show 3D plot with 1 structure. """
 
@@ -40,11 +43,13 @@ class StructureVisualizer:
             coordinates=coordinates,
             visual_params=visual_params,
             to_build_bonds=to_build_bonds,
+            to_set_equal_scale=to_set_equal_scale,
+            to_show_coordinates=to_show_coordinates,
+            to_show_indexes=to_show_indexes,
             num_of_min_distances=num_of_min_distances,
             skip_first_distances=skip_first_distances,
-            set_equal_scale=set_equal_scale,
-            show_coordinates=show_coordinates,
-            interactive_mode=interactive_mode,
+            is_interactive_mode=is_interactive_mode,
+            coordinate_limits=coordinate_limits,
         )
 
         ax.set_xlabel('X')
@@ -61,15 +66,17 @@ class StructureVisualizer:
             cls,
             coordinates_first: ndarray,
             coordinates_second: ndarray,
-            to_build_bonds: bool = False,
             visual_params_first: StructureVisualParams = VisualizationParams.carbon,
             visual_params_second: StructureVisualParams = VisualizationParams.al,
+            coordinate_limits_first: CoordinateLimits | None = None,
+            coordinate_limits_second: CoordinateLimits | None = None,
+            to_build_bonds: bool = False,
+            to_show_coordinates: bool | None = None,
+            to_show_indexes: bool | None = None,
             title: str | None = None,
-            show_coordinates: bool | None = None,
-            show_indexes: bool | None = None,
+            is_interactive_mode: bool = False,
             num_of_min_distances: int = 2,
             skip_first_distances: int = 0,
-            interactive_mode: bool = False,
     ) -> None:
         """ Show 3D plot with 2 structures (by default there are carbon and aluminium) """
 
@@ -86,9 +93,10 @@ class StructureVisualizer:
             to_build_bonds=to_build_bonds,
             num_of_min_distances=num_of_min_distances,
             skip_first_distances=skip_first_distances,
-            show_coordinates=show_coordinates,
-            show_indexes=show_indexes,
-            interactive_mode=False,
+            to_show_coordinates=to_show_coordinates,
+            to_show_indexes=to_show_indexes,
+            is_interactive_mode=False,
+            coordinate_limits=coordinate_limits_first,
         )
 
         # Plot second structure atoms (interactive if enabled)
@@ -100,9 +108,10 @@ class StructureVisualizer:
             to_build_bonds=False,
             num_of_min_distances=1,
             skip_first_distances=0,
-            show_coordinates=show_coordinates,
-            show_indexes=show_indexes,
-            interactive_mode=interactive_mode,
+            to_show_coordinates=to_show_coordinates,
+            to_show_indexes=to_show_indexes,
+            is_interactive_mode=is_interactive_mode,
+            coordinate_limits=coordinate_limits_second,
         )
 
         ax.set_xlabel('X')
@@ -125,12 +134,13 @@ class StructureVisualizer:
             visual_params_list: list[StructureVisualParams],
             to_build_bonds_list: list[bool],
             title: str | None = None,
-            show_coordinates: bool | None = None,
-            show_indexes: bool | None = None,
+            to_show_coordinates: bool | None = None,
+            to_show_indexes: bool | None = None,
             num_of_min_distances: int = 2,
             skip_first_distances: int = 0,
-            interactive_mode: bool = False,
+            is_interactive_mode: bool = False,
             custom_indices_list: list[list[int] | None] | None = None,
+            coordinate_limits_list: list[CoordinateLimits] | None = None,
     ) -> None:
         """ Show 3D plot with multiple structures """
 
@@ -140,13 +150,26 @@ class StructureVisualizer:
         if custom_indices_list and len(custom_indices_list) != len(coordinates_list):
             raise ValueError("len(custom_indices_list) != len(coordinates_list)")
 
+        if coordinate_limits_list and len(coordinate_limits_list) != len(coordinates_list):
+            raise ValueError("len(coordinate_limits_list) != len(coordinates_list)")
+
         # Prepare to visualize
         fig: Figure = plt.figure()
         ax: Axes = fig.add_subplot(111, projection='3d')
 
-        for i, (coordinates, visual_params, to_build_bonds) in enumerate(zip(
-                coordinates_list, visual_params_list, to_build_bonds_list)):
+        all_params = zip(
+            coordinates_list,
+            visual_params_list,
+            to_build_bonds_list,
+        )
+
+        for i, (coordinates, visual_params, to_build_bonds) in enumerate(all_params):
             custom_indices = custom_indices_list[i] if custom_indices_list else []
+
+            if coordinate_limits_list:
+                coordinate_limits: CoordinateLimits | None = coordinate_limits_list[i]
+            else:
+                coordinate_limits = None
 
             # if i == 1:
             #     num_of_min_distances=3
@@ -161,10 +184,11 @@ class StructureVisualizer:
                 to_build_bonds=to_build_bonds,
                 num_of_min_distances=num_of_min_distances,
                 skip_first_distances=skip_first_distances,
-                show_coordinates=show_coordinates,
-                show_indexes=show_indexes,
-                interactive_mode=interactive_mode if visual_params.label != "Carbon" else False,
+                to_show_coordinates=to_show_coordinates,
+                to_show_indexes=to_show_indexes,
+                is_interactive_mode=is_interactive_mode if visual_params.label != "Carbon" else False,
                 custom_indexes=custom_indices if custom_indices else [],
+                coordinate_limits=coordinate_limits,
             )
 
         ax.set_xlabel('X')
@@ -185,8 +209,8 @@ class StructureVisualizer:
         coordinates: np.ndarray,
         title: str | None = None,
         visual_params: StructureVisualParams = VisualizationParams.carbon,
-        show_coordinates: bool | None = None,
-        show_indexes: bool | None = None,
+        to_show_coordinates: bool | None = None,
+        to_show_indexes: bool | None = None,
     ) -> Axes:
         # Prepare to visualize in 2D
         fig: Figure = plt.figure()
@@ -202,7 +226,7 @@ class StructureVisualizer:
             alpha=visual_params.transparency,
         )
 
-        if show_coordinates:
+        if to_show_coordinates:
             # Show coordinates near each point
             for xx, yy in zip(x, y):
                 ax.annotate(
@@ -213,7 +237,7 @@ class StructureVisualizer:
                     fontsize=6,
                 )
 
-        if show_indexes:
+        if to_show_indexes:
             # Show coordinates near each point
             for xx, yy, i in zip(x, y, range(len(coordinates))):
                 ax.annotate(
@@ -241,15 +265,15 @@ class StructureVisualizer:
         coordinates: np.ndarray,
         title: str | None = None,
         visual_params: StructureVisualParams = VisualizationParams.carbon,
-        show_coordinates: bool | None = None,
-        show_indexes: bool | None = None,
+        to_show_coordinates: bool | None = None,
+        to_show_indexes: bool | None = None,
     ) -> None:
         cls.get_2d_plot(
             coordinates,
             title,
             visual_params,
-            show_coordinates,
-            show_indexes
+            to_show_coordinates,
+            to_show_indexes
         )
         plt.show()
 
@@ -260,14 +284,15 @@ class StructureVisualizer:
             ax: Axes,
             coordinates: ndarray,
             visual_params: StructureVisualParams,
-            set_equal_scale: bool | None = None,
+            to_set_equal_scale: bool | None = None,
             to_build_bonds: bool = True,
             num_of_min_distances: int = 2,
             skip_first_distances: int = 0,
-            show_coordinates: bool | None = None,
-            show_indexes: bool | None = None,
-            interactive_mode: bool = False,
+            to_show_coordinates: bool | None = None,
+            to_show_indexes: bool | None = None,
+            is_interactive_mode: bool = False,
             custom_indexes: list[int] = [],
+            coordinate_limits: CoordinateLimits | None = None,
     ) -> PathCollection | None:
         if coordinates.size == 0:
             logger.warning(f"No points to plot for {visual_params.label}.")
@@ -277,22 +302,27 @@ class StructureVisualizer:
         y: ndarray = coordinates[:, 1]
         z: ndarray = coordinates[:, 2]
 
+        if coordinate_limits:
+            x = np.clip(x, coordinate_limits.x_min, coordinate_limits.x_max)
+            y = np.clip(y, coordinate_limits.y_min, coordinate_limits.y_max)
+            z = np.clip(z, coordinate_limits.z_min, coordinate_limits.z_max)
+
         scatter: PathCollection = ax.scatter(
             x, y, z,
             c=visual_params.color_atoms,
             label=visual_params.label,
             s=visual_params.size,  # type: ignore
             alpha=visual_params.transparency,
-            picker=True if interactive_mode else False,
+            picker=True if is_interactive_mode else False,
         )
 
-        if set_equal_scale is None:
-            set_equal_scale = visual_params.set_equal_scale
+        if to_set_equal_scale is None:
+            to_set_equal_scale = visual_params.to_set_equal_scale
 
-        if set_equal_scale:
+        if to_set_equal_scale:
             cls._set_equal_scale(ax, x, y, z)
 
-        if show_coordinates is True or (show_coordinates is None and visual_params.show_coordinates):
+        if to_show_coordinates is True or (to_show_coordinates is None and visual_params.to_show_coordinates):
             # Show coordinates near each point
             for xx, yy, zz in zip(x, y, z):
                 ax.text(
@@ -304,7 +334,7 @@ class StructureVisualizer:
                     va="center",
                 )
 
-        if show_indexes is not False and visual_params.show_indexes:
+        if to_show_indexes or (to_show_indexes is None and visual_params.to_show_indexes):
             # Show coordinates near each point
             if len(custom_indexes) > 0:
                 for i, (xx, yy, zz) in enumerate(coordinates):
@@ -335,7 +365,7 @@ class StructureVisualizer:
                 num_of_min_distances=num_of_min_distances,
                 skip_first_distances=skip_first_distances)
 
-        if interactive_mode:
+        if is_interactive_mode:
             def on_pick(event) -> None:
                 try:
                     ind: int = event.ind[0]
@@ -384,17 +414,17 @@ class StructureVisualizer:
         min_lim = np.min([x_min, y_min, z_min])
         max_lim = np.max([x_max, y_max, z_max])
 
-        delta = (max_lim + min_lim) / 2
-        delta_plus = delta * 1.25  # to stretch specific axis
+        delta = (max_lim - min_lim) / 2
+        delta_minus = delta * 0.8
 
         x_mid = (x_max + x_min) / 2
         y_mid = (y_max + y_min) / 2
         z_mid = (z_max + z_min) / 2
 
-        ax.set_xlim(x_mid - delta_plus, x_mid + delta_plus)
-        ax.set_ylim(y_mid - delta_plus, y_mid + delta_plus)
+        ax.set_xlim(x_mid - delta, x_mid + delta)
+        ax.set_ylim(y_mid - delta, y_mid + delta)
 
         try:
-            ax.set_zlim(z_mid - delta, z_mid + delta)  # type: ignore
+            ax.set_zlim(z_mid - delta_minus, z_mid + delta_minus)  # type: ignore
         except Exception:
             pass

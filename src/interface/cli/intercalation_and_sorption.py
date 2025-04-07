@@ -602,9 +602,9 @@ class AppActionsIntercalationAndSorption:
                     title=title,
                     num_of_min_distances=num_of_min_distances,
                     skip_first_distances=skip_first_distances,
-                    show_coordinates=show_coordinates,
-                    show_indexes=show_indexes,
-                    interactive_mode=interactive_mode,
+                    to_show_coordinates=show_coordinates,
+                    to_show_indexes=show_indexes,
+                    is_interactive_mode=interactive_mode,
                     custom_indices_list=[None, a_layer_indices, b_layer_indices],
                 )
 
@@ -645,9 +645,9 @@ class AppActionsIntercalationAndSorption:
                     title=title,
                     num_of_min_distances=num_of_min_distances,
                     skip_first_distances=skip_first_distances,
-                    show_coordinates=show_coordinates,
-                    show_indexes=show_indexes,
-                    interactive_mode=interactive_mode,
+                    to_show_coordinates=show_coordinates,
+                    to_show_indexes=show_indexes,
+                    is_interactive_mode=interactive_mode,
                     custom_indices_list=[None, a_layer_indices, b_layer_indices, c_layer_indices],
                 )
             else:
@@ -661,9 +661,9 @@ class AppActionsIntercalationAndSorption:
                 title=title,
                 num_of_min_distances=num_of_min_distances,
                 skip_first_distances=skip_first_distances,
-                show_coordinates=show_coordinates,
-                show_indexes=show_indexes,
-                interactive_mode=interactive_mode,
+                to_show_coordinates=show_coordinates,
+                to_show_indexes=show_indexes,
+                is_interactive_mode=interactive_mode,
             )
 
     @staticmethod

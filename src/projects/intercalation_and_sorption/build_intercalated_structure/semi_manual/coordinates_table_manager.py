@@ -1,3 +1,4 @@
+from pathlib import Path
 import numpy as np
 import pandas as pd
 from scipy.spatial.distance import cdist
@@ -20,12 +21,12 @@ class CoordinatesTableManager:
             structure_folder: str,
             carbon_channel: CarbonHoneycombChannel,
             number_of_planes: int,
-    ) -> None:
+    ) -> Path:
         al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(
             structure_folder, carbon_channel, number_of_planes)
         df: pd.DataFrame = cls._build_updated_df(al_plane_coordinates)
 
-        FileWriter.write_excel_file(
+        path_to_file: Path | None = FileWriter.write_excel_file(
             df=df,
             structure_folder=structure_folder,
             sheet_name="Al atoms for the plane",
@@ -33,8 +34,13 @@ class CoordinatesTableManager:
             is_init_data_dir=False,
         )
 
+        if path_to_file is None:
+            raise IOError(f"Failed to write {Constants.filenames.AL_PLANE_COORDINATES_XLSX_FILE} file.")
+
+        return path_to_file
+
     @classmethod
-    def update_full_channel_tbl_file(cls, structure_folder: str,) -> None:
+    def update_full_channel_tbl_file(cls, structure_folder: str,) -> Path:
         al_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
             structure_folder=structure_folder,
             file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
@@ -48,13 +54,18 @@ class CoordinatesTableManager:
         al_channel_coordinates: Points = AtomsParser._parse_al_coordinates_df(al_channel_coordinates_df)
         df: pd.DataFrame = cls._build_updated_df(al_channel_coordinates)
 
-        FileWriter.write_excel_file(
+        path_to_file: Path | None = FileWriter.write_excel_file(
             df=df,
             structure_folder=structure_folder,
             sheet_name="Al atoms for the full channel",
             file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
             is_init_data_dir=False,
         )
+
+        if path_to_file is None:
+            raise IOError(f"Failed to write {Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE} file.")
+
+        return path_to_file
 
     @staticmethod
     def _build_updated_df(al_points: Points) -> pd.DataFrame:

@@ -7,7 +7,7 @@ fonttools==4.53.1
 GridDataFormats==1.0.2
 joblib==1.4.2
 kiwisolver==1.4.5
-matplotlib==3.9.1
+matplotlib==3.10.1
 mda-xdrlib==0.2.0
 MDAnalysis==2.7.0
 mmtf-python==1.1.3
