@@ -9,6 +9,13 @@ class VMParamsSetter:
         self.to_show_coordinates: bool = False
         self.to_show_indexes: bool = False
 
+        self.x_min: float | None = None
+        self.x_max: float | None = None
+        self.y_min: float | None = None
+        self.y_max: float | None = None
+        self.z_min: float | None = None
+        self.z_max: float | None = None
+
         self.bonds_num_of_min_distances: int = 2
         self.bonds_skip_first_distances: int = 0
 
@@ -45,6 +52,24 @@ class VMParamsSetter:
 
     def set_to_show_indexes(self, value: bool) -> None:
         self.to_show_indexes: bool = value
+
+    def set_x_min(self, value: float) -> None:
+        self.x_min = value
+
+    def set_x_max(self, value: float) -> None:
+        self.x_max = value
+
+    def set_y_min(self, value: float) -> None:
+        self.y_min = value
+
+    def set_y_max(self, value: float) -> None:
+        self.y_max = value
+
+    def set_z_min(self, value: float) -> None:
+        self.z_min = value
+
+    def set_z_max(self, value: float) -> None:
+        self.z_max = value
 
     def set_bonds_num_of_min_distances(self, value: int) -> None:
         self.bonds_num_of_min_distances: int = value
