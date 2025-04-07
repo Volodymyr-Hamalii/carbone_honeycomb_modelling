@@ -29,7 +29,7 @@ class FileWriter(FileManager):
         structure_folder: str | None = None,
         overwrite: bool = True,
         filename: str = Constants.filenames.INIT_DAT_FILE,
-    ) -> None:
+    ) -> None | Path:
         """For the path you can provide either path_to_file or structure_folder."""
 
         # TODO: refactor to use DataConverter.convert_ndarray_to_dat
@@ -64,6 +64,7 @@ class FileWriter(FileManager):
                     dat_file.write(line)
 
             logger.info(f"File saved: {path_to_file}")
+            return path_to_file
 
         except Exception as e:
             logger.error(f".dat file not saved: {e}")
@@ -74,7 +75,7 @@ class FileWriter(FileManager):
         path_to_file: Path | None = None,
         structure_folder: str | None = None,
         overwrite: bool = True,
-    ) -> None:
+    ) -> None | Path:
         """For the path you can provide either path_to_file or structure_folder."""
 
         # TODO: refactor to use DataConverter.convert_ndarray_to_pdb
@@ -114,6 +115,9 @@ class FileWriter(FileManager):
 
                 # Write the PDB file footer
                 pdb_file.write(PdbFileBuilder.get_end_lines(num_of_lines=len(data_lines)))
+
+            logger.info(f"File saved: {path_to_file}")
+            return path_to_file
 
         except Exception as e:
             logger.error(f".pdb file not saved: {e}")

@@ -124,14 +124,14 @@ class AppGui(ctk.CTk):
 
         # Button to show intercalation and sorption
         self.show_intercalation_and_sorption_btn = Button(
-            intercalation_and_sorption_frame, text="Translate Al to all channels",
-            command=self.open_translate_al_to_all_channels_window)
+            intercalation_and_sorption_frame, text="Get Al in channel details",
+            command=self.open_get_al_in_channel_details_window)
         self.show_intercalation_and_sorption_btn.pack(pady=10)
 
         # Button to show intercalation and sorption
         self.show_intercalation_and_sorption_btn = Button(
-            intercalation_and_sorption_frame, text="Get Al in channel details",
-            command=self.open_get_al_in_channel_details_window)
+            intercalation_and_sorption_frame, text="Translate Al to all channels",
+            command=self.open_translate_al_to_all_channels_window)
         self.show_intercalation_and_sorption_btn.pack(pady=10)
 
     def open_update_al_coordinates_table_window(self) -> None:

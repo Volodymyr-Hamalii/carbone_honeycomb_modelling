@@ -64,16 +64,24 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils):
 
         self.num_of_min_distances_input_field: InputField = InputField(
             self.input_window,
-            text="Number of min distances",
+            text="Number of min distances for bonds",
             command=self.update_num_of_min_distances,
             # title="Number of min distances for bonds",
             default_value=self.view_model.bonds_num_of_min_distances,
         )
         self.num_of_min_distances_input_field.pack(pady=10, padx=10)
 
+        # Input field for bonds_skip_first_distances
+        self.bonds_skip_first_distances_input_field = InputField(
+            self.input_window, text="Skip first distances for bonds",
+            command=self.update_bonds_skip_first_distances,
+            default_value=self.view_model.bonds_skip_first_distances,
+        )
+        self.bonds_skip_first_distances_input_field.pack(pady=10, padx=10)
+
         self.num_of_al_layers_input_field: InputField = InputField(
             self.input_window,
-            text="Number of AL layers",
+            text="Number of Al layers on the plot",
             command=self.update_num_of_al_layers,
             # title="Number of AL layers",
             default_value=self.view_model.num_of_al_layers,
@@ -130,6 +138,10 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils):
         value = int(self.num_of_min_distances_input_field.get())
         self.view_model.set_bonds_num_of_min_distances(value)
 
+    def update_bonds_skip_first_distances(self) -> None:
+        value = int(self.bonds_skip_first_distances_input_field.get())
+        self.view_model.set_bonds_skip_first_distances(value)
+
     def update_num_of_al_layers(self) -> None:
         value = int(self.num_of_al_layers_input_field.get())
 
@@ -178,7 +190,7 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils):
 
         self.try_to_reflect_al_atoms_checkbox: CheckBox = CheckBox(
             self.input_window,
-            text="Try to reflect Al atoms (if no init file and the Al atoms will be calculated)",
+            text="Try to reflect Al atoms\n(if no init file and the Al atoms will be calculated)",
             command=self.update_to_try_to_reflect_al_atoms,
             # title="Try to reflect aluminum atoms",
         )
@@ -195,16 +207,23 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils):
 
         self.num_of_min_distances_input_field: InputField = InputField(
             self.input_window,
-            text="Number of min distances",
+            text="Number of min distances for bonds",
             command=self.update_num_of_min_distances,
             # title="Number of min distances for bonds",
             default_value=self.view_model.bonds_num_of_min_distances,
         )
         self.num_of_min_distances_input_field.pack(pady=10, padx=10)
 
+        self.bonds_skip_first_distances_input_field = InputField(
+            self.input_window, text="Skip first distances for bonds",
+            command=self.update_bonds_skip_first_distances,
+            default_value=self.view_model.bonds_skip_first_distances,
+        )
+        self.bonds_skip_first_distances_input_field.pack(pady=10, padx=10)
+
         self.num_of_al_layers_input_field: InputField = InputField(
             self.input_window,
-            text="Number of AL layers",
+            text="Number of Al layers on the plot",
             command=self.update_num_of_al_layers,
             # title="Number of AL layers",
             default_value=self.view_model.num_of_al_layers,
@@ -246,6 +265,10 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils):
         value = int(self.num_of_min_distances_input_field.get())
         self.view_model.set_bonds_num_of_min_distances(value)
 
+    def update_bonds_skip_first_distances(self) -> None:
+        value = int(self.bonds_skip_first_distances_input_field.get())
+        self.view_model.set_bonds_skip_first_distances(value)
+
     def update_to_try_to_reflect_al_atoms(self) -> None:
         value = bool(self.try_to_reflect_al_atoms_checkbox.get())
         self.view_model.set_to_try_to_reflect_al_atoms(value)
@@ -280,7 +303,7 @@ class GetAlInChannelDetailsWindow(_IntercalationAndSorptionUtils):
         )
         description_label.pack(pady=10, padx=10)
 
-        self.input_window.geometry("450x500")
+        self.input_window.geometry("450x300")
 
         self.file_names_dropdown: DropdownList = DropdownList(
             self.input_window,
@@ -318,7 +341,7 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils):
         self.input_window = ctk.CTkToplevel()
         title: str = f"Translate Al to all channels ({self.structure_folder})"
         self.input_window.title(title)
-        self.input_window.geometry("450x400")
+        self.input_window.geometry("450x600")
 
         self.file_names_dropdown: DropdownList = DropdownList(
             self.input_window,
@@ -328,37 +351,82 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils):
         )
         self.file_names_dropdown.pack(pady=10, padx=10)
 
-    # def update_file_name(self, value: str) -> None:
-    #     self.view_model.set_file_name(value)
+        self.try_to_reflect_al_atoms_checkbox: CheckBox = CheckBox(
+            self.input_window,
+            text="Try to reflect Al atoms\n(if no init file and the Al atoms will be calculated)",
+            command=self.update_to_try_to_reflect_al_atoms,
+            # title="Try to reflect aluminum atoms",
+        )
+        self.try_to_reflect_al_atoms_checkbox.pack(pady=10, padx=10)
+
+        # self.number_of_planes_input_field: InputField = InputField(
+        #     self.input_window,
+        #     text="Number of planes (if no init file and the Al atoms will be calculated)",
+        #     command=self.update_number_of_planes,
+        #     # title="Number of planes",
+        #     default_value=self.view_model.number_of_planes,
+        # )
+        # self.number_of_planes_input_field.pack(pady=10, padx=10)
+
+        self.num_of_min_distances_input_field: InputField = InputField(
+            self.input_window,
+            text="Number of min distances for bonds",
+            command=self.update_num_of_min_distances,
+            # title="Number of min distances for bonds",
+            default_value=self.view_model.bonds_num_of_min_distances,
+        )
+        self.num_of_min_distances_input_field.pack(pady=10, padx=10)
+
+        # Input field for bonds_skip_first_distances
+        self.bonds_skip_first_distances_input_field = InputField(
+            self.input_window, text="Skip first distances for bonds",
+            command=self.update_bonds_skip_first_distances,
+            default_value=self.view_model.bonds_skip_first_distances,
+        )
+        self.bonds_skip_first_distances_input_field.pack(pady=10, padx=10)
+
+        self.num_of_al_layers_input_field: InputField = InputField(
+            self.input_window,
+            text="Number of Al layers on the plot",
+            command=self.update_num_of_al_layers,
+            # title="Number of Al layers",
+            default_value=self.view_model.num_of_al_layers,
+        )
+        self.num_of_al_layers_input_field.pack(pady=10, padx=10)
+
+        self.translate_btn: Button = Button(
+            self.input_window,
+            text="Translate Al to all channels",
+            command=self.translate_al_to_all_channels,
+        )
+        self.translate_btn.pack(pady=10, padx=10)
+
+    def translate_al_to_all_channels(self) -> None:
+        try:
+            paths: tuple[Path, Path, Path] = self.view_model.translate_al_to_all_channels(self.structure_folder)
+            messagebox.showinfo("Success", f"Generated files:\n{paths[0].name}\n{paths[1].name}\n{paths[2].name}")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+    def update_file_name(self, value: str) -> None:
+        self.view_model.set_file_name(value)
 
     # def update_number_of_planes(self) -> None:
     #     value = int(self.number_of_planes_input_field.get())
     #     self.view_model.set_number_of_planes(value)
 
-    # def update_num_of_min_distances(self) -> None:
-    #     value = int(self.num_of_min_distances_input_field.get())
-    #     self.view_model.set_bonds_num_of_min_distances(value)
+    def update_num_of_min_distances(self) -> None:
+        value = int(self.num_of_min_distances_input_field.get())
+        self.view_model.set_bonds_num_of_min_distances(value)
 
-    # def update_to_try_to_reflect_al_atoms(self) -> None:
-    #     value = bool(self.try_to_reflect_al_atoms_checkbox.get())
-    #     self.view_model.set_to_try_to_reflect_al_atoms(value)
+    def update_bonds_skip_first_distances(self) -> None:
+        value = int(self.bonds_skip_first_distances_input_field.get())
+        self.view_model.set_bonds_skip_first_distances(value)
 
-    # def update_num_of_al_layers(self) -> None:
-    #     value = int(self.num_of_al_layers_input_field.get())
-    #     self.view_model.set_num_of_al_layers(value)
+    def update_to_try_to_reflect_al_atoms(self) -> None:
+        value = bool(self.try_to_reflect_al_atoms_checkbox.get())
+        self.view_model.set_to_try_to_reflect_al_atoms(value)
 
-    # def update_number_of_planes(self) -> None:
-    #     value = int(self.number_of_planes_input_field.get())
-    #     self.view_model.set_number_of_planes(value)
-
-    # def update_num_of_min_distances(self) -> None:
-    #     value = int(self.num_of_min_distances_input_field.get())
-    #     self.view_model.set_bonds_num_of_min_distances(value)
-
-    # def update_to_try_to_reflect_al_atoms(self) -> None:
-    #     value = bool(self.try_to_reflect_al_atoms_checkbox.get())
-    #     self.view_model.set_to_try_to_reflect_al_atoms(value)
-
-    # def update_num_of_al_layers(self) -> None:
-    #     value = int(self.num_of_al_layers_input_field.get())
-    #     self.view_model.set_num_of_al_layers(value)
+    def update_num_of_al_layers(self) -> None:
+        value = int(self.num_of_al_layers_input_field.get())
+        self.view_model.set_num_of_al_layers(value)
