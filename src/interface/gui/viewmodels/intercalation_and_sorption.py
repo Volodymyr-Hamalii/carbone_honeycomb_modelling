@@ -2,7 +2,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from src.utils import Constants, PathBuilder, FileReader, FileWriter, Logger, Inputs
+from src.utils import Constants, FileReader, FileWriter, Logger
 from src.base_structure_classes import AlLatticeType, Points, CoordinateLimits
 from src.structure_visualizer import StructureVisualizer, VisualizationParams
 from src.data_preparation import StructureSettings
@@ -70,26 +70,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
 
     #     FileWriter.write_dat_file(upd_al_points, structure_folder=structure_folder, filename="al_in_all_channels.dat")
 
-    def update_plane_tbl_excel_file(self, structure_folder: str) -> None:
-        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
-
-        try:
-            CoordinatesTableManager.update_plane_tbl_file(structure_folder, carbon_channel, self.number_of_planes)
-
-        except IOError as e:
-            logger.warning(e)
-            raise IOError(
-                f"Error updating plane table file for {structure_folder} (possible reason: Excel file is blocked)"
-            ) from e
-
-    def update_al_coordinates_tbl(self, structure_folder: str) -> None:
-        """
-        Run in loop:
-        1) read Excel file to get Al atoms;
-        2) filter empty lines (if some lines were removed);
-        3) show current structure based on the coordinates from the file;
-        4) after closing the plot go to 1).
-        """
+    def plot_al_plane_coordinates(self, structure_folder: str) -> None:
         carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
 
         al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(
@@ -104,7 +85,30 @@ class VMIntercalationAndSorption(VMParamsSetter):
             title=structure_folder,
         )
 
-    def translate_al_to_other_planes(self, structure_folder: str) -> Path:
+    def generate_al_plane_coordinates_file(self, structure_folder: str) -> Path:
+        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
+        al_plane_coordinates: Points = AtomsParser._build_al_plane_coordinates(
+            carbon_channel, num_of_planes=self.number_of_planes)
+
+        path_to_file: Path | None = FileWriter.write_excel_file(
+            df=al_plane_coordinates.to_df(columns=["i", "x_Al", "y_Al", "z_Al"]),
+            structure_folder=structure_folder,
+            sheet_name="Al atoms for the plane",
+            file_name=Constants.filenames.AL_PLANE_COORDINATES_XLSX_FILE,
+            is_init_data_dir=False,
+        )
+
+        if path_to_file is None:
+            raise IOError(f"Failed to write {Constants.filenames.AL_PLANE_COORDINATES_XLSX_FILE} file.")
+
+        return path_to_file
+
+    def update_al_plane_coordinates_file(self, structure_folder: str) -> Path:
+        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
+        return CoordinatesTableManager.update_plane_tbl_file(
+            structure_folder, carbon_channel, self.number_of_planes)
+
+    def translate_al_to_other_planes(self, structure_folder: str) -> None:
         """
         Read Al coordinates from the Excel table and translate the structure to other planes.
         """
@@ -130,141 +134,98 @@ class VMIntercalationAndSorption(VMParamsSetter):
             title=structure_folder,
         )
 
+    # def plot_al_channel_coordinates(self, structure_folder: str) -> None:
+    #     carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
+
+    #     al_full_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
+    #         structure_folder=structure_folder,
+    #         file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
+    #         is_init_data_dir=False,
+    #     )
+
+    #     if al_full_channel_coordinates_df is not None:
+    #         al_full_channel_coordinates: Points = AtomsParser._parse_al_coordinates_df(
+    #             al_full_channel_coordinates_df)
+    #     else:
+    #         logger.warning(
+    #             f"Excel file with Al atoms for the full channel not found in {structure_folder}; building full channel.")
+
+    #         al_bulk: Points = self._build_al_atoms(carbon_channel.coordinate_limits)
+
+    #         # number_of_planes: int = int(Inputs.text_input(
+    #         #     to_set,
+    #         #     default_value="1",
+    #         #     text="Number of planes to translate",
+    #         #     env_id="number_of_planes",
+    #         # ))
+
+    #         al_channel_planes_coordinates: Points = AtomsParser.get_al_channel_coordinates(
+    #             structure_folder, carbon_channel, number_of_planes=1,
+    #             try_to_reflect_al_atoms=self.to_try_to_reflect_al_atoms)
+
+    #         al_full_channel_coordinates: Points = FullChannelBuilder.build_full_channel(
+    #             carbon_channel, al_channel_planes_coordinates, al_bulk)
+
+    #         FileWriter.write_excel_file(
+    #             df=al_full_channel_coordinates.to_df(columns=["i", "x_Al", "y_Al", "z_Al"]),
+    #             structure_folder=structure_folder,
+    #             sheet_name="Al atoms for the full channel",
+    #             file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
+    #             is_init_data_dir=False,
+    #         )
+
+    #     self._show_structures(
+    #         carbon_channel_points=carbon_channel.points,
+    #         al_points=al_full_channel_coordinates.points,
+    #         title=structure_folder,
+    #     )
+
+    def update_al_channel_coordinates(self, structure_folder: str) -> Path:
+        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
+
+        al_coordinates: Points = AtomsParser.get_al_channel_coordinates(
+            structure_folder, carbon_channel, self.number_of_planes, self.to_try_to_reflect_al_atoms)
+
+        # min_dists: np.ndarray = DistanceMeasure.calculate_min_distances(al_coordinates.points, carbon_channel_points)
+        # DistanceMeasure.calculate_min_distances_between_points()
+
+        file_name: str = Constants.filenames.AL_CHANNEL_COORDINATES_XLSX_FILE
+
         path_to_file: Path | None = FileWriter.write_excel_file(
             df=al_coordinates.to_df(columns=["i", "x_Al", "y_Al", "z_Al"]),
             structure_folder=structure_folder,
             sheet_name="Al atoms for the channel",
-            file_name=Constants.filenames.AL_CHANNEL_COORDINATES_XLSX_FILE,
+            file_name=file_name,
             is_init_data_dir=False,
         )
 
         if path_to_file is None:
-            raise ValueError("Failed to write Excel file")
+            raise IOError(f"Failed to write {file_name} Excel file")
 
         return path_to_file
 
-    def update_al_full_channel_coordinates_tbl(self, structure_folder: str) -> None:
-        """
-        Run in loop:
-        1) read Excel file to get Al atoms for the full channel;
-        2) filter empty lines (if some lines were removed);
-        3) show current structure based on the coordinates from the file;
-        4) after closing the plot go to 1).
-        """
-        return
-        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
-        to_build_bonds: bool = True
-
-        num_of_min_distances: int = int(Inputs.text_input(
-            to_set,
-            default_value="2",
-            text="Number of min distances for bonds to show on plot",
-            env_id="number_of_min_distances",
-        ))
-
-        show_al_layers: bool = Inputs.bool_input(
-            to_set,
-            default_value=False,
-            text="Show AL layers in different colors",
-            env_id="show_al_layers",
-        )
-
-        interactive_mode: bool = Inputs.bool_input(
-            to_set,
-            default_value=False,
-            text="Interactive mode to update point coordinates",
-            env_id="interactive_mode",
-        )
-
-        while True:
-            al_full_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
-                structure_folder=structure_folder,
-                file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
-                is_init_data_dir=False,
-            )
-
-            if al_full_channel_coordinates_df is not None:
-                al_full_channel_coordinates: Points = AtomsParser._parse_al_coordinates_df(
-                    al_full_channel_coordinates_df)
-            else:
-                logger.warning(
-                    f"Excel file with Al atoms for the full channel not found in {structure_folder}; building full channel.")
-
-                al_bulk: Points = self._build_al_atoms(
-                    to_set, carbon_channel.coordinate_limits)
-
-                # number_of_planes: int = int(Inputs.text_input(
-                #     to_set,
-                #     default_value="1",
-                #     text="Number of planes to translate",
-                #     env_id="number_of_planes",
-                # ))
-
-                try_to_reflect_al_atoms: bool = Inputs.bool_input(
-                    to_set,
-                    default_value=True,
-                    text="Try to reflect aluminum atoms for other planes",
-                    env_id="try_to_reflect_al_atoms",
-                )
-
-                al_channel_planes_coordinates: Points = AtomsParser.get_al_channel_coordinates(
-                    structure_folder, carbon_channel, number_of_planes=1,
-                    try_to_reflect_al_atoms=try_to_reflect_al_atoms)
-
-                al_full_channel_coordinates: Points = FullChannelBuilder.build_full_channel(
-                    carbon_channel, al_channel_planes_coordinates, al_bulk)
-
-                FileWriter.write_excel_file(
-                    df=al_full_channel_coordinates.to_df(columns=["i", "x_Al", "y_Al", "z_Al"]),
-                    structure_folder=structure_folder,
-                    sheet_name="Al atoms for the full channel",
-                    file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
-                    is_init_data_dir=False,
-                )
-
-            self._show_structures(
-                carbon_channel_points=carbon_channel.points,
-                al_points=al_full_channel_coordinates.points,
-                to_build_bonds=to_build_bonds,
-                title=structure_folder,
-                num_of_min_distances=num_of_min_distances,
-                show_al_layers=show_al_layers,
-                interactive_mode=interactive_mode,
-                # show_coordinates=False,
-                # show_indexes=True,
-                to_set=to_set,
-            )
-
-            try:
-                CoordinatesTableManager.update_full_channel_tbl_file(structure_folder)
-
-            except IOError as e:
-                logger.warning(e)
-                file_is_closed: bool = Inputs.bool_input(
-                    to_set,
-                    default_value=True,
-                    text="Did you save and close Excel file?",
-                )
-
-                if file_is_closed is False:
-                    raise
-
-    def get_al_in_channel_details(self, structure_folder: str) -> None:
+    def get_al_in_channel_details(self, structure_folder: str) -> Path:
         """
         Get details of Al atoms in the channel.
         """
-        return
         carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
 
-        number_of_planes: int = int(Inputs.text_input(
-            to_set,
-            default_value="1",
-            text="Number of planes to translate",
-            env_id="number_of_planes",
-        ))
+        # al_coordinates: Points = AtomsParser.get_al_channel_coordinates(
+        #     structure_folder, carbon_channel, self.number_of_planes, self.to_try_to_reflect_al_atoms)
 
-        al_coordinates: Points = AtomsParser.get_al_channel_coordinates(
-            structure_folder, carbon_channel, number_of_planes=number_of_planes, try_to_reflect_al_atoms=True)
+        logger.info("self.file_name", self.file_name)
+
+        al_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
+            structure_folder=structure_folder,
+            file_name=self.file_name,
+            is_init_data_dir=False,
+            to_print_warning=False,
+        )
+
+        if al_coordinates_df is None:
+            raise IOError(f"Failed to read {self.file_name} Excel file")
+
+        al_coordinates: Points = AtomsParser._parse_al_coordinates_df(al_coordinates_df)
 
         # Prepare data for DataFrame
         data: list[dict] = []
@@ -303,16 +264,21 @@ class VMIntercalationAndSorption(VMParamsSetter):
         # Set multi-level columns
         df.columns = pd.MultiIndex.from_tuples(df.columns)
 
-        file_name: str = f"{structure_folder}_{Constants.filenames.AL_CHANNEL_DETAILS_XLSX_FILE}"
+        result_file_name: str = self.file_name.split(".")[0] + "_" + Constants.filenames.AL_CHANNEL_DETAILS_XLSX_FILE
 
         # Write DataFrame to Excel file
-        FileWriter.write_excel_file(
+        path_to_file: Path | None = FileWriter.write_excel_file(
             df=df,
             structure_folder=structure_folder,
             sheet_name="Al atoms in channel details",
-            file_name=file_name,
+            file_name=result_file_name,
             is_init_data_dir=False,
         )
+
+        if path_to_file is None:
+            raise IOError(f"Failed to write {result_file_name} Excel file")
+
+        return path_to_file
 
     def translate_al_to_all_channels(self, structure_folder: str) -> None:
         """
