@@ -16,9 +16,9 @@ class StructureWindow:
             if self.one_channel else f"Show init full CH structure ({self.structure_folder}) "
         self.input_window.title(title)
 
-        # self.input_window.pack_propagate(False)
-        # self.input_window.grid_propagate(False)
-        self.input_window.geometry("400x400")
+        self.input_window.pack_propagate(True)
+        self.input_window.grid_propagate(True)
+        # self.input_window.geometry("400x400")
 
         # Checkbox for to_build_bonds
         self.to_build_bonds_checkbox = CheckBox(

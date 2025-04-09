@@ -43,7 +43,9 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils):
         self.input_window = ctk.CTkToplevel()
         title: str = f"Update Al coordinates table ({self.structure_folder})"
         self.input_window.title(title)
-        self.input_window.geometry("450x600")
+        # self.input_window.geometry("450x600")
+        self.input_window.pack_propagate(True)
+        self.input_window.grid_propagate(True)
 
         self.file_names_dropdown: DropdownList = DropdownList(
             self.input_window,
@@ -190,7 +192,9 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils):
         )
         description_label.pack(pady=10, padx=10)
 
-        self.input_window.geometry("450x600")
+        # self.input_window.geometry("450x600")
+        self.input_window.pack_propagate(True)
+        self.input_window.grid_propagate(True)
 
         self.file_names_dropdown: DropdownList = DropdownList(
             self.input_window,
@@ -327,7 +331,9 @@ class GetAlInChannelDetailsWindow(_IntercalationAndSorptionUtils):
         )
         description_label.pack(pady=10, padx=10)
 
-        self.input_window.geometry("450x300")
+        # self.input_window.geometry("450x300")
+        self.input_window.pack_propagate(True)
+        self.input_window.grid_propagate(True)
 
         self.file_names_dropdown: DropdownList = DropdownList(
             self.input_window,
@@ -365,7 +371,9 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils):
         self.input_window = ctk.CTkToplevel()
         title: str = f"Translate Al to all channels ({self.structure_folder})"
         self.input_window.title(title)
-        self.input_window.geometry("450x600")
+        # self.input_window.geometry("450x600")
+        self.input_window.pack_propagate(True)
+        self.input_window.grid_propagate(True)
 
         self.file_names_dropdown: DropdownList = DropdownList(
             self.input_window,

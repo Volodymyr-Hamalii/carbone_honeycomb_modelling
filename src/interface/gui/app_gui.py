@@ -11,7 +11,10 @@ class AppGui(ctk.CTk):
     def __init__(self):
         super().__init__()
         self.title("Carbon Honeycomb Manager")
-        self.geometry("400x700")
+
+        # self.geometry("400x700")
+        self.pack_propagate(True)
+        self.grid_propagate(True)
 
         structure_folders: list[str] = FileReader.read_list_of_dirs()
         self.structure_folder: str = structure_folders[0]
