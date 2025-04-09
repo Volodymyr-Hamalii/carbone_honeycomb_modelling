@@ -43,7 +43,7 @@ class AtomsParser:
         )
         if al_full_channel_coordinates_df is not None:
             logger.info(f"Read {file_name} file.")
-            return cls._parse_al_coordinates_df(al_full_channel_coordinates_df)
+            return cls.parse_al_coordinates_df(al_full_channel_coordinates_df)
 
         # Try to read the channel Al plane coordinates
         file_name: str = Constants.filenames.AL_CHANNEL_COORDINATES_XLSX_FILE
@@ -55,7 +55,7 @@ class AtomsParser:
         )
         if al_channel_coordinates_df is not None:
             logger.info(f"Read {file_name} file.")
-            return cls._parse_al_coordinates_df(al_channel_coordinates_df)
+            return cls.parse_al_coordinates_df(al_channel_coordinates_df)
 
         # logger.warning(f"Excel table with Al atoms for {structure_folder} structure not found. Al atoms builder.")
 
@@ -68,7 +68,7 @@ class AtomsParser:
         )
         if al_plane_coordinates_df is not None:
             logger.info(f"Read {file_name} file.")
-            al_plane_coordinates: Points = cls._parse_al_coordinates_df(al_plane_coordinates_df)
+            al_plane_coordinates: Points = cls.parse_al_coordinates_df(al_plane_coordinates_df)
         else:
             # Build atoms
             logger.info(f"Building Al atoms for {structure_folder} structure...")
@@ -103,7 +103,7 @@ class AtomsParser:
             )
 
             if al_plane_coordinates_df is not None:
-                return cls._parse_al_coordinates_df(al_plane_coordinates_df)
+                return cls.parse_al_coordinates_df(al_plane_coordinates_df)
 
         # logger.warning(f"Excel table with Al atoms for {structure_folder} structure not found. Al atoms builder.")
 
@@ -139,7 +139,7 @@ class AtomsParser:
         return Points(points=coordinates_al.sorted_points)
 
     @staticmethod
-    def _parse_al_coordinates_df(al_plane_coordinates_df: pd.DataFrame) -> Points:
+    def parse_al_coordinates_df(al_plane_coordinates_df: pd.DataFrame) -> Points:
         """
         Parse al_plane_coordinates_df DataFrame with columns
         i, x_Al, y_Al, z_Al, min_dist_to_Al, Al_1, Al_2, Al_3 ...

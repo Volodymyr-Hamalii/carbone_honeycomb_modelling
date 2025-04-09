@@ -51,7 +51,7 @@ class CoordinatesTableManager:
             raise FileNotFoundError(
                 f"Excel file with Al atoms for the full channel not found in {structure_folder}.")
 
-        al_channel_coordinates: Points = AtomsParser._parse_al_coordinates_df(al_channel_coordinates_df)
+        al_channel_coordinates: Points = AtomsParser.parse_al_coordinates_df(al_channel_coordinates_df)
         df: pd.DataFrame = cls._build_updated_df(al_channel_coordinates)
 
         path_to_file: Path | None = FileWriter.write_excel_file(

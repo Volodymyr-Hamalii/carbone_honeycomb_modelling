@@ -144,7 +144,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
     #     )
 
     #     if al_full_channel_coordinates_df is not None:
-    #         al_full_channel_coordinates: Points = AtomsParser._parse_al_coordinates_df(
+    #         al_full_channel_coordinates: Points = AtomsParser.parse_al_coordinates_df(
     #             al_full_channel_coordinates_df)
     #     else:
     #         logger.warning(
@@ -225,7 +225,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
         if al_coordinates_df is None:
             raise IOError(f"Failed to read {self.file_name} Excel file")
 
-        al_coordinates: Points = AtomsParser._parse_al_coordinates_df(al_coordinates_df)
+        al_coordinates: Points = AtomsParser.parse_al_coordinates_df(al_coordinates_df)
 
         # Prepare data for DataFrame
         data: list[dict] = []
@@ -301,7 +301,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
         if al_one_channel_coordinates_df is None:
             raise IOError(f"Failed to read {self.file_name} Excel file")
 
-        al_channel_coordinates: Points = AtomsParser._parse_al_coordinates_df(al_one_channel_coordinates_df)
+        al_channel_coordinates: Points = AtomsParser.parse_al_coordinates_df(al_one_channel_coordinates_df)
 
         al_coordinates: Points = AlAtomsTranslator.translate_for_all_channels(
             coordinates_carbon=coordinates_carbon,
