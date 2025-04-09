@@ -460,6 +460,14 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils):
         self.input_window.pack_propagate(True)
         self.input_window.grid_propagate(True)
 
+        self.file_names_dropdown: DropdownList = DropdownList(
+            self.input_window,
+            options=self.file_names,
+            command=self.view_model.set_file_name,
+            title="Al coordinates table to translate",
+        )
+        self.file_names_dropdown.pack(pady=10, padx=10)
+
         # Create a frame to hold the columns
         columns_frame = ctk.CTkFrame(self.input_window)
         columns_frame.pack(fill="both", expand=True, padx=10, pady=10)
@@ -472,21 +480,6 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils):
         right_frame.pack(side="right", fill="both", expand=True, padx=10, pady=10)
 
         # Left column inputs
-        self.file_names_dropdown: DropdownList = DropdownList(
-            self.input_window,
-            options=self.file_names,
-            command=self.view_model.set_file_name,
-            title="Al coordinates table to translate",
-        )
-        self.file_names_dropdown.pack(pady=10, padx=10)
-
-        self.try_to_reflect_al_atoms_checkbox: CheckBox = CheckBox(
-            left_frame,
-            text="Try to reflect Al atoms to fit the plane\n(if no init file and the Al atoms will be calculated)",
-            command=self.update_to_try_to_reflect_al_atoms,
-        )
-        self.try_to_reflect_al_atoms_checkbox.pack(pady=10, padx=10)
-
         self.num_of_min_distances_input_field: InputField = InputField(
             left_frame,
             text="Number of min distances for bonds",
@@ -509,6 +502,13 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils):
             default_value=self.view_model.num_of_al_layers,
         )
         self.num_of_al_layers_input_field.pack(pady=10, padx=10)
+
+        self.try_to_reflect_al_atoms_checkbox: CheckBox = CheckBox(
+            left_frame,
+            text="Try to reflect Al atoms to fit the plane\n(if no init file and the Al atoms will be calculated)",
+            command=self.update_to_try_to_reflect_al_atoms,
+        )
+        self.try_to_reflect_al_atoms_checkbox.pack(pady=10, padx=10)
 
         # Right column inputs
         self.coord_x_limits_input_field = InputFieldCoordLimits(
