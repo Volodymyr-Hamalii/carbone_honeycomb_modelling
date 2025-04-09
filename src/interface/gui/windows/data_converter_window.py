@@ -85,7 +85,7 @@ class DataConverterWindow:
         self.next_btn = Button(
             self.input_window, text="Convert", command=self.convert_file
         )
-        self.next_btn.pack(pady=10, padx=10)
+        self.next_btn.pack(pady=(10, 25), padx=10)
 
     # def update_excel_file_name(self, value: str) -> None:
     #     self.view_model.set_excel_file_name(value)

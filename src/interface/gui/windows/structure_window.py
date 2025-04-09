@@ -90,7 +90,7 @@ class StructureWindow:
             self.input_window, text="Show structure",
             command=self.show_structure,
         )
-        self.next_btn.pack(pady=10, padx=10)
+        self.next_btn.pack(pady=(10, 25), padx=10)
 
     def show_structure(self) -> None:
         if self.one_channel:

@@ -55,7 +55,7 @@ class ChannelDetailsWindow:
             self.input_window, text="Show",
             command=self.get_channel_details,
         )
-        self.next_btn.pack(pady=10)
+        self.next_btn.pack(pady=(10, 25))
 
     def get_channel_details(self) -> None:
         self.view_model.get_channel_details(self.structure_folder)
