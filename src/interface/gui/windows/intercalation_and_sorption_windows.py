@@ -90,7 +90,7 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils):
 
         # Checkbox for to_show_indexes
         self.to_show_al_indexes_checkbox = CheckBox(
-            self.input_window, text="Show atoms indexes on the plot",
+            self.input_window, text="Show atom's indexes on the plot",
             command=self.update_to_show_al_indexes,
             default=self.view_model.to_show_al_indexes,
         )
@@ -244,7 +244,7 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils):
 
         # Checkbox for to_show_indexes
         self.to_show_al_indexes_checkbox = CheckBox(
-            self.input_window, text="Show atoms indexes on the plot",
+            self.input_window, text="Show atom's indexes on the plot",
             command=self.update_to_show_al_indexes,
             default=self.view_model.to_show_al_indexes,
         )
@@ -420,7 +420,7 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils):
 
         # Checkbox for to_show_indexes
         self.to_show_al_indexes_checkbox = CheckBox(
-            self.input_window, text="Show atoms indexes on the plot",
+            self.input_window, text="Show atom's indexes on the plot",
             command=self.update_to_show_al_indexes,
             default=self.view_model.to_show_al_indexes,
         )
@@ -428,7 +428,7 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils):
 
         self.translate_btn: Button = Button(
             self.input_window,
-            text="Translate Al to all channels",
+            text="Translate Al to all channels\nand generate output files",
             command=self.translate_al_to_all_channels,
         )
         self.translate_btn.pack(pady=10, padx=10)
