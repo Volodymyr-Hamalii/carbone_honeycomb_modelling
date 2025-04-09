@@ -12,11 +12,10 @@ class ChannelDetailsWindow:
 
     def create_window(self) -> None:
         self.input_window = ctk.CTkToplevel()
-        self.input_window.title(f"Show channel parameters ({self.structure_folder})")
-
-        # self.input_window.geometry("300x300")
         self.input_window.pack_propagate(True)
         self.input_window.grid_propagate(True)
+
+        self.input_window.title(f"Show channel parameters ({self.structure_folder})")
 
         # Checkbox for to_show_channel_angles
         self.to_show_channel_angles_checkbox = CheckBox(

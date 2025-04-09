@@ -115,7 +115,7 @@ class AppGui(ctk.CTk):
 
         # Button to show intercalation and sorption
         self.show_intercalation_and_sorption_btn = Button(
-            intercalation_and_sorption_frame, text="Update Al coordinates table for specific planes",
+            intercalation_and_sorption_frame, text="Update Al coordinates table",
             command=self.open_update_al_coordinates_table_window)
         self.show_intercalation_and_sorption_btn.pack(pady=10, padx=10)
 

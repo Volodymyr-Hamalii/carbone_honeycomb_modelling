@@ -18,13 +18,15 @@ class StructureWindow:
 
     def create_window(self) -> None:
         self.input_window = ctk.CTkToplevel()
-        title: str = f"Show one channel structure ({self.structure_folder})" \
-            if self.one_channel else f"Show init full CH structure ({self.structure_folder}) "
-        self.input_window.title(title)
-
         self.input_window.pack_propagate(True)
         self.input_window.grid_propagate(True)
-        # self.input_window.geometry("400x400")
+
+        title: str = (
+            f"Show one channel structure ({self.structure_folder})"
+            if self.one_channel
+            else f"Show init full CH structure ({self.structure_folder}) "
+        )
+        self.input_window.title(title)
 
         # Checkbox for to_build_bonds
         self.to_build_bonds_checkbox = CheckBox(

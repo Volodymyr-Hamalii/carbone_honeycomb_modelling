@@ -41,10 +41,21 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils):
 
     def create_window(self) -> None:
         self.input_window = ctk.CTkToplevel()
-        title: str = f"Update Al coordinates table ({self.structure_folder})"
-        self.input_window.title(title)
         self.input_window.pack_propagate(True)
         self.input_window.grid_propagate(True)
+
+        title: str = f"Update Al coordinates table ({self.structure_folder})"
+        self.input_window.title(title)
+
+        description: str = (
+            "Allows to plot the selected structure, or update the Excel file with Al coordinates "
+            "(to remove the empty rows and rebuild the dist matrix)."
+            "If the file is not found, the program will build the Al atoms for the provided number of planes."
+        )
+        description_label: ctk.CTkLabel = ctk.CTkLabel(
+            self.input_window, text=description, wraplength=500
+        )
+        description_label.pack(pady=10, padx=10)
 
         # Create a frame to hold the columns
         columns_frame = ctk.CTkFrame(self.input_window)
@@ -214,15 +225,15 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils):
 
     def create_window(self) -> None:
         self.input_window = ctk.CTkToplevel()
-        title: str = f"Translate Al to other planes ({self.structure_folder})"
-        self.input_window.title(title)
-
         self.input_window.pack_propagate(True)
         self.input_window.grid_propagate(True)
 
+        title: str = f"Translate Al to other planes ({self.structure_folder})"
+        self.input_window.title(title)
+
         description: str = (
-            f"If the file {Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE} exists - it just plots the structure.\n"
-            f"If the file above is not found, the program will build the full channel and translate Al atoms to other planes."
+            "Read the selected file with coordinates for N planes "
+            "and translate Al atoms to other planes."
         )
         description_label: ctk.CTkLabel = ctk.CTkLabel(
             self.input_window, text=description, wraplength=500
@@ -251,7 +262,7 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils):
         # Left column inputs
         self.try_to_reflect_al_atoms_checkbox: CheckBox = CheckBox(
             left_frame,
-            text="Try to reflect Al atoms\n(if no init file and the Al atoms will be calculated)",
+            text="Try to reflect Al atoms to fit the plane",
             command=self.update_to_try_to_reflect_al_atoms,
         )
         self.try_to_reflect_al_atoms_checkbox.pack(pady=10, padx=10)
@@ -398,6 +409,9 @@ class GetAlInChannelDetailsWindow(_IntercalationAndSorptionUtils):
 
     def create_window(self) -> None:
         self.input_window = ctk.CTkToplevel()
+        self.input_window.pack_propagate(True)
+        self.input_window.grid_propagate(True)
+
         title: str = f"Get Al in channel details ({self.structure_folder})"
         self.input_window.title(title)
 
@@ -409,9 +423,6 @@ class GetAlInChannelDetailsWindow(_IntercalationAndSorptionUtils):
             self.input_window, text=description, wraplength=400
         )
         description_label.pack(pady=10, padx=10)
-
-        self.input_window.pack_propagate(True)
-        self.input_window.grid_propagate(True)
 
         self.file_names_dropdown: DropdownList = DropdownList(
             self.input_window,
@@ -471,7 +482,7 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils):
 
         self.try_to_reflect_al_atoms_checkbox: CheckBox = CheckBox(
             left_frame,
-            text="Try to reflect Al atoms\n(if no init file and the Al atoms will be calculated)",
+            text="Try to reflect Al atoms to fit the plane\n(if no init file and the Al atoms will be calculated)",
             command=self.update_to_try_to_reflect_al_atoms,
         )
         self.try_to_reflect_al_atoms_checkbox.pack(pady=10, padx=10)

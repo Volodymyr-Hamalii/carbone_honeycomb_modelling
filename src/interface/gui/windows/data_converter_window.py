@@ -15,10 +15,6 @@ class DataConverterWindow:
     def __init__(self, view_model: VMDataConverter, structure_folder: str) -> None:
         self.view_model: VMDataConverter = view_model
         self.structure_folder: str = structure_folder
-
-        # self.excel_file_names: list[str] = ["None"]
-        # self.dat_file_names: list[str] = ["None"]
-        # self.pdb_file_names: list[str] = ["None"]
         self.file_names: list[str] = []
         self._refresh_file_name_lists()
 
@@ -26,38 +22,15 @@ class DataConverterWindow:
 
     def create_window(self) -> None:
         self.input_window = ctk.CTkToplevel()
-        title: str = f"Data converter ({self.structure_folder})"
-        self.input_window.title(title)
 
-        # self.input_window.geometry("400x400")
         self.input_window.pack_propagate(True)
         self.input_window.grid_propagate(True)
 
-        # Create dropdown lists
-        # self.excel_file_names_dropdown: DropdownList = DropdownList(
-        #     self.input_window,
-        #     options=self.excel_file_names,
-        #     command=self.update_excel_file_name,
-        # )
-        # self.excel_file_names_dropdown.pack(pady=10, padx=10)
-
-        # self.dat_file_names_dropdown: DropdownList = DropdownList(
-        #     self.input_window,
-        #     options=self.dat_file_names,
-        #     command=self.update_dat_file_name,
-        # )
-        # self.dat_file_names_dropdown.pack(pady=10, padx=10)
-
-        # self.pdb_file_names_dropdown: DropdownList = DropdownList(
-        #     self.input_window,
-        #     options=self.pdb_file_names,
-        #     command=self.update_pdb_file_name,
-        # )
-        # self.pdb_file_names_dropdown.pack(pady=10, padx=10)
+        title: str = f"Data converter ({self.structure_folder})"
+        self.input_window.title(title)
 
         self.data_dir_dropdown: DropdownList = DropdownList(
             self.input_window,
-            # options=[Constants.filenames.RESULT_DATA_DIR, Constants.filenames.INIT_DATA_DIR],
             options=[Constants.filenames.RESULT_DATA_DIR],
             command=self.update_data_dir,
             title="Data directory",
@@ -87,15 +60,6 @@ class DataConverterWindow:
         )
         self.next_btn.pack(pady=(10, 25), padx=10)
 
-    # def update_excel_file_name(self, value: str) -> None:
-    #     self.view_model.set_excel_file_name(value)
-
-    # def update_dat_file_name(self, value: str) -> None:
-    #     self.view_model.set_dat_file_name(value)
-
-    # def update_pdb_file_name(self, value: str) -> None:
-    #     self.view_model.set_pdb_file_name(value)
-
     def update_data_dir(self, value: str) -> None:
         self.view_model.set_data_dir(value)
         self._refresh_file_name_lists()
@@ -108,9 +72,6 @@ class DataConverterWindow:
 
     def _refresh_file_name_lists(self) -> None:
         path: Path = self.view_model.data_dir / self.structure_folder
-        # self.excel_file_names: list[str] = FileReader.read_list_of_files(path, ".xlsx") or ["None"]
-        # self.dat_file_names: list[str] = FileReader.read_list_of_files(path, ".dat") or ["None"]
-        # self.pdb_file_names: list[str] = FileReader.read_list_of_files(path, ".pdb") or ["None"]
         self.file_names: list[str] = FileReader.read_list_of_files(path) or ["None"]
 
         if self.view_model.file_name == "None" and self.file_names:
