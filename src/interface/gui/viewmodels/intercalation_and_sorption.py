@@ -374,6 +374,15 @@ class VMIntercalationAndSorption(VMParamsSetter):
     ) -> None:
         # TODO: refactor
 
+        coordinate_limits: CoordinateLimits = CoordinateLimits(
+            x_min=self.x_min,
+            x_max=self.x_max,
+            y_min=self.y_min,
+            y_max=self.y_max,
+            z_min=self.z_min,
+            z_max=self.z_max,
+        )
+
         if self.num_of_al_layers == 1:
             StructureVisualizer.show_two_structures(
                 coordinates_first=carbon_channel_points,
@@ -385,6 +394,8 @@ class VMIntercalationAndSorption(VMParamsSetter):
                 to_show_coordinates=self.to_show_coordinates,
                 to_show_indexes=self.to_show_al_indexes,
                 # is_interactive_mode=self.interactive_mode,
+                coordinate_limits_first=coordinate_limits,
+                coordinate_limits_second=coordinate_limits,
             )
 
         elif self.num_of_al_layers == 2:
@@ -423,6 +434,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
                 to_show_indexes=self.to_show_al_indexes,
                 # is_interactive_mode=self.interactive_mode,
                 custom_indices_list=[None, a_layer_indices, b_layer_indices],
+                coordinate_limits_list=[coordinate_limits for _ in range(3)],
             )
 
         elif self.num_of_al_layers == 3:
@@ -466,7 +478,9 @@ class VMIntercalationAndSorption(VMParamsSetter):
                 to_show_indexes=self.to_show_al_indexes,
                 # is_interactive_mode=self.interactive_mode,
                 custom_indices_list=[None, a_layer_indices, b_layer_indices, c_layer_indices],
+                coordinate_limits_list=[coordinate_limits for _ in range(4)],
             )
+
         else:
             raise NotImplementedError(f"Number of layers {self.num_of_al_layers} is not implemented")
 

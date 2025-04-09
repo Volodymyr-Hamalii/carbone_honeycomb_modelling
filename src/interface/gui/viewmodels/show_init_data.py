@@ -6,7 +6,7 @@ from matplotlib.pyplot import Axes  # type: ignore
 
 from src.utils import PathBuilder, Logger
 from src.coordinate_operations import DistanceMeasure, LinesOperations
-from src.base_structure_classes import Points
+from src.base_structure_classes import Points, CoordinateLimits
 from src.structure_visualizer import StructureVisualizer, VisualizationParams
 from src.data_preparation import AtomsUniverseBuilder
 from src.projects import (
@@ -137,19 +137,16 @@ class VMShowInitData(VMParamsSetter):
             coordinates_carbon=coordinates_carbon)
         carbon_channel: CarbonHoneycombChannel = carbon_channels[0]
 
-        # to_build_bonds: bool = Inputs.bool_input(
-        #     to_set,
-        #     default_value=True,
-        #     text="To build bonds between atoms",
-        #     env_id="to_build_bonds",
-        # )
+        coordinate_limits: CoordinateLimits = CoordinateLimits(
+            x_min=self.x_min,
+            x_max=self.x_max,
+            y_min=self.y_min,
+            y_max=self.y_max,
+            z_min=self.z_min,
+            z_max=self.z_max,
+        )
 
-        # to_show_coordinates: bool = Inputs.bool_input(
-        #     to_set,
-        #     default_value=True,
-        #     text="To show coordinates",
-        #     env_id="to_show_coordinates",
-        # )
+        # print(coordinate_limits)
 
         StructureVisualizer.show_structure(
             coordinates=carbon_channel.points,
@@ -160,6 +157,7 @@ class VMShowInitData(VMParamsSetter):
             to_show_indexes=self.to_show_c_indexes,
             num_of_min_distances=self.bonds_num_of_min_distances,
             skip_first_distances=self.bonds_skip_first_distances,
+            coordinate_limits=coordinate_limits,
         )
 
     def get_channel_details(self, structure_folder: str) -> None:

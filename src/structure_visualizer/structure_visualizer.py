@@ -298,14 +298,25 @@ class StructureVisualizer:
             logger.warning(f"No points to plot for {visual_params.label}.")
             return
 
+        if coordinate_limits:
+            # Remove points outside the coordinate limits
+            coordinates = coordinates[
+                (coordinates[:, 0] >= coordinate_limits.x_min) &
+                (coordinates[:, 0] <= coordinate_limits.x_max) &
+                (coordinates[:, 1] >= coordinate_limits.y_min) &
+                (coordinates[:, 1] <= coordinate_limits.y_max) &
+                (coordinates[:, 2] >= coordinate_limits.z_min) &
+                (coordinates[:, 2] <= coordinate_limits.z_max)
+            ]
+
         x: ndarray = coordinates[:, 0]
         y: ndarray = coordinates[:, 1]
         z: ndarray = coordinates[:, 2]
 
-        if coordinate_limits:
-            x = np.clip(x, coordinate_limits.x_min, coordinate_limits.x_max)
-            y = np.clip(y, coordinate_limits.y_min, coordinate_limits.y_max)
-            z = np.clip(z, coordinate_limits.z_min, coordinate_limits.z_max)
+        # if coordinate_limits:
+        #     x = np.clip(x, coordinate_limits.x_min, coordinate_limits.x_max)
+        #     y = np.clip(y, coordinate_limits.y_min, coordinate_limits.y_max)
+        #     z = np.clip(z, coordinate_limits.z_min, coordinate_limits.z_max)
 
         scatter: PathCollection = ax.scatter(
             x, y, z,

@@ -1,6 +1,12 @@
 import customtkinter as ctk
 from ..viewmodels import VMShowInitData
-from ..components import Button, CheckBox, PlotWindow, InputField
+from ..components import (
+    Button,
+    CheckBox,
+    PlotWindow,
+    InputField,
+    InputFieldCoordLimits,
+)
 
 
 class StructureWindow:
@@ -60,6 +66,25 @@ class StructureWindow:
         )
         self.bonds_skip_first_distances_input_field.pack(pady=10, padx=10)
 
+        # Input field for coord_limits
+        self.coord_x_limits_input_field = InputFieldCoordLimits(
+            self.input_window, text="X plot limits",
+            command=self.update_x_coord_limits,
+        )
+        self.coord_x_limits_input_field.pack(pady=10, padx=10)
+
+        self.coord_y_limits_input_field = InputFieldCoordLimits(
+            self.input_window, text="Y plot limits",
+            command=self.update_y_coord_limits,
+        )
+        self.coord_y_limits_input_field.pack(pady=10, padx=10)
+
+        self.coord_z_limits_input_field = InputFieldCoordLimits(
+            self.input_window, text="Z plot limits",
+            command=self.update_z_coord_limits,
+        )
+        self.coord_z_limits_input_field.pack(pady=10, padx=10)
+
         # Button to proceed to the next step
         self.next_btn = Button(
             self.input_window, text="Show structure",
@@ -72,7 +97,7 @@ class StructureWindow:
             self.view_model.show_one_channel_structure(self.structure_folder)
         else:
             self.view_model.show_init_structure(self.structure_folder)
-        self.show_plot_window()
+        # self.show_plot_window()
 
     def update_to_build_bonds(self) -> None:
         value = bool(self.to_build_bonds_checkbox.get())
@@ -94,6 +119,24 @@ class StructureWindow:
         value = int(self.bonds_skip_first_distances_input_field.get())
         self.view_model.set_bonds_skip_first_distances(value)
 
-    def show_plot_window(self) -> None:
-        plot_window = PlotWindow(self.input_window, title=self.structure_folder)
-        plot_window.destroy()
+    def update_x_coord_limits(self) -> None:
+        value_min: str = self.coord_x_limits_input_field.min_entry.get()
+        value_max: str = self.coord_x_limits_input_field.max_entry.get()
+        self.view_model.set_x_min(value_min)
+        self.view_model.set_x_max(value_max)
+
+    def update_y_coord_limits(self) -> None:
+        value_min: str = self.coord_y_limits_input_field.min_entry.get()
+        value_max: str = self.coord_y_limits_input_field.max_entry.get()
+        self.view_model.set_y_min(value_min)
+        self.view_model.set_y_max(value_max)
+
+    def update_z_coord_limits(self) -> None:
+        value_min: str = self.coord_z_limits_input_field.min_entry.get()
+        value_max: str = self.coord_z_limits_input_field.max_entry.get()
+        self.view_model.set_z_min(value_min)
+        self.view_model.set_z_max(value_max)
+
+    # def show_plot_window(self) -> None:
+    #     plot_window = PlotWindow(self.input_window, title=self.structure_folder)
+    #     plot_window.destroy()
