@@ -114,8 +114,22 @@ class VMIntercalationAndSorption(VMParamsSetter):
         """
         carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
 
-        al_coordinates: Points = AtomsParser.get_al_channel_coordinates(
-            structure_folder, carbon_channel, self.number_of_planes, self.to_try_to_reflect_al_atoms)
+        # al_coordinates: Points = AtomsParser.get_al_channel_coordinates(
+        #     structure_folder, carbon_channel, self.number_of_planes, self.to_try_to_reflect_al_atoms)
+
+        al_full_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
+            structure_folder=structure_folder,
+            file_name=self.file_name,
+            is_init_data_dir=False,
+            to_print_warning=False,
+        )
+
+        if al_full_channel_coordinates_df is None:
+            raise IOError(f"Failed to read {self.file_name} Excel file")
+
+        al_coordinates: Points = AtomsParser.parse_al_coordinates_df(al_full_channel_coordinates_df)
+        al_coordinates: Points = AlAtomsTranslator.translate_for_all_planes(
+            carbon_channel, al_coordinates, self.number_of_planes, self.to_try_to_reflect_al_atoms)
 
         if self.number_of_planes > 1:
             # Build only specified planes
@@ -183,24 +197,36 @@ class VMIntercalationAndSorption(VMParamsSetter):
     def update_al_channel_coordinates(self, structure_folder: str) -> Path:
         carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
 
-        al_coordinates: Points = AtomsParser.get_al_channel_coordinates(
-            structure_folder, carbon_channel, self.number_of_planes, self.to_try_to_reflect_al_atoms)
+        # al_coordinates: Points = AtomsParser.get_al_channel_coordinates(
+        #     structure_folder, carbon_channel, self.number_of_planes, self.to_try_to_reflect_al_atoms)
+
+        al_full_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
+            structure_folder=structure_folder,
+            file_name=self.file_name,
+            is_init_data_dir=False,
+            to_print_warning=False,
+        )
+
+        if al_full_channel_coordinates_df is None:
+            raise IOError(f"Failed to read {self.file_name} Excel file")
+
+        al_coordinates: Points = AtomsParser.parse_al_coordinates_df(al_full_channel_coordinates_df)
+        al_coordinates: Points = AlAtomsTranslator.translate_for_all_planes(
+            carbon_channel, al_coordinates, self.number_of_planes, self.to_try_to_reflect_al_atoms)
 
         # min_dists: np.ndarray = DistanceMeasure.calculate_min_distances(al_coordinates.points, carbon_channel_points)
         # DistanceMeasure.calculate_min_distances_between_points()
-
-        file_name: str = Constants.filenames.AL_CHANNEL_COORDINATES_XLSX_FILE
 
         path_to_file: Path | None = FileWriter.write_excel_file(
             df=al_coordinates.to_df(columns=["i", "x_Al", "y_Al", "z_Al"]),
             structure_folder=structure_folder,
             sheet_name="Al atoms for the channel",
-            file_name=file_name,
+            file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
             is_init_data_dir=False,
         )
 
         if path_to_file is None:
-            raise IOError(f"Failed to write {file_name} Excel file")
+            raise IOError(f"Failed to write {self.file_name} Excel file")
 
         return path_to_file
 
@@ -212,8 +238,6 @@ class VMIntercalationAndSorption(VMParamsSetter):
 
         # al_coordinates: Points = AtomsParser.get_al_channel_coordinates(
         #     structure_folder, carbon_channel, self.number_of_planes, self.to_try_to_reflect_al_atoms)
-
-        logger.info("self.file_name", self.file_name)
 
         al_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
             structure_folder=structure_folder,

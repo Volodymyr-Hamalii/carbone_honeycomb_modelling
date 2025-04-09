@@ -265,7 +265,7 @@ class AppActionsIntercalationAndSorption:
             )
 
             if al_full_channel_coordinates_df is not None:
-                al_full_channel_coordinates: Points = AtomsParser._parse_al_coordinates_df(
+                al_full_channel_coordinates: Points = AtomsParser.parse_al_coordinates_df(
                     al_full_channel_coordinates_df)
             else:
                 logger.warning(

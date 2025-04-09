@@ -330,7 +330,10 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils):
         self.update_tbl_btn.pack(pady=(10, 25), padx=10)
 
     def translate_al_to_other_planes(self) -> None:
-        self.view_model.translate_al_to_other_planes(self.structure_folder)
+        try:
+            self.view_model.translate_al_to_other_planes(self.structure_folder)
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
 
     def update_file(self) -> None:
         try:
