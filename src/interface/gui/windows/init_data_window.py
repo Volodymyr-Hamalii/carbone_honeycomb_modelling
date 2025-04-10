@@ -1,20 +1,35 @@
+from pathlib import Path
 import customtkinter as ctk
+
+from src.utils import Constants, FileReader
 from ..viewmodels import VMShowInitData
 from ..components import (
     Button,
     CheckBox,
-    PlotWindow,
+    DropdownList,
     InputField,
     InputFieldCoordLimits,
 )
 
 
-class StructureWindow:
-    def __init__(self, view_model: VMShowInitData, structure_folder: str, one_channel: bool = False) -> None:
+class InitDataWindow:
+    def __init__(self, view_model: VMShowInitData, structure_folder: str, is_one_channel: bool = False) -> None:
         self.view_model: VMShowInitData = view_model
+        self.view_model.set_data_dir(Constants.filenames.INIT_DATA_DIR)
+
         self.structure_folder: str = structure_folder
-        self.one_channel: bool = one_channel
+        self.is_one_channel: bool = is_one_channel
+
+        self.file_names: list[str] = []
+        self._refresh_file_name_lists()
+
         self.create_window()
+
+    def _refresh_file_name_lists(self) -> None:
+        path: Path = self.view_model.data_dir / self.structure_folder
+        self.file_names: list[str] = FileReader.read_list_of_files(path) or ["None"]
+        if not self.view_model.file_name or self.view_model.file_name == "None":
+            self.view_model.set_file_name(self.file_names[0])
 
     def create_window(self) -> None:
         self.input_window = ctk.CTkToplevel()
@@ -23,10 +38,17 @@ class StructureWindow:
 
         title: str = (
             f"Show one channel structure ({self.structure_folder})"
-            if self.one_channel
+            if self.is_one_channel
             else f"Show init full CH structure ({self.structure_folder}) "
         )
         self.input_window.title(title)
+
+        self.file_names_dropdown: DropdownList = DropdownList(
+            self.input_window,
+            options=self.file_names,
+            command=self.view_model.set_file_name,
+        )
+        self.file_names_dropdown.pack(pady=10, padx=10)
 
         # Checkbox for to_build_bonds
         self.to_build_bonds_checkbox = CheckBox(
@@ -95,7 +117,7 @@ class StructureWindow:
         self.next_btn.pack(pady=(10, 25), padx=10)
 
     def show_structure(self) -> None:
-        if self.one_channel:
+        if self.is_one_channel:
             self.view_model.show_one_channel_structure(self.structure_folder)
         else:
             self.view_model.show_init_structure(self.structure_folder)

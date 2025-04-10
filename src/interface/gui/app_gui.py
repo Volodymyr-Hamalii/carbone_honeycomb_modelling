@@ -73,10 +73,10 @@ class AppGui(ctk.CTk):
         self.show_channel_parameters_btn.pack(pady=10, padx=10)
 
     def open_show_init_structure_window(self) -> None:
-        StructureWindow(self.view_model_show_init_data, self.structure_folder)
+        InitDataWindow(self.view_model_show_init_data, self.structure_folder)
 
     def open_show_one_channel_structure_window(self) -> None:
-        StructureWindow(self.view_model_show_init_data, self.structure_folder, one_channel=True)
+        InitDataWindow(self.view_model_show_init_data, self.structure_folder, is_one_channel=True)
 
     def open_get_channel_details_window(self) -> None:
         ChannelDetailsWindow(self.view_model_show_init_data, self.structure_folder)
