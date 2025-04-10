@@ -45,6 +45,7 @@ class AppGui(ctk.CTk):
             self,
             options=structure_folders,
             command=self.set_structure_folder,
+            title="Select structure (from 'init_data' folder)",
         )
         self.structure_folder_dropdown.pack(pady=10, padx=10)
 
