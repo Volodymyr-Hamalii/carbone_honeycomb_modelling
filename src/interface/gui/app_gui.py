@@ -1,7 +1,8 @@
+from pathlib import Path
 from tkinter import messagebox
 import customtkinter as ctk
 
-from src.utils import FileReader
+from src.utils import Constants, FileReader
 
 from .components import *
 from .viewmodels import *
@@ -17,12 +18,15 @@ class AppGui(ctk.CTk):
         self.pack_propagate(True)
         self.grid_propagate(True)
 
+        folder_path: Path = Constants.path.INIT_DATA_PATH
         structure_folders: list[str] = FileReader.read_list_of_dirs()
 
         if not structure_folders:
             messagebox.showerror(
                 "Error",
-                "Data folders not found. Please, put 'init_data' folder with CH channels data in the root directory.")
+                "Data folders not found. Please, put 'init_data' folder with CH channels data in the root directory:\n"
+                f"{folder_path}."
+            )
             self.structure_folder: str = "None"
         else:
             self.structure_folder: str = structure_folders[0]
