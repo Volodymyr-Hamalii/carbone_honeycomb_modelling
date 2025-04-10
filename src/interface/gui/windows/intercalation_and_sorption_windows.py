@@ -2,7 +2,7 @@ from pathlib import Path
 import customtkinter as ctk
 from tkinter import messagebox
 
-from src.utils import Logger, Constants, FileReader
+from src.utils import Logger, FileReader
 
 from ..viewmodels import VMIntercalationAndSorption
 from ..components import Button, CheckBox, DropdownList, InputField, InputFieldCoordLimits
@@ -136,14 +136,14 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils):
         # Remaining widgets below the columns
         self.plot_btn: Button = Button(
             self.input_window,
-            text="Build the model",
+            text="Plot the model",
             command=self.plot_al_plane_coordinates,
         )
         self.plot_btn.pack(pady=10, padx=10)
 
         self.update_tbl_btn: Button = Button(
             self.input_window,
-            text="Update the Excel file",
+            text="Update the Excel file for plane",
             command=self.update_al_plane_coordinates_file,
         )
         self.update_tbl_btn.pack(pady=10, padx=10)
@@ -156,7 +156,10 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils):
         self.generate_tbl_btn.pack(pady=(10, 25), padx=10)
 
     def plot_al_plane_coordinates(self) -> None:
-        self.view_model.plot_al_plane_coordinates(self.structure_folder)
+        try:
+            self.view_model.plot_al_plane_coordinates(self.structure_folder)
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
 
     def update_al_plane_coordinates_file(self) -> None:
         try:

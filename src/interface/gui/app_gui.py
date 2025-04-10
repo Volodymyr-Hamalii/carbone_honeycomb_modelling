@@ -1,3 +1,4 @@
+from tkinter import messagebox
 import customtkinter as ctk
 
 from src.utils import FileReader
@@ -17,7 +18,14 @@ class AppGui(ctk.CTk):
         self.grid_propagate(True)
 
         structure_folders: list[str] = FileReader.read_list_of_dirs()
-        self.structure_folder: str = structure_folders[0]
+
+        if not structure_folders:
+            messagebox.showerror(
+                "Error",
+                "Data folders not found. Please, put 'init_data' folder with CH channels data in the root directory.")
+            self.structure_folder: str = "None"
+        else:
+            self.structure_folder: str = structure_folders[0]
 
         # Initialize ViewModels
         self.view_model_show_init_data = VMShowInitData()
@@ -56,7 +64,7 @@ class AppGui(ctk.CTk):
 
         # Button to show init structure
         self.show_init_structure_btn = Button(
-            init_data_info_frame, text="Show init CH structure", command=self.open_show_init_structure_window
+            init_data_info_frame, text="Show initial CH structure", command=self.open_show_init_structure_window
         )
         self.show_init_structure_btn.pack(pady=10, padx=10)
 
@@ -115,7 +123,7 @@ class AppGui(ctk.CTk):
 
         # Button to show intercalation and sorption
         self.show_intercalation_and_sorption_btn = Button(
-            intercalation_and_sorption_frame, text="Update Al coordinates table",
+            intercalation_and_sorption_frame, text="Build Al atoms in the CH channel",
             command=self.open_update_al_coordinates_table_window)
         self.show_intercalation_and_sorption_btn.pack(pady=10, padx=10)
 
