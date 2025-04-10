@@ -137,7 +137,7 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils):
         self.plot_btn: Button = Button(
             self.input_window,
             text="Plot the model",
-            command=self.plot_al_plane_coordinates,
+            command=self.plot_al_in_c_structure,
         )
         self.plot_btn.pack(pady=10, padx=10)
 
@@ -155,9 +155,9 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils):
         )
         self.generate_tbl_btn.pack(pady=(10, 25), padx=10)
 
-    def plot_al_plane_coordinates(self) -> None:
+    def plot_al_in_c_structure(self) -> None:
         try:
-            self.view_model.plot_al_plane_coordinates(self.structure_folder)
+            self.view_model.plot_al_in_c_structure(self.structure_folder)
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
@@ -541,14 +541,28 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils):
 
         self.translate_btn: Button = Button(
             self.input_window,
-            text="Translate Al to all channels and generate output files",
-            command=self.translate_al_to_all_channels,
+            text="Generate output files",
+            command=self.translate_al_to_all_channels_generate_files,
+        )
+        self.translate_btn.pack(pady=10, padx=10)
+
+        self.translate_btn: Button = Button(
+            self.input_window,
+            text="Plot structure",
+            command=self.plot_al_in_c_structure,
         )
         self.translate_btn.pack(pady=(10, 25), padx=10)
 
-    def translate_al_to_all_channels(self) -> None:
+    def plot_al_in_c_structure(self) -> None:
         try:
-            paths: tuple[Path, Path, Path] = self.view_model.translate_al_to_all_channels(self.structure_folder)
+            self.view_model.translate_al_to_all_channels_plot(self.structure_folder)
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+    def translate_al_to_all_channels_generate_files(self) -> None:
+        try:
+            paths: tuple[Path, Path, Path] = self.view_model.translate_al_to_all_channels_generate_files(
+                self.structure_folder)
             messagebox.showinfo("Success", f"Generated files:\n{paths[0].name}\n{paths[1].name}\n{paths[2].name}")
         except Exception as e:
             messagebox.showerror("Error", str(e))
