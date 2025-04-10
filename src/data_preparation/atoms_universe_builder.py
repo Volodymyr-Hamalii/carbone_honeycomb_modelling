@@ -33,6 +33,9 @@ class AtomsUniverseBuilder:
         atoms = u.atoms
         points: ndarray = atoms.positions  # type: ignore
 
+        # Round coordinates to 3 decimal places
+        points = np.round(points, 3)
+
         return Points(points=points)
 
     @classmethod

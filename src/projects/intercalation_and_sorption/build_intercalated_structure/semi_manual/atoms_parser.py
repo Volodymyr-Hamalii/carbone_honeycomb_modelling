@@ -158,5 +158,8 @@ class AtomsParser:
         # Extract the coordinates as a numpy array
         points_array: np.ndarray = filtered_df[required_columns].to_numpy()
 
+        # Round coordinates to 3 decimal places
+        points_array = np.round(points_array, 3)
+
         # Return the Points instance
         return Points(points=points_array)

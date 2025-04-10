@@ -27,6 +27,8 @@ class IntercalatedChannelBuilder:
         if len(carbon_points) == 0:
             raise ValueError(f"No carbon atoms found in {file_name} file.")
 
+        carbon_points = np.round(carbon_points, 3)
+
         return Points(points=carbon_points)
 
     @staticmethod
