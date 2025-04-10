@@ -51,6 +51,9 @@ class FileWriter(FileManager):
                 # Don't overwrite existing file
                 return
 
+            # Ensure the directory exists
+            path_to_file.parent.mkdir(parents=True, exist_ok=True)
+
             # Convert ndarray to list[str]
             if isinstance(data_lines, ndarray):
                 data_lines = [f"{i[0]}\t{i[1]}\t{i[2]}" for i in data_lines]
@@ -96,6 +99,9 @@ class FileWriter(FileManager):
             if overwrite is False and path_to_file.exists():
                 # Don't overwrite existing file
                 return
+
+            # Ensure the directory exists
+            path_to_file.parent.mkdir(parents=True, exist_ok=True)
 
             # Convert ndarray to list[str]
             if isinstance(data_lines, ndarray):

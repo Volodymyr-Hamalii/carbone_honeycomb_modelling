@@ -4,11 +4,10 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import Axes  # type: ignore
 
-from src.utils import PathBuilder, Logger
+from src.utils import Logger, FileReader
 from src.coordinate_operations import DistanceMeasure, LinesOperations
 from src.base_structure_classes import Points, CoordinateLimits
 from src.structure_visualizer import StructureVisualizer, VisualizationParams
-from src.data_preparation import AtomsUniverseBuilder
 from src.projects import (
     CarbonHoneycombActions,
     CarbonHoneycombChannel,
@@ -33,8 +32,7 @@ class VMShowInitData(VMParamsSetter):
         to_show_indexes: bool
         """
 
-        path_to_init_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_folder)
-        carbon_points: Points = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
+        carbon_points: np.ndarray = FileReader.read_init_data_file(structure_folder, self.file_name)
 
         # to_build_bonds: bool = Inputs.bool_input(
         #     to_set,
@@ -44,7 +42,7 @@ class VMShowInitData(VMParamsSetter):
         # )
 
         StructureVisualizer.show_structure(
-            carbon_points.points,
+            carbon_points,
             to_build_bonds=self.to_build_bonds,
             to_show_coordinates=self.to_show_coordinates,
             to_show_indexes=self.to_show_c_indexes,
@@ -129,12 +127,11 @@ class VMShowInitData(VMParamsSetter):
         to_show_indexes: bool
         """
 
-        path_to_init_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_folder)
-
-        coordinates_carbon: Points = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
+        carbon_points: np.ndarray = FileReader.read_init_data_file(structure_folder, self.file_name)
 
         carbon_channels: list[CarbonHoneycombChannel] = CarbonHoneycombActions.split_init_structure_into_separate_channels(
-            coordinates_carbon=coordinates_carbon)
+            coordinates_carbon=Points(points=carbon_points))
+
         carbon_channel: CarbonHoneycombChannel = carbon_channels[0]
 
         coordinate_limits: CoordinateLimits = CoordinateLimits(

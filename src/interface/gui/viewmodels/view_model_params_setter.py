@@ -27,12 +27,15 @@ class VMParamsSetter:
 
         # Files and paths
         self.data_dir: Path = Constants.path.RESULT_DATA_PATH
-        self.file_name: str = "None"
-        self.file_format: str = "None"  # "xlsx", "dat", "pdb"
+        self.file_name: str = ""
+        self.file_format: str = ""  # "xlsx", "dat", "pdb"
         self.available_formats: list[str] = ["xlsx", "dat", "pdb"]
-        self.excel_file_name: str = Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE
-        self.dat_file_name: str = Constants.filenames.AL_ALL_CHANNELS_COORDINATES_DAT_FILE
-        self.pdb_file_name: str = Constants.filenames.PDB_FILE_ONE_CHANNEL
+        # self.excel_file_name: str = Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE
+        # self.dat_file_name: str = Constants.filenames.AL_ALL_CHANNELS_COORDINATES_DAT_FILE
+        # self.pdb_file_name: str = Constants.filenames.PDB_FILE_ONE_CHANNEL
+        self.excel_file_name: str = ""
+        self.dat_file_name: str = ""
+        self.pdb_file_name: str = ""
 
         # Intercalation and sorption
         self.number_of_planes: int = 1

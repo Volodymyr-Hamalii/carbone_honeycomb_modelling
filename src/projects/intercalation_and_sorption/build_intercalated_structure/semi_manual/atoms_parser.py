@@ -115,9 +115,9 @@ class AtomsParser:
         return coordinates_al
 
     @staticmethod
-    def build_carbon_channel(structure_folder: str) -> CarbonHoneycombChannel:
+    def build_carbon_channel(structure_folder: str, file_name: str | None = None) -> CarbonHoneycombChannel:
         coordinates_carbon: Points = IntercalatedChannelBuilder.build_carbon_coordinates(
-            structure_folder=structure_folder)
+            structure_folder=structure_folder, file_name=file_name)
 
         carbon_channels: list[CarbonHoneycombChannel] = CarbonHoneycombActions.split_init_structure_into_separate_channels(
             coordinates_carbon=coordinates_carbon)

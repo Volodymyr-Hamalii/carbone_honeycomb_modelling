@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 
-from src.utils import Constants, PathBuilder, Logger, execution_time_logger
+from src.utils import Constants, Logger, execution_time_logger, PathBuilder, FileReader
 from src.data_preparation import StructureSettings, AtomsUniverseBuilder
 from src.base_structure_classes import Points, AlLatticeType, CoordinateLimits
 from src.projects.carbon_honeycomb_actions import CarbonHoneycombChannel
@@ -18,10 +18,16 @@ logger = Logger("IntercalatedChannelBuilder")
 
 class IntercalatedChannelBuilder:
     @staticmethod
-    def build_carbon_coordinates(structure_folder: str) -> Points:
-        path_to_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_folder)
+    def build_carbon_coordinates(structure_folder: str, file_name: str | None = None) -> Points:
+        if file_name is None:
+            file_name = Constants.filenames.INIT_DAT_FILE
 
-        return AtomsUniverseBuilder.builds_atoms_coordinates(path_to_pdb_file)
+        carbon_points: np.ndarray = FileReader.read_init_data_file(structure_folder, file_name)
+
+        if len(carbon_points) == 0:
+            raise ValueError(f"No carbon atoms found in {file_name} file.")
+
+        return Points(points=carbon_points)
 
     @staticmethod
     def build_al_coordinates_for_cell(
@@ -101,12 +107,15 @@ class IntercalatedChannelBuilder:
         )
 
     @staticmethod
-    def translate_al_points_through_channels(al_points: np.ndarray, carbon_channels: list[CarbonHoneycombChannel]) -> np.ndarray:
+    def translate_al_points_through_channels(
+            al_points: np.ndarray,
+            carbon_channels: list[CarbonHoneycombChannel],
+    ) -> np.ndarray:
         """ Translate the built structure to all channels. """
 
         if not carbon_channels:
             raise ValueError("The list of carbon_channels must not be empty.")
-        
+
         filled_channel_center: np.ndarray = carbon_channels[0].channel_center
 
         result_al_points: np.ndarray = al_points.copy()

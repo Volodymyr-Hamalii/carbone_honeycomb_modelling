@@ -4,6 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 import numpy as np
+import MDAnalysis as mda
 
 from ..constants import Constants
 from ..logger import Logger
@@ -121,18 +122,25 @@ class FileReader(FileManager):
         """
         path_to_file: Path = FileManager._get_path_to_file(structure_folder, file_name, folder_path, is_init_data_dir)
 
-        atom_data: list[list[float]] = []
+        # atom_data: list[list[float]] = []
 
         try:
-            with path_to_file.open("r") as pdb_file:
-                for line in pdb_file:
-                    if line.startswith(("ATOM", "HETATM")):
-                        x: float = float(line[30:38].strip())
-                        y: float = float(line[38:46].strip())
-                        z: float = float(line[46:54].strip())
-                        atom_data.append([x, y, z])
+            # with path_to_file.open("r") as pdb_file:
+            #     for line in pdb_file:
+            #         if line.startswith(("ATOM", "HETATM")):
+            #             x: float = float(line[30:38].strip())
+            #             y: float = float(line[38:46].strip())
+            #             z: float = float(line[46:54].strip())
+            #             atom_data.append([x, y, z])
 
-            return np.array(atom_data)
+            # Load a structure from a file
+            u = mda.Universe(path_to_file)
+
+            # Access atoms and coordinates
+            atoms = u.atoms
+            points: np.ndarray = atoms.positions  # type: ignore
+
+            return np.array(points)
 
         except FileNotFoundError:
             logger.error(f"PDB file not found at {path_to_file}")
@@ -187,3 +195,19 @@ class FileReader(FileManager):
 
         except Exception as e:
             logger.error(f"Failed to read file {path_to_file}: {e}")
+
+    @classmethod
+    def read_init_data_file(cls, structure_folder: str, file_name: str) -> np.ndarray:
+        file_format: str = file_name.split(".")[-1].lower()
+
+        if file_format == "pdb":
+            return cls.read_pdb_file(structure_folder, file_name=file_name)
+        elif file_format == "dat":
+            return cls.read_dat_file(structure_folder, file_name=file_name)
+        elif file_format == "xlsx":
+            carbon_points_df: pd.DataFrame | None = cls.read_excel_file(structure_folder, file_name=file_name)
+            if carbon_points_df is None:
+                raise IOError(f"Failed to read file: {file_name}")
+            return carbon_points_df.to_numpy()
+        else:
+            raise ValueError(f"Unsupported file format: {file_format}")

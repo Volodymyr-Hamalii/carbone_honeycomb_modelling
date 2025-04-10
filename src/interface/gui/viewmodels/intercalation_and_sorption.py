@@ -71,7 +71,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
     #     FileWriter.write_dat_file(upd_al_points, structure_folder=structure_folder, filename="al_in_all_channels.dat")
 
     def plot_al_plane_coordinates(self, structure_folder: str) -> None:
-        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
+        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder, file_name=Constants.filenames.INIT_DAT_FILE)
 
         al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(
             structure_folder, carbon_channel, self.number_of_planes, self.file_name)
@@ -86,7 +86,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
         )
 
     def generate_al_plane_coordinates_file(self, structure_folder: str) -> Path:
-        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
+        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder, file_name=Constants.filenames.INIT_DAT_FILE)
         al_plane_coordinates: Points = AtomsParser._build_al_plane_coordinates(
             carbon_channel, num_of_planes=self.number_of_planes)
 
