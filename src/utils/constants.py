@@ -3,6 +3,7 @@ from pathlib import Path
 from math import sqrt
 import logging
 import dotenv
+import sys
 
 
 def _clear_env_cache() -> None:
@@ -58,9 +59,13 @@ class _ConstantsFilenames:
 
 
 class _ConstantsPath:
-    # path_to_root_script = os.path.join()
+    if getattr(sys, 'frozen', False):
+        # If the application is frozen (e.g., packaged with PyInstaller)
+        UTILS_DIR_PATH: Path = Path(sys.executable).resolve().parent
+    else:
+        # If running in a normal Python environment
+        UTILS_DIR_PATH: Path = Path(__file__).resolve().parent
 
-    UTILS_DIR_PATH: Path = Path(__file__).resolve().parent
     ROOT_DIR_PATH: Path = UTILS_DIR_PATH.parent.parent
 
     INIT_DATA_PATH: Path = ROOT_DIR_PATH / _ConstantsFilenames.INIT_DATA_DIR
