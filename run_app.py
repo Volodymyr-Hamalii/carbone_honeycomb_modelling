@@ -1,10 +1,4 @@
-from src import (
-    Logger,
-    AppGui,
-)
-
-
-logger = Logger("Main")
+from src import AppGui
 
 
 if __name__ == "__main__":
