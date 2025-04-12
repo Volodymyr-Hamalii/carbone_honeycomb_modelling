@@ -34,7 +34,7 @@ class AtomsParser:
         """ Read Al coordinates from the Excel file or build them if there is no Excel file. """
 
         # Try to read the full channel coordinates
-        file_name: str = Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE
+        file_name: str = Constants.file_names.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE
         al_full_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
             structure_folder=structure_folder,
             file_name=file_name,
@@ -46,7 +46,7 @@ class AtomsParser:
             return cls.parse_al_coordinates_df(al_full_channel_coordinates_df)
 
         # Try to read the channel Al plane coordinates
-        file_name: str = Constants.filenames.AL_CHANNEL_COORDINATES_XLSX_FILE
+        file_name: str = Constants.file_names.AL_CHANNEL_COORDINATES_XLSX_FILE
         al_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
             structure_folder=structure_folder,
             file_name=file_name,
@@ -59,7 +59,7 @@ class AtomsParser:
 
         # logger.warning(f"Excel table with Al atoms for {structure_folder} structure not found. Al atoms builder.")
 
-        file_name: str = Constants.filenames.AL_PLANE_COORDINATES_XLSX_FILE
+        file_name: str = Constants.file_names.AL_PLANE_COORDINATES_XLSX_FILE
         al_plane_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
             structure_folder=structure_folder,
             file_name=file_name,

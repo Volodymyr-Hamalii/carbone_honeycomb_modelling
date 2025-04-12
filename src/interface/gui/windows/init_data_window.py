@@ -15,7 +15,7 @@ from ..components import (
 class InitDataWindow:
     def __init__(self, view_model: VMShowInitData, structure_folder: str, is_one_channel: bool = False) -> None:
         self.view_model: VMShowInitData = view_model
-        self.view_model.set_data_dir(Constants.filenames.INIT_DATA_DIR)
+        self.view_model.set_data_dir(Constants.file_names.INIT_DATA_DIR)
 
         self.structure_folder: str = structure_folder
         self.is_one_channel: bool = is_one_channel

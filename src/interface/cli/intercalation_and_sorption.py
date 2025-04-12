@@ -220,7 +220,7 @@ class AppActionsIntercalationAndSorption:
             df=al_coordinates.to_df(columns=["i", "x_Al", "y_Al", "z_Al"]),
             structure_folder=structure_folder,
             sheet_name="Al atoms for the channel",
-            file_name=Constants.filenames.AL_CHANNEL_COORDINATES_XLSX_FILE,
+            file_name=Constants.file_names.AL_CHANNEL_COORDINATES_XLSX_FILE,
             is_init_data_dir=False,
         )
 
@@ -260,7 +260,7 @@ class AppActionsIntercalationAndSorption:
         while True:
             al_full_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
                 structure_folder=structure_folder,
-                file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
+                file_name=Constants.file_names.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
                 is_init_data_dir=False,
             )
 
@@ -299,7 +299,7 @@ class AppActionsIntercalationAndSorption:
                     df=al_full_channel_coordinates.to_df(columns=["i", "x_Al", "y_Al", "z_Al"]),
                     structure_folder=structure_folder,
                     sheet_name="Al atoms for the full channel",
-                    file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
+                    file_name=Constants.file_names.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
                     is_init_data_dir=False,
                 )
 
@@ -384,7 +384,7 @@ class AppActionsIntercalationAndSorption:
         # Set multi-level columns
         df.columns = pd.MultiIndex.from_tuples(df.columns)
 
-        file_name: str = f"{structure_folder}_{Constants.filenames.AL_CHANNEL_DETAILS_XLSX_FILE}"
+        file_name: str = f"{structure_folder}_{Constants.file_names.AL_CHANNEL_DETAILS_XLSX_FILE}"
 
         # Write DataFrame to Excel file
         FileWriter.write_excel_file(
@@ -469,20 +469,20 @@ class AppActionsIntercalationAndSorption:
             df=al_coordinates.to_df(columns=["i", "x_Al", "y_Al", "z_Al"]),
             structure_folder=structure_folder,
             sheet_name="Al atoms for the channel",
-            file_name=Constants.filenames.AL_ALL_CHANNELS_COORDINATES_XLSX_FILE,
+            file_name=Constants.file_names.AL_ALL_CHANNELS_COORDINATES_XLSX_FILE,
             is_init_data_dir=False,
         )
 
         FileWriter.write_dat_file(
             al_coordinates.points,
             structure_folder=structure_folder,
-            file_name=Constants.filenames.AL_ALL_CHANNELS_COORDINATES_DAT_FILE,
+            file_name=Constants.file_names.AL_ALL_CHANNELS_COORDINATES_DAT_FILE,
         )
 
         FileWriter.write_dat_file(
             coordinates_carbon.points,
             structure_folder=structure_folder,
-            file_name=Constants.filenames.C_ALL_CHANNELS_COORDINATES_DAT_FILE,
+            file_name=Constants.file_names.C_ALL_CHANNELS_COORDINATES_DAT_FILE,
         )
 
     @staticmethod
@@ -501,7 +501,7 @@ class AppActionsIntercalationAndSorption:
         al_lattice_type = AlLatticeType(al_lattice_type_str)
 
         if al_lattice_type.is_cell:
-            al_file: str = Inputs.text_input(to_set, default_value=Constants.filenames.AL_FILE, text="Init AL file")
+            al_file: str = Inputs.text_input(to_set, default_value=Constants.file_names.AL_FILE, text="Init AL file")
             return IntercalatedChannelBuilder.build_al_coordinates_for_cell(
                 to_translate_al=to_translate_al,
                 al_file=al_file,

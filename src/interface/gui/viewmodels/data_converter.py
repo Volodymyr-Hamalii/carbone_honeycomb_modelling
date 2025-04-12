@@ -116,7 +116,7 @@ class VMDataConverter(VMParamsSetter):
 
     #     file_name: str = Inputs.text_input(
     #         to_set,
-    #         default_value=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
+    #         default_value=Constants.file_names.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
     #         text="File name to convert",
     #         env_id="file_name_to_convert")
 

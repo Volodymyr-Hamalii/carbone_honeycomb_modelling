@@ -72,7 +72,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
 
     def plot_al_in_c_structure(self, structure_folder: str) -> None:
         carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(
-            structure_folder, file_name=Constants.filenames.INIT_DAT_FILE)
+            structure_folder, file_name=Constants.file_names.INIT_DAT_FILE)
 
         al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(
             structure_folder, carbon_channel, self.number_of_planes, self.file_name)
@@ -88,7 +88,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
 
     def generate_al_plane_coordinates_file(self, structure_folder: str) -> Path:
         carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(
-            structure_folder, file_name=Constants.filenames.INIT_DAT_FILE)
+            structure_folder, file_name=Constants.file_names.INIT_DAT_FILE)
         al_plane_coordinates: Points = AtomsParser._build_al_plane_coordinates(
             carbon_channel, num_of_planes=self.number_of_planes)
 
@@ -96,12 +96,12 @@ class VMIntercalationAndSorption(VMParamsSetter):
             df=al_plane_coordinates.to_df(columns=["i", "x_Al", "y_Al", "z_Al"]),
             structure_folder=structure_folder,
             sheet_name="Al atoms for the plane",
-            file_name=Constants.filenames.AL_PLANE_COORDINATES_XLSX_FILE,
+            file_name=Constants.file_names.AL_PLANE_COORDINATES_XLSX_FILE,
             is_init_data_dir=False,
         )
 
         if path_to_file is None:
-            raise IOError(f"Failed to write {Constants.filenames.AL_PLANE_COORDINATES_XLSX_FILE} file.")
+            raise IOError(f"Failed to write {Constants.file_names.AL_PLANE_COORDINATES_XLSX_FILE} file.")
 
         return path_to_file
 
@@ -155,7 +155,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
 
     #     al_full_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
     #         structure_folder=structure_folder,
-    #         file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
+    #         file_name=Constants.file_names.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
     #         is_init_data_dir=False,
     #     )
 
@@ -186,7 +186,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
     #             df=al_full_channel_coordinates.to_df(columns=["i", "x_Al", "y_Al", "z_Al"]),
     #             structure_folder=structure_folder,
     #             sheet_name="Al atoms for the full channel",
-    #             file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
+    #             file_name=Constants.file_names.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
     #             is_init_data_dir=False,
     #         )
 
@@ -223,7 +223,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
             df=al_coordinates.to_df(columns=["i", "x_Al", "y_Al", "z_Al"]),
             structure_folder=structure_folder,
             sheet_name="Al atoms for the channel",
-            file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
+            file_name=Constants.file_names.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
             is_init_data_dir=False,
         )
 
@@ -290,7 +290,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
         # Set multi-level columns
         df.columns = pd.MultiIndex.from_tuples(df.columns)
 
-        result_file_name: str = self.file_name.split(".")[0] + "_" + Constants.filenames.AL_CHANNEL_DETAILS_XLSX_FILE
+        result_file_name: str = self.file_name.split(".")[0] + "_" + Constants.file_names.AL_CHANNEL_DETAILS_XLSX_FILE
 
         # Write DataFrame to Excel file
         path_to_file: Path | None = FileWriter.write_excel_file(
@@ -376,7 +376,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
             title=structure_folder,
         )
 
-        file_name_xlsx: str = self._get_path_to_file_to_save(Constants.filenames.AL_ALL_CHANNELS_COORDINATES_XLSX_FILE)
+        file_name_xlsx: str = self._get_path_to_file_to_save(Constants.file_names.AL_ALL_CHANNELS_COORDINATES_XLSX_FILE)
         path_to_al_xlsx_file: Path | None = FileWriter.write_excel_file(
             df=al_coordinates.to_df(columns=["i", "x_Al", "y_Al", "z_Al"]),
             structure_folder=structure_folder,
@@ -388,7 +388,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
         if path_to_al_xlsx_file is None:
             raise IOError(f"Failed to write {file_name_xlsx} file")
 
-        file_name_dat: str = self._get_path_to_file_to_save(Constants.filenames.AL_ALL_CHANNELS_COORDINATES_DAT_FILE)
+        file_name_dat: str = self._get_path_to_file_to_save(Constants.file_names.AL_ALL_CHANNELS_COORDINATES_DAT_FILE)
         path_to_al_dat_file: Path | None = FileWriter.write_dat_file(
             al_coordinates.points,
             structure_folder=structure_folder,
@@ -398,7 +398,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
         if path_to_al_dat_file is None:
             raise IOError(f"Failed to write {file_name_dat} file")
 
-        file_name_c_dat: str = self._get_path_to_file_to_save(Constants.filenames.C_ALL_CHANNELS_COORDINATES_DAT_FILE)
+        file_name_c_dat: str = self._get_path_to_file_to_save(Constants.file_names.C_ALL_CHANNELS_COORDINATES_DAT_FILE)
         path_to_c_dat_file: Path | None = FileWriter.write_dat_file(
             coordinates_carbon.points,
             structure_folder=structure_folder,

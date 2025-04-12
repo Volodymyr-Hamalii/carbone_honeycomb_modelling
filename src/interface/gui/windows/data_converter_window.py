@@ -31,7 +31,7 @@ class DataConverterWindow:
 
         self.data_dir_dropdown: DropdownList = DropdownList(
             self.input_window,
-            options=[Constants.filenames.RESULT_DATA_DIR],
+            options=[Constants.file_names.RESULT_DATA_DIR],
             command=self.update_data_dir,
             title="Data directory",
             is_disabled=True,

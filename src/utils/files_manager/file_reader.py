@@ -79,7 +79,7 @@ class FileReader(FileManager):
     @staticmethod
     def read_json_file(
             folder_path: Path | str,
-            file_name: str = Constants.filenames.STRUCTURE_SETTINGS_FILE,
+            file_name: str = Constants.file_names.STRUCTURE_SETTINGS_FILE,
     ) -> Any:
         """
         Read JSON file (by default 'structure_settings.json').
@@ -100,7 +100,7 @@ class FileReader(FileManager):
             cls,
             structure_folder: str,
             folder_path: Path | str | None = None,
-            file_name: str = Constants.filenames.INIT_DAT_FILE,
+            file_name: str = Constants.file_names.INIT_DAT_FILE,
             is_init_data_dir: bool = True,
     ) -> np.ndarray:
 
@@ -125,7 +125,7 @@ class FileReader(FileManager):
     def read_pdb_file(
             structure_folder: str,
             folder_path: Path | str | None = None,
-            file_name: str = Constants.filenames.INIT_PDB_FILE,
+            file_name: str = Constants.file_names.INIT_PDB_FILE,
             is_init_data_dir: bool = True,
     ) -> np.ndarray:
         """

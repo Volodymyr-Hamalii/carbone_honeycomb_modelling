@@ -37,7 +37,7 @@ class _ConstantsSettings:
 
 
 class _ConstantsFilenames:
-    # filenames
+    # file_names
     INIT_DATA_DIR: str = "init_data"
     RESULT_DATA_DIR: str = "result_data"
 
@@ -115,7 +115,7 @@ class _ConstantsPhys:
 class Constants:
     path = _ConstantsPath
     logger = _ConstantsLogger
-    filenames = _ConstantsFilenames
+    file_names = _ConstantsFilenames
     phys = _ConstantsPhys
     math = _ConstantsMath
     settings = _ConstantsSettings

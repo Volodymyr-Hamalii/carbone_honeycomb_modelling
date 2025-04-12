@@ -28,7 +28,7 @@ class FileWriter(FileManager):
         path_to_file: Path | None = None,
         structure_folder: str | None = None,
         overwrite: bool = True,
-        file_name: str = Constants.filenames.INIT_DAT_FILE,
+        file_name: str = Constants.file_names.INIT_DAT_FILE,
     ) -> None | Path:
         """For the path you can provide either path_to_file or structure_folder."""
 
@@ -94,7 +94,7 @@ class FileWriter(FileManager):
 
                 path_to_file = PathBuilder.build_path_to_result_data_file(
                     structure_folder,
-                    file=Constants.filenames.INIT_DAT_FILE)
+                    file=Constants.file_names.INIT_DAT_FILE)
 
             if overwrite is False and path_to_file.exists():
                 # Don't overwrite existing file

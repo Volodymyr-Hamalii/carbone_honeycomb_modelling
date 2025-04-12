@@ -19,8 +19,8 @@
 #     def dat_to_pdb(
 #         cls,
 #         structure_folder: str,
-#         dat_file_name: str = Constants.filenames.INIT_DAT_FILE,
-#         pdb_file_name: str = Constants.filenames.INIT_PDB_FILE,
+#         dat_file_name: str = Constants.file_names.INIT_DAT_FILE,
+#         pdb_file_name: str = Constants.file_names.INIT_PDB_FILE,
 #     ) -> None:
 
 #         # Read and parse the file

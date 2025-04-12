@@ -30,9 +30,9 @@ class VMParamsSetter:
         self.file_name: str = ""
         self.file_format: str = ""  # "xlsx", "dat", "pdb"
         self.available_formats: list[str] = ["xlsx", "dat", "pdb"]
-        # self.excel_file_name: str = Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE
-        # self.dat_file_name: str = Constants.filenames.AL_ALL_CHANNELS_COORDINATES_DAT_FILE
-        # self.pdb_file_name: str = Constants.filenames.PDB_FILE_ONE_CHANNEL
+        # self.excel_file_name: str = Constants.file_names.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE
+        # self.dat_file_name: str = Constants.file_names.AL_ALL_CHANNELS_COORDINATES_DAT_FILE
+        # self.pdb_file_name: str = Constants.file_names.PDB_FILE_ONE_CHANNEL
         self.excel_file_name: str = ""
         self.dat_file_name: str = ""
         self.pdb_file_name: str = ""
@@ -110,9 +110,9 @@ class VMParamsSetter:
     ######### Files and paths #########
 
     def set_data_dir(self, value: str) -> None:
-        if value == Constants.filenames.INIT_DATA_DIR:
+        if value == Constants.file_names.INIT_DATA_DIR:
             self.data_dir: Path = Constants.path.INIT_DATA_PATH
-        elif value == Constants.filenames.RESULT_DATA_DIR:
+        elif value == Constants.file_names.RESULT_DATA_DIR:
             self.data_dir: Path = Constants.path.RESULT_DATA_PATH
         else:
             raise ValueError(f"Invalid data directory: {value}")

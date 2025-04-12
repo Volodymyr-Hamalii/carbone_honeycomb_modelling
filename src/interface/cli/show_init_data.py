@@ -58,7 +58,7 @@ class AppActionsShowInitData:
         #     structure_folder=structure_folder)
 
         if al_lattice_type.is_cell:
-            al_file: str = Inputs.text_input(to_set, default_value=Constants.filenames.AL_FILE, text="Init AL file")
+            al_file: str = Inputs.text_input(to_set, default_value=Constants.file_names.AL_FILE, text="Init AL file")
 
             coordinates_al: Points = IntercalatedChannelBuilder.build_al_coordinates_for_cell(
                 to_translate_al=to_translate_al,

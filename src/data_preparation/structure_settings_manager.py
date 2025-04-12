@@ -6,7 +6,7 @@ logger = Logger("StructureSettingsManager")
 
 
 class StructureSettingsManager:
-    file_name: str = Constants.filenames.STRUCTURE_SETTINGS_FILE
+    file_name: str = Constants.file_names.STRUCTURE_SETTINGS_FILE
 
     @classmethod
     def get_structure_settings(cls, structure_folder: str) -> StructureSettings:

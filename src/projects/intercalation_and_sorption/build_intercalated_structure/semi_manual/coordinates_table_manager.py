@@ -30,12 +30,12 @@ class CoordinatesTableManager:
             df=df,
             structure_folder=structure_folder,
             sheet_name="Al atoms for the plane",
-            file_name=Constants.filenames.AL_PLANE_COORDINATES_XLSX_FILE,
+            file_name=Constants.file_names.AL_PLANE_COORDINATES_XLSX_FILE,
             is_init_data_dir=False,
         )
 
         if path_to_file is None:
-            raise IOError(f"Failed to write {Constants.filenames.AL_PLANE_COORDINATES_XLSX_FILE} file.")
+            raise IOError(f"Failed to write {Constants.file_names.AL_PLANE_COORDINATES_XLSX_FILE} file.")
 
         return path_to_file
 
@@ -43,7 +43,7 @@ class CoordinatesTableManager:
     def update_full_channel_tbl_file(cls, structure_folder: str,) -> Path:
         al_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
             structure_folder=structure_folder,
-            file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
+            file_name=Constants.file_names.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
             is_init_data_dir=False,
         )
 
@@ -58,12 +58,12 @@ class CoordinatesTableManager:
             df=df,
             structure_folder=structure_folder,
             sheet_name="Al atoms for the full channel",
-            file_name=Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
+            file_name=Constants.file_names.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
             is_init_data_dir=False,
         )
 
         if path_to_file is None:
-            raise IOError(f"Failed to write {Constants.filenames.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE} file.")
+            raise IOError(f"Failed to write {Constants.file_names.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE} file.")
 
         return path_to_file
 
