@@ -38,17 +38,37 @@ class FileReader(FileManager):
     def read_list_of_files(
             folder_path: Path | str,
             format: str | None = None,
+            to_include_nested_files: bool = False,
+            to_append_parent_dir: bool = False,
     ) -> list[str]:
-        """ Read a list of files in the given folder path. By default uses '.xlsx' format. """
+        """
+        Read a list of files in the given folder path. By default uses '.xlsx' format.
+        If to_include_nested_files is True, it will include files from nested folders.
+        """
         try:
-            return sorted(
-                [
-                    file.name for file in Path(folder_path).iterdir()
-                    if file.is_file() and (
-                        file.name.endswith(format) if format else True
+            file_names: list[str] = []
+
+            for file in Path(folder_path).iterdir():
+                if file.is_file() and (
+                    file.name.endswith(format) if format else True
+                ):
+                    if to_append_parent_dir:
+                        file_names.append(file.parent.name + "/" + file.name)
+                    else:
+                        file_names.append(file.name)
+
+                if to_include_nested_files and file.is_dir():
+                    file_names.extend(
+                        FileReader.read_list_of_files(
+                            file,
+                            format=format,
+                            to_include_nested_files=to_include_nested_files,
+                            to_append_parent_dir=True,
+                        )
                     )
-                ]
-            )
+
+            return sorted(file_names)
+
         except FileNotFoundError:
             logger.error(f"Folder {folder_path} not found.")
             return []

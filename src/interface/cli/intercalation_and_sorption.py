@@ -70,7 +70,7 @@ class AppActionsIntercalationAndSorption:
             num_of_min_distances=num_of_min_distances,
         )
 
-        FileWriter.write_dat_file(upd_al_points, structure_folder=structure_folder, filename="al_in_all_channels.dat")
+        FileWriter.write_dat_file(upd_al_points, structure_folder=structure_folder, file_name="al_in_all_channels.dat")
 
     @classmethod
     def update_al_coordinates_tbl(cls, structure_folder: str, to_set: bool) -> None:
@@ -476,13 +476,13 @@ class AppActionsIntercalationAndSorption:
         FileWriter.write_dat_file(
             al_coordinates.points,
             structure_folder=structure_folder,
-            filename=Constants.filenames.AL_ALL_CHANNELS_COORDINATES_DAT_FILE,
+            file_name=Constants.filenames.AL_ALL_CHANNELS_COORDINATES_DAT_FILE,
         )
 
         FileWriter.write_dat_file(
             coordinates_carbon.points,
             structure_folder=structure_folder,
-            filename=Constants.filenames.C_ALL_CHANNELS_COORDINATES_DAT_FILE,
+            file_name=Constants.filenames.C_ALL_CHANNELS_COORDINATES_DAT_FILE,
         )
 
     @staticmethod

@@ -28,7 +28,9 @@ class _IntercalationAndSorptionUtils:
 
     def _refresh_file_name_lists(self) -> None:
         path: Path = self.view_model.data_dir / self.structure_folder
-        self.file_names: list[str] = FileReader.read_list_of_files(path, format=".xlsx") or ["None"]
+        self.file_names: list[str] = FileReader.read_list_of_files(
+            path, format=".xlsx", to_include_nested_files=True) or ["None"]
+
         if (not self.view_model.file_name) or (
                 self.view_model.file_name == "None") or (
                 self.view_model.file_name not in self.file_names):

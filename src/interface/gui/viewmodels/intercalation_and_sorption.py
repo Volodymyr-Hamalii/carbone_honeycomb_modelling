@@ -68,7 +68,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
     #         num_of_min_distances=num_of_min_distances,
     #     )
 
-    #     FileWriter.write_dat_file(upd_al_points, structure_folder=structure_folder, filename="al_in_all_channels.dat")
+    #     FileWriter.write_dat_file(upd_al_points, structure_folder=structure_folder, file_name="al_in_all_channels.dat")
 
     def plot_al_in_c_structure(self, structure_folder: str) -> None:
         carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(
@@ -376,34 +376,37 @@ class VMIntercalationAndSorption(VMParamsSetter):
             title=structure_folder,
         )
 
+        file_name_xlsx: str = self._get_path_to_file_to_save(Constants.filenames.AL_ALL_CHANNELS_COORDINATES_XLSX_FILE)
         path_to_al_xlsx_file: Path | None = FileWriter.write_excel_file(
             df=al_coordinates.to_df(columns=["i", "x_Al", "y_Al", "z_Al"]),
             structure_folder=structure_folder,
             sheet_name="Al atoms for the channel",
-            file_name=Constants.filenames.AL_ALL_CHANNELS_COORDINATES_XLSX_FILE,
+            file_name=file_name_xlsx,
             is_init_data_dir=False,
         )
 
         if path_to_al_xlsx_file is None:
-            raise IOError(f"Failed to write {Constants.filenames.AL_ALL_CHANNELS_COORDINATES_XLSX_FILE} file")
+            raise IOError(f"Failed to write {file_name_xlsx} file")
 
+        file_name_dat: str = self._get_path_to_file_to_save(Constants.filenames.AL_ALL_CHANNELS_COORDINATES_DAT_FILE)
         path_to_al_dat_file: Path | None = FileWriter.write_dat_file(
             al_coordinates.points,
             structure_folder=structure_folder,
-            filename=Constants.filenames.AL_ALL_CHANNELS_COORDINATES_DAT_FILE,
+            file_name=file_name_dat,
         )
 
         if path_to_al_dat_file is None:
-            raise IOError(f"Failed to write {Constants.filenames.AL_ALL_CHANNELS_COORDINATES_DAT_FILE} file")
+            raise IOError(f"Failed to write {file_name_dat} file")
 
+        file_name_c_dat: str = self._get_path_to_file_to_save(Constants.filenames.C_ALL_CHANNELS_COORDINATES_DAT_FILE)
         path_to_c_dat_file: Path | None = FileWriter.write_dat_file(
             coordinates_carbon.points,
             structure_folder=structure_folder,
-            filename=Constants.filenames.C_ALL_CHANNELS_COORDINATES_DAT_FILE,
+            file_name=file_name_c_dat,
         )
 
         if path_to_c_dat_file is None:
-            raise IOError(f"Failed to write {Constants.filenames.C_ALL_CHANNELS_COORDINATES_DAT_FILE} file")
+            raise IOError(f"Failed to write {file_name_c_dat} file")
 
         return path_to_al_xlsx_file, path_to_al_dat_file, path_to_c_dat_file
 
@@ -561,3 +564,8 @@ class VMIntercalationAndSorption(VMParamsSetter):
         ]
 
         return grouped_coordinates
+
+    def _get_path_to_file_to_save(self, file_name: str) -> str:
+        if "/" in self.file_name:
+            return self.file_name.split("/")[-2] + "/" + file_name
+        return file_name

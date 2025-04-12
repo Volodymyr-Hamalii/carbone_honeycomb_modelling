@@ -9,9 +9,8 @@ logger = Logger("Actions")
 
 
 class VMDataConverter(VMParamsSetter):
-    @classmethod
     def convert_file(
-            cls,
+            self,
             init_file_path: Path,
             target_format: str,
             is_init_data_dir: bool = False,
@@ -67,16 +66,18 @@ class VMDataConverter(VMParamsSetter):
 
         # Write the data based on the target format
         if target_format == "xlsx":
+            file_name: str = self._get_path_to_file_to_save(init_file_path.stem + ".xlsx")
             FileWriter.write_excel_file(
                 df=df,
                 structure_folder=init_file_path.parent.name,
-                file_name=init_file_path.stem + ".xlsx",
+                file_name=file_name,
                 sheet_name="Sheet1",
                 # folder_path=init_file_path.parent,
                 is_init_data_dir=is_init_data_dir,
             )
 
         elif target_format == "dat":
+            # TODO: file_name
             dat_lines: list[str] = DataConverter.convert_df_to_dat(df)
             FileWriter.write_dat_file(
                 data_lines=dat_lines,
@@ -85,6 +86,7 @@ class VMDataConverter(VMParamsSetter):
             )
 
         elif target_format == "pdb":
+            # TODO: file_name
             pdb_lines: list[str] = DataConverter.convert_df_to_pdb(df)
             FileWriter.write_pdb_file(
                 data_lines=pdb_lines,
@@ -137,3 +139,8 @@ class VMDataConverter(VMParamsSetter):
     #         structure_folder=structure_folder,
     #         path_to_file=folder_path / structure_folder / file_name_dat,
     #     )
+
+    def _get_path_to_file_to_save(self, file_name: str) -> str:
+        if "/" in self.file_name:
+            return self.file_name.split("/")[-1] + "/" + file_name
+        return file_name
