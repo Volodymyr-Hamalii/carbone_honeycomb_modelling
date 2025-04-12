@@ -314,9 +314,6 @@ class VMIntercalationAndSorption(VMParamsSetter):
         coordinates_carbon: Points = IntercalatedChannelBuilder.build_carbon_coordinates(
             structure_folder=structure_folder)
 
-        carbon_channels: list[CarbonHoneycombChannel] = CarbonHoneycombActions.split_init_structure_into_separate_channels(
-            coordinates_carbon=coordinates_carbon)
-
         al_one_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
             structure_folder=structure_folder,
             file_name=self.file_name,
@@ -329,11 +326,13 @@ class VMIntercalationAndSorption(VMParamsSetter):
 
         al_coordinates: Points = AtomsParser.parse_al_coordinates_df(al_one_channel_coordinates_df)
 
-        # al_coordinates: Points = AlAtomsTranslator.translate_for_all_channels(
-        #     coordinates_carbon=coordinates_carbon,
-        #     carbon_channels=carbon_channels,
-        #     al_channel_coordinates=al_channel_coordinates,
-        # )
+        if self.to_remove_al_atoms_with_min_and_max_x_coordinates:
+            logger.info("Removing Al atoms with min and max X coordinates")
+            points_upd: np.ndarray = al_coordinates.points[
+                (al_coordinates.points[:, 0] != np.min(al_coordinates.points[:, 0])) &
+                (al_coordinates.points[:, 0] != np.max(al_coordinates.points[:, 0]))
+            ]
+            al_coordinates = Points(points=points_upd)
 
         self._show_structures(
             carbon_channel_points=coordinates_carbon.points,
@@ -363,6 +362,14 @@ class VMIntercalationAndSorption(VMParamsSetter):
             raise IOError(f"Failed to read {self.file_name} Excel file")
 
         al_channel_coordinates: Points = AtomsParser.parse_al_coordinates_df(al_one_channel_coordinates_df)
+
+        if self.to_remove_al_atoms_with_min_and_max_x_coordinates:
+            logger.info("Removing Al atoms with min and max X coordinates")
+            points_upd: np.ndarray = al_channel_coordinates.points[
+                (al_channel_coordinates.points[:, 0] != np.min(al_channel_coordinates.points[:, 0])) &
+                (al_channel_coordinates.points[:, 0] != np.max(al_channel_coordinates.points[:, 0]))
+            ]
+            al_channel_coordinates = Points(points=points_upd)
 
         al_coordinates: Points = AlAtomsTranslator.translate_for_all_channels(
             coordinates_carbon=coordinates_carbon,

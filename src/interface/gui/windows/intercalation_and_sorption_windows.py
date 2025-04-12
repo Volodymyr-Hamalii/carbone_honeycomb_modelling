@@ -517,6 +517,13 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils):
         )
         self.try_to_reflect_al_atoms_checkbox.pack(pady=10, padx=10)
 
+        self.to_remove_al_atoms_with_min_and_max_x_coordinates_checkbox: CheckBox = CheckBox(
+            left_frame,
+            text="Remove Al atoms with min and max X coordinates",
+            command=self.update_to_remove_al_atoms_with_min_and_max_x_coordinates,
+        )
+        self.to_remove_al_atoms_with_min_and_max_x_coordinates_checkbox.pack(pady=10, padx=10)
+
         # Right column inputs
         self.coord_x_limits_input_field = InputFieldCoordLimits(
             right_frame, text="X plot limits",
@@ -589,6 +596,10 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils):
     def update_to_try_to_reflect_al_atoms(self) -> None:
         value = bool(self.try_to_reflect_al_atoms_checkbox.get())
         self.view_model.set_to_try_to_reflect_al_atoms(value)
+
+    def update_to_remove_al_atoms_with_min_and_max_x_coordinates(self) -> None:
+        value = bool(self.to_remove_al_atoms_with_min_and_max_x_coordinates_checkbox.get())
+        self.view_model.set_to_remove_al_atoms_with_min_and_max_x_coordinates(value)
 
     def update_num_of_al_layers(self) -> None:
         value = int(self.num_of_al_layers_input_field.get())

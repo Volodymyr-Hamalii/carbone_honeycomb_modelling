@@ -44,6 +44,7 @@ class VMParamsSetter:
         self.to_try_to_reflect_al_atoms: bool = True
         self.to_equidistant_al_points: bool = True
         self.to_filter_al_atoms: bool = True
+        self.to_remove_al_atoms_with_min_and_max_x_coordinates: bool = False
         self.al_lattice_type: str = "FCC"
 
     ######### Plot details #########
@@ -148,6 +149,9 @@ class VMParamsSetter:
 
     def set_to_filter_al_atoms(self, value: bool) -> None:
         self.to_filter_al_atoms: bool = value
+
+    def set_to_remove_al_atoms_with_min_and_max_x_coordinates(self, value: bool) -> None:
+        self.to_remove_al_atoms_with_min_and_max_x_coordinates: bool = value
 
     def set_al_lattice_type(self, value: str) -> None:
         self.al_lattice_type: str = value
