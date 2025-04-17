@@ -29,14 +29,14 @@ class InputFieldCoordLimits(ctk.CTkFrame):
         # Initialize the CTkEntry for min value within the frame
         self.min_entry = ctk.CTkEntry(self, **kwargs)
         self.min_entry.configure(state=state)
-        if default_min is not None:
+        if default_min is not None and default_min != -float("inf"):
             self.min_entry.insert(0, default_min)
         self.min_entry.pack(side="left", fill="x", expand=True, padx=5)
 
         # Initialize the CTkEntry for max value within the frame
         self.max_entry = ctk.CTkEntry(self, **kwargs)
         self.max_entry.configure(state=state)
-        if default_max is not None:
+        if default_max is not None and default_max != float("inf"):
             self.max_entry.insert(0, default_max)
         self.max_entry.pack(side="left", fill="x", expand=True, padx=5)
 

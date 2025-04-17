@@ -115,18 +115,24 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils):
         self.coord_x_limits_input_field = InputFieldCoordLimits(
             right_frame, text="X plot limits",
             command=self.update_x_coord_limits,
+            default_min=self.view_model.x_min,
+            default_max=self.view_model.x_max,
         )
         self.coord_x_limits_input_field.pack(pady=10, padx=10)
 
         self.coord_y_limits_input_field = InputFieldCoordLimits(
             right_frame, text="Y plot limits",
             command=self.update_y_coord_limits,
+            default_min=self.view_model.y_min,
+            default_max=self.view_model.y_max,
         )
         self.coord_y_limits_input_field.pack(pady=10, padx=10)
 
         self.coord_z_limits_input_field = InputFieldCoordLimits(
             right_frame, text="Z plot limits",
             command=self.update_z_coord_limits,
+            default_min=self.view_model.z_min,
+            default_max=self.view_model.z_max,
         )
         self.coord_z_limits_input_field.pack(pady=10, padx=10)
 
@@ -271,6 +277,7 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils):
             left_frame,
             text="Try to reflect Al atoms to fit the plane",
             command=self.update_to_try_to_reflect_al_atoms,
+            default=self.view_model.to_try_to_reflect_al_atoms,
         )
         self.try_to_reflect_al_atoms_checkbox.pack(pady=10, padx=10)
 
@@ -311,18 +318,24 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils):
         self.coord_x_limits_input_field = InputFieldCoordLimits(
             right_frame, text="X plot limits",
             command=self.update_x_coord_limits,
+            default_min=self.view_model.x_min,
+            default_max=self.view_model.x_max,
         )
         self.coord_x_limits_input_field.pack(pady=10, padx=10)
 
         self.coord_y_limits_input_field = InputFieldCoordLimits(
             right_frame, text="Y plot limits",
             command=self.update_y_coord_limits,
+            default_min=self.view_model.y_min,
+            default_max=self.view_model.y_max,
         )
         self.coord_y_limits_input_field.pack(pady=10, padx=10)
 
         self.coord_z_limits_input_field = InputFieldCoordLimits(
             right_frame, text="Z plot limits",
             command=self.update_z_coord_limits,
+            default_min=self.view_model.z_min,
+            default_max=self.view_model.z_max,
         )
         self.coord_z_limits_input_field.pack(pady=10, padx=10)
 
@@ -514,6 +527,7 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils):
             left_frame,
             text="Try to reflect Al atoms to fit the plane\n(if no init file and the Al atoms will be calculated)",
             command=self.update_to_try_to_reflect_al_atoms,
+            default=self.view_model.to_try_to_reflect_al_atoms,
         )
         self.try_to_reflect_al_atoms_checkbox.pack(pady=10, padx=10)
 
@@ -521,6 +535,7 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils):
             left_frame,
             text="Remove Al atoms with min and max X coordinates",
             command=self.update_to_remove_al_atoms_with_min_and_max_x_coordinates,
+            default=self.view_model.to_remove_al_atoms_with_min_and_max_x_coordinates,
         )
         self.to_remove_al_atoms_with_min_and_max_x_coordinates_checkbox.pack(pady=10, padx=10)
 
@@ -528,18 +543,24 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils):
         self.coord_x_limits_input_field = InputFieldCoordLimits(
             right_frame, text="X plot limits",
             command=self.update_x_coord_limits,
+            default_min=self.view_model.x_min,
+            default_max=self.view_model.x_max,
         )
         self.coord_x_limits_input_field.pack(pady=10, padx=10)
 
         self.coord_y_limits_input_field = InputFieldCoordLimits(
             right_frame, text="Y plot limits",
             command=self.update_y_coord_limits,
+            default_min=self.view_model.y_min,
+            default_max=self.view_model.y_max,
         )
         self.coord_y_limits_input_field.pack(pady=10, padx=10)
 
         self.coord_z_limits_input_field = InputFieldCoordLimits(
             right_frame, text="Z plot limits",
             command=self.update_z_coord_limits,
+            default_min=self.view_model.z_min,
+            default_max=self.view_model.z_max,
         )
         self.coord_z_limits_input_field.pack(pady=10, padx=10)
 
