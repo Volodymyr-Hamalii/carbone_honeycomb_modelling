@@ -7,20 +7,20 @@ logger = Logger("DataConverter")
 
 
 class DataConverter:
-    _dat_file_first_lines: str = "        210         150           3  1.000000000000000E-002       10000\n" + \
+    _dat_file_first_line: str = "        {num_of_atoms}         150           3  1.000000000000000E-002       10000\n" + \
         "   5.00000000000000             3023   1.00000000000000\n"
 
-    _pdb_file_first_lines: str = "COMPND\tBENS NIEUWE KRISTALLEN\n" + \
+    _pdb_file_first_line: str = "COMPND\tBENS NIEUWE KRISTALLEN\n" + \
         "AUTHOR\tBWVANDEWAAL\t27 04 00\n"
 
-    _pdb_file_end_lines: str = "TER\t{num_of_atoms}\nEND\n"
+    _pdb_file_end_line: str = "TER\t{num_of_atoms}\nEND\n"
 
     @classmethod
     def convert_df_to_dat(cls, df: pd.DataFrame) -> list[str]:
         """ Return list of strings with .dat file lines. """
-        dat_lines: list[str] = [cls._dat_file_first_lines]
+        dat_lines: list[str] = [cls._dat_file_first_line]
         for _, row in df.iterrows():
-            dat_lines.append(f"{row[0]:.3f}\t{row[1]:.3f}\t{row[2]:.3f}\n")
+            dat_lines.append(f"{row[0]:.6f}\t{row[1]:.6f}\t{row[2]:.6f}\n")
         return dat_lines
 
     @classmethod
@@ -47,9 +47,11 @@ class DataConverter:
     @classmethod
     def convert_ndarray_to_dat(cls, coordinates: np.ndarray) -> list[str]:
         """ Return list of strings with .dat file lines. """
-        dat_lines: list[str] = [cls._dat_file_first_lines]
+        first_line: str = cls._dat_file_first_line.format(num_of_atoms=len(coordinates))
+        dat_lines: list[str] = [first_line]
+
         for row in coordinates:
-            dat_lines.append(f"{row[0]:.3f}\t{row[1]:.3f}\t{row[2]:.3f}\n")
+            dat_lines.append(f"{row[0]:.6f}\t{row[1]:.6f}\t{row[2]:.6f}\n")
         return dat_lines
 
     @classmethod
@@ -61,14 +63,15 @@ class DataConverter:
             chain_id: str = "A",
     ) -> list[str]:
         """ Return list of strings with .pdb file lines. """
-        pdb_lines: list[str] = [cls._pdb_file_first_lines]
+        first_line: str = cls._pdb_file_first_line.format(num_of_atoms=len(coordinates))
+        pdb_lines: list[str] = [first_line]
 
         for i, row in enumerate(coordinates):
             pdb_line: str = cls._build_pdb_line(row, i + 1, atom_name, residue_seq_num, chain_id)
             pdb_lines.append(pdb_line)
 
         num_of_atoms: int = len(coordinates)
-        pdb_lines.append(cls._pdb_file_end_lines.format(num_of_atoms=num_of_atoms))
+        pdb_lines.append(cls._pdb_file_end_line.format(num_of_atoms=num_of_atoms))
         return pdb_lines
 
     @staticmethod
