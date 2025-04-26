@@ -40,9 +40,10 @@ class Table(ctk.CTkFrame):
         col_widths = []
         for col in data.columns:
             if isinstance(col, tuple):
+                # Only consider the last level of the MultiIndex for width calculation
                 max_content_width = max(
-                    max(data[col].astype(str).apply(len).max() for col in data.columns),
-                    max(len(str(subcol)) for subcol in col)
+                    data[col].astype(str).apply(len).max(),
+                    len(str(col[-1]))  # Use the last level of the MultiIndex
                 )
             else:
                 max_content_width = max(data[col].astype(str).apply(len).max(), len(str(col)))
@@ -68,8 +69,13 @@ class Table(ctk.CTkFrame):
                     if level == 0:
                         header_frame = ctk.CTkFrame(table_frame, bg_color="black")
                         header_frame.grid(
-                            row=level, column=col_start + 1, columnspan=(col_end - col_start + 1),
-                            sticky="nsew", padx=1, pady=1)
+                            row=level,
+                            column=col_start + 1,
+                            columnspan=(col_end - col_start + 1),
+                            sticky="nsew",
+                            padx=1,
+                            pady=1,
+                        )
                         header = tk.Text(
                             header_frame,
                             height=1,
