@@ -4,6 +4,8 @@ from .dropdown_list import DropdownList
 from .input_field import InputField
 from .input_field_coord_limits import InputFieldCoordLimits
 from .plot import PlotWindow
+from .table import Table
+
 
 __all__: list[str] = [
     "Button",
@@ -11,5 +13,6 @@ __all__: list[str] = [
     "DropdownList",
     "InputField",
     "InputFieldCoordLimits",
-    "PlotWindow"
+    "PlotWindow",
+    "Table",
 ]
