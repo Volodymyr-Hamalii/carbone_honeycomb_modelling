@@ -6,6 +6,8 @@ from src.utils import Logger, FileReader
 
 from ..viewmodels import VMIntercalationAndSorption
 from ..components import Button, CheckBox, DropdownList, InputField, InputFieldCoordLimits
+from .windows_template import WindowsTemplate
+
 
 __all__: list[str] = [
     "UpdateAlCoordinatesTableWindow",
@@ -37,32 +39,22 @@ class _IntercalationAndSorptionUtils:
             self.view_model.set_file_name(self.file_names[0])
 
 
-class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils):
+class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
     def __init__(self, view_model: VMIntercalationAndSorption, structure_folder: str) -> None:
         super().__init__(view_model, structure_folder)
-
-        self.create_window()
-
-    def create_window(self) -> None:
-        self.input_window = ctk.CTkToplevel()
-        self.input_window.pack_propagate(True)
-        self.input_window.grid_propagate(True)
-
-        title: str = f"Update Al coordinates table ({self.structure_folder})"
-        self.input_window.title(title)
-
-        description: str = (
-            "Allows to plot the selected structure, or update the Excel file with Al coordinates "
-            "(to remove the empty rows and rebuild the dist matrix)."
-            "If the file is not found, the program will build the Al atoms for the provided number of planes."
+        self.create_window(
+            title=f"Update Al coordinates table ({self.structure_folder})",
+            description=(
+                "Allows to plot the selected structure, or update the Excel file with Al coordinates "
+                "(to remove the empty rows and rebuild the dist matrix)."
+                "If the file is not found, the program will build the Al atoms for the provided number of planes."
+            ),
         )
-        description_label: ctk.CTkLabel = ctk.CTkLabel(
-            self.input_window, text=description, wraplength=500
-        )
-        description_label.pack(pady=10, padx=10)
+        self.create_ui()
 
+    def create_ui(self) -> None:
         # Create a frame to hold the columns
-        columns_frame = ctk.CTkFrame(self.input_window)
+        columns_frame = ctk.CTkFrame(self.window)
         columns_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
         # Create frames for left and right columns inside the columns_frame
@@ -73,97 +65,91 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils):
         right_frame.pack(side="right", fill="both", expand=True, padx=10, pady=10)
 
         # Left column inputs
-        self.file_names_dropdown: DropdownList = DropdownList(
+        self.file_names_dropdown: DropdownList = self.pack_dropdown_list(
             left_frame,
             options=self.file_names,
             command=self.view_model.set_file_name,
         )
-        self.file_names_dropdown.pack(pady=10, padx=10)
 
-        self.number_of_planes_input_field: InputField = InputField(
+        self.number_of_planes_input_field: InputField = self.pack_input_field(
             left_frame,
             text="Number of planes",
             command=self.update_number_of_planes,
             default_value=self.view_model.number_of_planes,
         )
-        self.number_of_planes_input_field.pack(pady=10, padx=10)
 
-        self.num_of_min_distances_input_field: InputField = InputField(
+        self.num_of_min_distances_input_field: InputField = self.pack_input_field(
             left_frame,
             text="Number of min distances for bonds",
             command=self.update_num_of_min_distances,
             default_value=self.view_model.bonds_num_of_min_distances,
         )
-        self.num_of_min_distances_input_field.pack(pady=10, padx=10)
 
-        self.bonds_skip_first_distances_input_field = InputField(
-            left_frame, text="Skip first distances for bonds",
+        self.bonds_skip_first_distances_input_field: InputField = self.pack_input_field(
+            left_frame,
+            text="Skip first distances for bonds",
             command=self.update_bonds_skip_first_distances,
             default_value=self.view_model.bonds_skip_first_distances,
         )
-        self.bonds_skip_first_distances_input_field.pack(pady=10, padx=10)
 
-        self.num_of_al_layers_input_field: InputField = InputField(
+        self.num_of_al_layers_input_field: InputField = self.pack_input_field(
             left_frame,
             text="Number of Al layers on the plot",
             command=self.update_num_of_al_layers,
             default_value=self.view_model.num_of_al_layers,
         )
-        self.num_of_al_layers_input_field.pack(pady=10, padx=10)
 
         # Right column inputs
-        self.coord_x_limits_input_field = InputFieldCoordLimits(
-            right_frame, text="X plot limits",
+        self.coord_x_limits_input_field: InputFieldCoordLimits = self.pack_input_field_coord_limits(
+            right_frame,
+            text="X plot limits",
             command=self.update_x_coord_limits,
             default_min=self.view_model.x_min,
             default_max=self.view_model.x_max,
         )
-        self.coord_x_limits_input_field.pack(pady=10, padx=10)
 
-        self.coord_y_limits_input_field = InputFieldCoordLimits(
-            right_frame, text="Y plot limits",
+        self.coord_y_limits_input_field: InputFieldCoordLimits = self.pack_input_field_coord_limits(
+            right_frame,
+            text="Y plot limits",
             command=self.update_y_coord_limits,
             default_min=self.view_model.y_min,
             default_max=self.view_model.y_max,
         )
-        self.coord_y_limits_input_field.pack(pady=10, padx=10)
 
-        self.coord_z_limits_input_field = InputFieldCoordLimits(
-            right_frame, text="Z plot limits",
+        self.coord_z_limits_input_field: InputFieldCoordLimits = self.pack_input_field_coord_limits(
+            right_frame,
+            text="Z plot limits",
             command=self.update_z_coord_limits,
             default_min=self.view_model.z_min,
             default_max=self.view_model.z_max,
         )
-        self.coord_z_limits_input_field.pack(pady=10, padx=10)
 
-        self.to_show_al_indexes_checkbox = CheckBox(
-            right_frame, text="Show atom's indexes on the plot",
+        self.to_show_al_indexes_checkbox: CheckBox = self.pack_check_box(
+            right_frame,
+            text="Show atom's indexes on the plot",
             command=self.update_to_show_al_indexes,
             default=self.view_model.to_show_al_indexes,
         )
-        self.to_show_al_indexes_checkbox.pack(pady=10, padx=10)
 
         # Remaining widgets below the columns
-        self.plot_btn: Button = Button(
-            self.input_window,
+        self.plot_btn: Button = self.pack_button(
+            self.window,
             text="Plot the model",
             command=self.plot_al_in_c_structure,
         )
-        self.plot_btn.pack(pady=10, padx=10)
 
-        self.update_tbl_btn: Button = Button(
-            self.input_window,
+        self.btn: Button = self.pack_button(
+            self.window,
             text="Update the Excel file for plane",
             command=self.update_al_plane_coordinates_file,
         )
-        self.update_tbl_btn.pack(pady=10, padx=10)
 
-        self.generate_tbl_btn: Button = Button(
-            self.input_window,
+        self.generate_tbl_btn: Button = self.pack_button(
+            self.window,
             text="Generate the Excel file with Al coordinates for plane",
             command=self.generate_al_plane_coordinates_file,
+            pady=(10, 25),
         )
-        self.generate_tbl_btn.pack(pady=(10, 25), padx=10)
 
     def plot_al_in_c_structure(self) -> None:
         try:
@@ -230,39 +216,28 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils):
         self.view_model.set_z_max(value_max)
 
 
-class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils):
+class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
     def __init__(self, view_model: VMIntercalationAndSorption, structure_folder: str) -> None:
         super().__init__(view_model, structure_folder)
-
-        self.create_window()
-
-    def create_window(self) -> None:
-        self.input_window = ctk.CTkToplevel()
-        self.input_window.pack_propagate(True)
-        self.input_window.grid_propagate(True)
-
-        title: str = f"Translate Al to other planes ({self.structure_folder})"
-        self.input_window.title(title)
-
-        description: str = (
-            "Read the selected file with coordinates for N planes "
-            "and translate Al atoms to other planes."
+        self.create_window(
+            title=f"Translate Al to other planes ({self.structure_folder})",
+            description=(
+                "Read the selected file with coordinates for N planes "
+                "and translate Al atoms to other planes."
+            ),
         )
-        description_label: ctk.CTkLabel = ctk.CTkLabel(
-            self.input_window, text=description, wraplength=500
-        )
-        description_label.pack(pady=10, padx=10)
+        self.create_ui()
 
-        self.file_names_dropdown: DropdownList = DropdownList(
-            self.input_window,
+    def create_ui(self) -> None:
+        self.file_names_dropdown: DropdownList = self.pack_dropdown_list(
+            self.window,
             options=self.file_names,
             command=self.view_model.set_file_name,
             title="Al coordinates table to translate",
         )
-        self.file_names_dropdown.pack(pady=10, padx=10)
 
         # Create a frame to hold the columns
-        columns_frame = ctk.CTkFrame(self.input_window)
+        columns_frame = ctk.CTkFrame(self.window)
         columns_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
         # Create frames for left and right columns inside the columns_frame
@@ -273,92 +248,85 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils):
         right_frame.pack(side="right", fill="both", expand=True, padx=10, pady=10)
 
         # Left column inputs
-        self.try_to_reflect_al_atoms_checkbox: CheckBox = CheckBox(
+        self.try_to_reflect_al_atoms_checkbox: CheckBox = self.pack_check_box(
             left_frame,
             text="Try to reflect Al atoms to fit the plane",
             command=self.update_to_try_to_reflect_al_atoms,
             default=self.view_model.to_try_to_reflect_al_atoms,
         )
-        self.try_to_reflect_al_atoms_checkbox.pack(pady=10, padx=10)
 
-        self.number_of_planes_input_field: InputField = InputField(
+        self.number_of_planes_input_field: InputField = self.pack_input_field(
             left_frame,
             text="Number of planes",
             command=self.update_number_of_planes,
             default_value=self.view_model.number_of_planes,
         )
-        self.number_of_planes_input_field.pack(pady=10, padx=10)
 
-        self.num_of_min_distances_input_field: InputField = InputField(
+        self.num_of_min_distances_input_field: InputField = self.pack_input_field(
             left_frame,
             text="Number of min distances for bonds",
             command=self.update_num_of_min_distances,
             default_value=self.view_model.bonds_num_of_min_distances,
         )
-        self.num_of_min_distances_input_field.pack(pady=10, padx=10)
 
-        self.bonds_skip_first_distances_input_field = InputField(
-            left_frame, text="Skip first distances for bonds",
+        self.bonds_skip_first_distances_input_field: InputField = self.pack_input_field(
+            left_frame,
+            text="Skip first distances for bonds",
             command=self.update_bonds_skip_first_distances,
             default_value=self.view_model.bonds_skip_first_distances,
         )
-        self.bonds_skip_first_distances_input_field.pack(pady=10, padx=10)
 
-        self.num_of_al_layers_input_field: InputField = InputField(
+        self.num_of_al_layers_input_field: InputField = self.pack_input_field(
             left_frame,
             text="Number of Al layers on the plot",
             command=self.update_num_of_al_layers,
             default_value=self.view_model.num_of_al_layers,
         )
-        self.num_of_al_layers_input_field.pack(pady=10, padx=10)
 
         # Right column inputs
-
-        # Input field for coord_limits
-        self.coord_x_limits_input_field = InputFieldCoordLimits(
-            right_frame, text="X plot limits",
+        self.coord_x_limits_input_field: InputFieldCoordLimits = self.pack_input_field_coord_limits(
+            right_frame,
+            text="X plot limits",
             command=self.update_x_coord_limits,
             default_min=self.view_model.x_min,
             default_max=self.view_model.x_max,
         )
-        self.coord_x_limits_input_field.pack(pady=10, padx=10)
 
-        self.coord_y_limits_input_field = InputFieldCoordLimits(
-            right_frame, text="Y plot limits",
+        self.coord_y_limits_input_field: InputFieldCoordLimits = self.pack_input_field_coord_limits(
+            right_frame,
+            text="Y plot limits",
             command=self.update_y_coord_limits,
             default_min=self.view_model.y_min,
             default_max=self.view_model.y_max,
         )
-        self.coord_y_limits_input_field.pack(pady=10, padx=10)
 
-        self.coord_z_limits_input_field = InputFieldCoordLimits(
-            right_frame, text="Z plot limits",
+        self.coord_z_limits_input_field: InputFieldCoordLimits = self.pack_input_field_coord_limits(
+            right_frame,
+            text="Z plot limits",
             command=self.update_z_coord_limits,
             default_min=self.view_model.z_min,
             default_max=self.view_model.z_max,
         )
-        self.coord_z_limits_input_field.pack(pady=10, padx=10)
 
-        self.to_show_al_indexes_checkbox = CheckBox(
-            right_frame, text="Show atom's indexes on the plot",
+        self.to_show_al_indexes_checkbox: CheckBox = self.pack_check_box(
+            right_frame,
+            text="Show atom's indexes on the plot",
             command=self.update_to_show_al_indexes,
             default=self.view_model.to_show_al_indexes,
         )
-        self.to_show_al_indexes_checkbox.pack(pady=10, padx=10)
 
-        self.translate_btn: Button = Button(
-            self.input_window,
+        self.translate_btn: Button = self.pack_button(
+            self.window,
             text="Build the model",
             command=self.translate_al_to_other_planes,
         )
-        self.translate_btn.pack(pady=10, padx=10)
 
-        self.update_tbl_btn: Button = Button(
-            self.input_window,
+        self.btn: Button = self.pack_button(
+            self.window,
             text="Update the Excel file",
             command=self.update_file,
+            pady=(10, 25),
         )
-        self.update_tbl_btn.pack(pady=(10, 25), padx=10)
 
     def translate_al_to_other_planes(self) -> None:
         try:
@@ -421,43 +389,32 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils):
         self.view_model.set_z_max(value_max)
 
 
-class GetAlInChannelDetailsWindow(_IntercalationAndSorptionUtils):
+class GetAlInChannelDetailsWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
     def __init__(self, view_model: VMIntercalationAndSorption, structure_folder: str) -> None:
         super().__init__(view_model, structure_folder)
-
-        self.create_window()
-
-    def create_window(self) -> None:
-        self.input_window = ctk.CTkToplevel()
-        self.input_window.pack_propagate(True)
-        self.input_window.grid_propagate(True)
-
-        title: str = f"Get Al in channel details ({self.structure_folder})"
-        self.input_window.title(title)
-
-        description: str = (
-            "Write an Excel file with Al atoms in channel details (Al atoms coordinates, "
-            "distances to the plane, distances to the carbon atoms, distances to the other Al atoms)."
+        self.create_window(
+            title=f"Get Al in channel details ({self.structure_folder})",
+            description=(
+                "Write an Excel file with Al atoms in channel details (Al atoms coordinates, "
+                "distances to the plane, distances to the carbon atoms, distances to the other Al atoms)."
+            ),
         )
-        description_label: ctk.CTkLabel = ctk.CTkLabel(
-            self.input_window, text=description, wraplength=400
-        )
-        description_label.pack(pady=10, padx=10)
+        self.create_ui()
 
-        self.file_names_dropdown: DropdownList = DropdownList(
-            self.input_window,
+    def create_ui(self) -> None:
+        self.file_names_dropdown: DropdownList = self.pack_dropdown_list(
+            self.window,
             options=self.file_names,
             command=self.view_model.set_file_name,
             title="Al coordinates table to analyze",
         )
-        self.file_names_dropdown.pack(pady=10, padx=10)
 
-        self.get_details_btn: Button = Button(
-            self.input_window,
+        self.btn: Button = self.pack_button(
+            self.window,
             text="Save Al in channel details to Excel file",
             command=self.get_al_in_channel_details,
+            pady=(10, 25),
         )
-        self.get_details_btn.pack(pady=(10, 25), padx=10)
 
     def get_al_in_channel_details(self) -> None:
         try:
@@ -467,29 +424,27 @@ class GetAlInChannelDetailsWindow(_IntercalationAndSorptionUtils):
             messagebox.showerror("Error", str(e))
 
 
-class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils):
+class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
     def __init__(self, view_model: VMIntercalationAndSorption, structure_folder: str) -> None:
         super().__init__(view_model, structure_folder)
+        self.create_window(
+            title=f"Translate Al to all channels ({self.structure_folder})",
+            description=(
+                "Translate Al atoms to all channels."
+            ),
+        )
+        self.create_ui()
 
-        self.create_window()
-
-    def create_window(self) -> None:
-        self.input_window = ctk.CTkToplevel()
-        title: str = f"Translate Al to all channels ({self.structure_folder})"
-        self.input_window.title(title)
-        self.input_window.pack_propagate(True)
-        self.input_window.grid_propagate(True)
-
-        self.file_names_dropdown: DropdownList = DropdownList(
-            self.input_window,
+    def create_ui(self) -> None:
+        self.file_names_dropdown: DropdownList = self.pack_dropdown_list(
+            self.window,
             options=self.file_names,
             command=self.view_model.set_file_name,
             title="Al coordinates table to translate",
         )
-        self.file_names_dropdown.pack(pady=10, padx=10)
 
         # Create a frame to hold the columns
-        columns_frame = ctk.CTkFrame(self.input_window)
+        columns_frame = ctk.CTkFrame(self.window)
         columns_frame.pack(fill="both", expand=True, padx=10, pady=10)
 
         # Create frames for left and right columns inside the columns_frame
@@ -500,90 +455,85 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils):
         right_frame.pack(side="right", fill="both", expand=True, padx=10, pady=10)
 
         # Left column inputs
-        self.num_of_min_distances_input_field: InputField = InputField(
+        self.num_of_min_distances_input_field: InputField = self.pack_input_field(
             left_frame,
             text="Number of min distances for bonds",
             command=self.update_num_of_min_distances,
             default_value=self.view_model.bonds_num_of_min_distances,
         )
-        self.num_of_min_distances_input_field.pack(pady=10, padx=10)
 
-        self.bonds_skip_first_distances_input_field = InputField(
-            left_frame, text="Skip first distances for bonds",
+        self.bonds_skip_first_distances_input_field: InputField = self.pack_input_field(
+            left_frame,
+            text="Skip first distances for bonds",
             command=self.update_bonds_skip_first_distances,
             default_value=self.view_model.bonds_skip_first_distances,
         )
-        self.bonds_skip_first_distances_input_field.pack(pady=10, padx=10)
 
-        self.num_of_al_layers_input_field: InputField = InputField(
+        self.num_of_al_layers_input_field: InputField = self.pack_input_field(
             left_frame,
             text="Number of Al layers on the plot",
             command=self.update_num_of_al_layers,
             default_value=self.view_model.num_of_al_layers,
         )
-        self.num_of_al_layers_input_field.pack(pady=10, padx=10)
 
-        self.try_to_reflect_al_atoms_checkbox: CheckBox = CheckBox(
+        self.try_to_reflect_al_atoms_checkbox: CheckBox = self.pack_check_box(
             left_frame,
             text="Try to reflect Al atoms to fit the plane\n(if no init file and the Al atoms will be calculated)",
             command=self.update_to_try_to_reflect_al_atoms,
             default=self.view_model.to_try_to_reflect_al_atoms,
         )
-        self.try_to_reflect_al_atoms_checkbox.pack(pady=10, padx=10)
 
-        self.to_remove_al_atoms_with_min_and_max_x_coordinates_checkbox: CheckBox = CheckBox(
+        self.to_remove_al_atoms_with_min_and_max_x_coordinates_checkbox: CheckBox = self.pack_check_box(
             left_frame,
             text="Remove Al atoms with min and max X coordinates",
             command=self.update_to_remove_al_atoms_with_min_and_max_x_coordinates,
             default=self.view_model.to_remove_al_atoms_with_min_and_max_x_coordinates,
         )
-        self.to_remove_al_atoms_with_min_and_max_x_coordinates_checkbox.pack(pady=10, padx=10)
 
         # Right column inputs
-        self.coord_x_limits_input_field = InputFieldCoordLimits(
-            right_frame, text="X plot limits",
+        self.coord_x_limits_input_field: InputFieldCoordLimits = self.pack_input_field_coord_limits(
+            right_frame,
+            text="X plot limits",
             command=self.update_x_coord_limits,
             default_min=self.view_model.x_min,
             default_max=self.view_model.x_max,
         )
-        self.coord_x_limits_input_field.pack(pady=10, padx=10)
 
-        self.coord_y_limits_input_field = InputFieldCoordLimits(
-            right_frame, text="Y plot limits",
+        self.coord_y_limits_input_field: InputFieldCoordLimits = self.pack_input_field_coord_limits(
+            right_frame,
+            text="Y plot limits",
             command=self.update_y_coord_limits,
             default_min=self.view_model.y_min,
             default_max=self.view_model.y_max,
         )
-        self.coord_y_limits_input_field.pack(pady=10, padx=10)
 
-        self.coord_z_limits_input_field = InputFieldCoordLimits(
-            right_frame, text="Z plot limits",
+        self.coord_z_limits_input_field: InputFieldCoordLimits = self.pack_input_field_coord_limits(
+            right_frame,
+            text="Z plot limits",
             command=self.update_z_coord_limits,
             default_min=self.view_model.z_min,
             default_max=self.view_model.z_max,
         )
-        self.coord_z_limits_input_field.pack(pady=10, padx=10)
 
-        self.to_show_al_indexes_checkbox = CheckBox(
-            right_frame, text="Show atom's indexes on the plot",
+        self.to_show_al_indexes_checkbox: CheckBox = self.pack_check_box(
+            right_frame,
+            text="Show atom's indexes on the plot",
             command=self.update_to_show_al_indexes,
             default=self.view_model.to_show_al_indexes,
         )
-        self.to_show_al_indexes_checkbox.pack(pady=10, padx=10)
 
-        self.translate_btn: Button = Button(
-            self.input_window,
+        self.translate_btn: Button = self.pack_button(
+            self.window,
             text="Generate output files",
             command=self.translate_al_to_all_channels_generate_files,
         )
-        self.translate_btn.pack(pady=10, padx=10)
 
-        self.translate_btn: Button = Button(
-            self.input_window,
+        self.plot_btn: Button = self.pack_button(
+            self.window,
             text="Plot structure",
             command=self.plot_al_in_c_structure,
+            pady=(10, 25),
         )
-        self.translate_btn.pack(pady=(10, 25), padx=10)
 
     def plot_al_in_c_structure(self) -> None:
         try:

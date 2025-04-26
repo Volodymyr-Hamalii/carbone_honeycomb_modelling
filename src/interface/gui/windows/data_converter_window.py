@@ -1,64 +1,58 @@
 from pathlib import Path
-import customtkinter as ctk
 from tkinter import messagebox
 
 from src.utils import Logger, Constants, FileReader
 
 from ..viewmodels import VMDataConverter
 from ..components import Button, DropdownList
+from .windows_template import WindowsTemplate
 
 
 logger = Logger("DataOperationsWindow")
 
 
-class DataConverterWindow:
+class DataConverterWindow(WindowsTemplate):
     def __init__(self, view_model: VMDataConverter, structure_folder: str) -> None:
+        super().__init__()
         self.view_model: VMDataConverter = view_model
         self.structure_folder: str = structure_folder
         self.file_names: list[str] = []
         self._refresh_file_name_lists()
 
-        self.create_window()
+        self.create_window(
+            title=f"Data converter ({self.structure_folder})",
+        )
+        self.create_ui()
 
-    def create_window(self) -> None:
-        self.input_window = ctk.CTkToplevel()
-
-        self.input_window.pack_propagate(True)
-        self.input_window.grid_propagate(True)
-
-        title: str = f"Data converter ({self.structure_folder})"
-        self.input_window.title(title)
-
-        self.data_dir_dropdown: DropdownList = DropdownList(
-            self.input_window,
+    def create_ui(self) -> None:
+        self.data_dir_dropdown: DropdownList = self.pack_dropdown_list(
+            self.window,
             options=[Constants.file_names.RESULT_DATA_DIR],
             command=self.update_data_dir,
             title="Data directory",
             is_disabled=True,
         )
-        self.data_dir_dropdown.pack(pady=10, padx=10)
 
-        self.file_names_dropdown: DropdownList = DropdownList(
-            self.input_window,
+        self.file_names_dropdown: DropdownList = self.pack_dropdown_list(
+            self.window,
             options=self.file_names,
             command=self.update_file_name,
             title="File to convert",
         )
-        self.file_names_dropdown.pack(pady=10, padx=10)
 
-        self.formats_dropdown: DropdownList = DropdownList(
-            self.input_window,
+        self.formats_dropdown: DropdownList = self.pack_dropdown_list(
+            self.window,
             options=self.view_model.available_formats,
             command=self.update_formats,
             title="Target file format",
         )
-        self.formats_dropdown.pack(pady=10, padx=10)
 
-        # Button to proceed to the next step
-        self.next_btn = Button(
-            self.input_window, text="Convert", command=self.convert_file
+        self.next_btn: Button = self.pack_button(
+            self.window,
+            text="Convert",
+            command=self.convert_file,
+            pady=(10, 25),
         )
-        self.next_btn.pack(pady=(10, 25), padx=10)
 
     def update_data_dir(self, value: str) -> None:
         self.view_model.set_data_dir(value)

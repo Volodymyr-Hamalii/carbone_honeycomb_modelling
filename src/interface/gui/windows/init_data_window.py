@@ -1,5 +1,4 @@
 from pathlib import Path
-import customtkinter as ctk
 
 from src.utils import Constants, FileReader
 from ..viewmodels import VMShowInitData
@@ -10,10 +9,12 @@ from ..components import (
     InputField,
     InputFieldCoordLimits,
 )
+from .windows_template import WindowsTemplate
 
 
-class InitDataWindow:
+class InitDataWindow(WindowsTemplate):
     def __init__(self, view_model: VMShowInitData, structure_folder: str, is_one_channel: bool = False) -> None:
+        super().__init__()
         self.view_model: VMShowInitData = view_model
         self.view_model.set_data_dir(Constants.file_names.INIT_DATA_DIR)
 
@@ -23,7 +24,16 @@ class InitDataWindow:
         self.file_names: list[str] = []
         self._refresh_file_name_lists()
 
-        self.create_window()
+        self.create_window(
+            title=f"Show one channel structure ({self.structure_folder})"
+            if self.is_one_channel
+            else f"Show init full CH structure ({self.structure_folder}) ",
+            # description=(
+            #     "Write an Excel file with Al atoms in channel details (Al atoms coordinates, "
+            #     "Al atoms indexes, Al atoms distances from the C atoms, etc.)"
+            # ),
+        )
+        self.create_ui()
 
     def _refresh_file_name_lists(self) -> None:
         path: Path = self.view_model.data_dir / self.structure_folder
@@ -33,90 +43,76 @@ class InitDataWindow:
                 self.view_model.file_name not in self.file_names):
             self.view_model.set_file_name(self.file_names[0])
 
-    def create_window(self) -> None:
-        self.input_window = ctk.CTkToplevel()
-        self.input_window.pack_propagate(True)
-        self.input_window.grid_propagate(True)
-
-        title: str = (
-            f"Show one channel structure ({self.structure_folder})"
-            if self.is_one_channel
-            else f"Show init full CH structure ({self.structure_folder}) "
-        )
-        self.input_window.title(title)
-
-        self.file_names_dropdown: DropdownList = DropdownList(
-            self.input_window,
+    def create_ui(self) -> None:
+        self.file_names_dropdown: DropdownList = self.pack_dropdown_list(
+            self.window,
             options=self.file_names,
             command=self.view_model.set_file_name,
         )
-        self.file_names_dropdown.pack(pady=10, padx=10)
 
         # Checkbox for to_build_bonds
-        self.to_build_bonds_checkbox = CheckBox(
-            self.input_window, text="Build Bonds",
+        self.to_build_bonds_checkbox: CheckBox = self.pack_check_box(
+            self.window, text="Build Bonds",
             command=self.update_to_build_bonds,
             default=self.view_model.to_build_bonds,
         )
-        self.to_build_bonds_checkbox.pack(pady=10, padx=10)
 
         # Checkbox for to_show_coordinates
-        self.to_show_coordinates_checkbox = CheckBox(
-            self.input_window, text="Show coordinates",
+        self.to_show_coordinates_checkbox: CheckBox = self.pack_check_box(
+            self.window, text="Show coordinates",
             command=self.update_to_show_coordinates,
             default=self.view_model.to_show_coordinates,
         )
-        self.to_show_coordinates_checkbox.pack(pady=10, padx=10)
 
         # Checkbox for to_show_indexes
-        self.to_show_c_indexes_checkbox = CheckBox(
-            self.input_window, text="Show C atoms indexes",
+        self.to_show_c_indexes_checkbox: CheckBox = self.pack_check_box(
+            self.window, text="Show C atoms indexes",
             command=self.update_to_show_c_indexes,
             default=self.view_model.to_show_c_indexes,
         )
-        self.to_show_c_indexes_checkbox.pack(pady=10, padx=10)
 
         # Input field for bonds_num_of_min_distances
-        self.bonds_num_of_min_distances_input_field = InputField(
-            self.input_window, text="Number of min distances for bonds",
+        self.bonds_num_of_min_distances_input_field: InputField = self.pack_input_field(
+            self.window, text="Number of min distances for bonds",
             command=self.update_bonds_num_of_min_distances,
             default_value=self.view_model.bonds_num_of_min_distances,
         )
-        self.bonds_num_of_min_distances_input_field.pack(pady=10, padx=10)
 
         # Input field for bonds_skip_first_distances
-        self.bonds_skip_first_distances_input_field = InputField(
-            self.input_window, text="Skip first distances for bonds",
+        self.bonds_skip_first_distances_input_field: InputField = self.pack_input_field(
+            self.window, text="Skip first distances for bonds",
             command=self.update_bonds_skip_first_distances,
             default_value=self.view_model.bonds_skip_first_distances,
         )
-        self.bonds_skip_first_distances_input_field.pack(pady=10, padx=10)
 
         # Input field for coord_limits
-        self.coord_x_limits_input_field = InputFieldCoordLimits(
-            self.input_window, text="X plot limits",
+        self.coord_x_limits_input_field: InputFieldCoordLimits = self.pack_input_field_coord_limits(
+            self.window, text="X plot limits",
             command=self.update_x_coord_limits,
+            default_min=self.view_model.x_min,
+            default_max=self.view_model.x_max,
         )
-        self.coord_x_limits_input_field.pack(pady=10, padx=10)
 
-        self.coord_y_limits_input_field = InputFieldCoordLimits(
-            self.input_window, text="Y plot limits",
+        self.coord_y_limits_input_field: InputFieldCoordLimits = self.pack_input_field_coord_limits(
+            self.window, text="Y plot limits",
             command=self.update_y_coord_limits,
+            default_min=self.view_model.y_min,
+            default_max=self.view_model.y_max,
         )
-        self.coord_y_limits_input_field.pack(pady=10, padx=10)
 
-        self.coord_z_limits_input_field = InputFieldCoordLimits(
-            self.input_window, text="Z plot limits",
+        self.coord_z_limits_input_field: InputFieldCoordLimits = self.pack_input_field_coord_limits(
+            self.window, text="Z plot limits",
             command=self.update_z_coord_limits,
+            default_min=self.view_model.z_min,
+            default_max=self.view_model.z_max,
         )
-        self.coord_z_limits_input_field.pack(pady=10, padx=10)
 
         # Button to proceed to the next step
-        self.next_btn = Button(
-            self.input_window, text="Show structure",
+        self.next_btn: Button = self.pack_button(
+            self.window, text="Show structure",
             command=self.show_structure,
+            pady=(10, 25),
         )
-        self.next_btn.pack(pady=(10, 25), padx=10)
 
     def show_structure(self) -> None:
         if self.is_one_channel:
