@@ -2,10 +2,19 @@ from pathlib import Path
 import customtkinter as ctk
 from tkinter import messagebox
 
+import pandas as pd
+
 from src.utils import Logger, FileReader
 
 from ..viewmodels import VMIntercalationAndSorption
-from ..components import Button, CheckBox, DropdownList, InputField, InputFieldCoordLimits
+from ..components import (
+    Button,
+    CheckBox,
+    DropdownList,
+    InputField,
+    InputFieldCoordLimits,
+    Table,
+)
 from .windows_template import WindowsTemplate
 
 
@@ -393,10 +402,10 @@ class GetAlInChannelDetailsWindow(_IntercalationAndSorptionUtils, WindowsTemplat
     def __init__(self, view_model: VMIntercalationAndSorption, structure_folder: str) -> None:
         super().__init__(view_model, structure_folder)
         self.create_window(
-            title=f"Get Al in channel details ({self.structure_folder})",
+            title=f"Get intercalated CH channel details ({self.structure_folder})",
             description=(
-                "Write an Excel file with Al atoms in channel details (Al atoms coordinates, "
-                "distances to the plane, distances to the carbon atoms, distances to the other Al atoms)."
+                "Build a table with intercalated CH channel details (intercalated atoms coordinates, "
+                "distances to the plane, distances to the carbon atoms, distances to the other intercalated atoms)."
             ),
         )
         self.create_ui()
@@ -406,20 +415,41 @@ class GetAlInChannelDetailsWindow(_IntercalationAndSorptionUtils, WindowsTemplat
             self.window,
             options=self.file_names,
             command=self.view_model.set_file_name,
-            title="Al coordinates table to analyze",
+            title="Intercalated atoms coordinates to analyze",
         )
 
-        self.btn: Button = self.pack_button(
+        self.btn_show_table: Button = self.pack_button(
             self.window,
-            text="Save Al in channel details to Excel file",
+            text="Show table",
+            command=self.show_al_in_channel_details,
+        )
+
+        self.btn_save_file: Button = self.pack_button(
+            self.window,
+            text="Save Excel file",
             command=self.get_al_in_channel_details,
             pady=(10, 25),
         )
 
     def get_al_in_channel_details(self) -> None:
         try:
-            path_to_file: Path = self.view_model.get_al_in_channel_details(self.structure_folder)
+            path_to_file: Path = self.view_model.save_al_in_channel_details(self.structure_folder)
             messagebox.showinfo("Success", f"Al in channel details saved to {path_to_file}")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+    def show_al_in_channel_details(self) -> None:
+        try:
+            df: pd.DataFrame = self.view_model.get_al_in_channel_details(self.structure_folder)
+
+            # Create a new window
+            new_window = ctk.CTkToplevel(self.window)
+            new_window.title("Intercalated CH channel details")
+            new_window.geometry("800x500")
+
+            # Create and display the table in the new window
+            self.table_window: Table = Table(df, master=new_window)
+            self.table_window.pack(fill="both", expand=True)
         except Exception as e:
             messagebox.showerror("Error", str(e))
 

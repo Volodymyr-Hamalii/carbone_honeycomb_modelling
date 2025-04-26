@@ -232,7 +232,29 @@ class VMIntercalationAndSorption(VMParamsSetter):
 
         return path_to_file
 
-    def get_al_in_channel_details(self, structure_folder: str) -> Path:
+    def save_al_in_channel_details(self, structure_folder: str) -> Path:
+        """
+        Save Al in channel details to an Excel file.
+        """
+        data: pd.DataFrame = self.get_al_in_channel_details(structure_folder)
+
+        result_file_name: str = self.file_name.split(".")[0] + "_" + Constants.file_names.AL_CHANNEL_DETAILS_XLSX_FILE
+
+        # Write DataFrame to Excel file
+        path_to_file: Path | None = FileWriter.write_excel_file(
+            df=data,
+            structure_folder=structure_folder,
+            sheet_name="Al atoms in channel details",
+            file_name=result_file_name,
+            is_init_data_dir=False,
+        )
+
+        if path_to_file is None:
+            raise IOError(f"Failed to write {result_file_name} Excel file")
+
+        return path_to_file
+
+    def get_al_in_channel_details(self, structure_folder: str) -> pd.DataFrame:
         """
         Get details of Al atoms in the channel.
         """
@@ -289,21 +311,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
         # Set multi-level columns
         df.columns = pd.MultiIndex.from_tuples(df.columns)
 
-        result_file_name: str = self.file_name.split(".")[0] + "_" + Constants.file_names.AL_CHANNEL_DETAILS_XLSX_FILE
-
-        # Write DataFrame to Excel file
-        path_to_file: Path | None = FileWriter.write_excel_file(
-            df=df,
-            structure_folder=structure_folder,
-            sheet_name="Al atoms in channel details",
-            file_name=result_file_name,
-            is_init_data_dir=False,
-        )
-
-        if path_to_file is None:
-            raise IOError(f"Failed to write {result_file_name} Excel file")
-
-        return path_to_file
+        return df
 
     def translate_al_to_all_channels_plot(self, structure_folder: str) -> None:
         """
