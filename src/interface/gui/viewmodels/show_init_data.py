@@ -1,5 +1,3 @@
-from pathlib import Path
-
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.pyplot import Axes  # type: ignore
@@ -21,113 +19,65 @@ logger = Logger("Actions")
 
 
 class VMShowInitData(VMParamsSetter):
-    def show_init_structure(self, structure_folder: str) -> None:
+    def show_init_structure(
+            self,
+            project_dir: str,
+            subproject_dir: str,
+            structure_dir: str,
+    ) -> None:
         """
-        Show 3D model of result_data/{structure_folder}/ljout-from-init-dat.pdb
+        Show 3D model of result_data/{structure_dir}/ljout-from-init-dat.pdb
 
         Use params:
-        structure_folder: str
+        structure_dir: str
         to_build_bonds: bool
         to_show_coordinates: bool
         to_show_indexes: bool
         """
 
-        carbon_points: np.ndarray = FileReader.read_init_data_file(structure_folder, self.file_name)
-
-        # to_build_bonds: bool = Inputs.bool_input(
-        #     to_set,
-        #     default_value=True,
-        #     text="To build bonds between atoms",
-        #     env_id="to_build_bonds",
-        # )
+        carbon_points: np.ndarray = FileReader.read_init_data_file(
+            project_dir=project_dir,
+            subproject_dir=subproject_dir,
+            structure_dir=structure_dir,
+            file_name=self.file_name,
+        )
 
         StructureVisualizer.show_structure(
             carbon_points,
             to_build_bonds=self.to_build_bonds,
             to_show_coordinates=self.to_show_coordinates,
             to_show_indexes=self.to_show_c_indexes,
-            title=structure_folder,
+            title=structure_dir,
             to_set_equal_scale=True,
             num_of_min_distances=self.bonds_num_of_min_distances,
             skip_first_distances=self.bonds_skip_first_distances,
         )
 
-    # @staticmethod
-    # def show_init_al_structure(
-    #         to_translate_al: bool,
-    #         al_lattice_type_str: str,
-    #         al_file: str,
-    #         to_build_bonds: bool = True,
-    # ) -> None:
-    #     """ Show 3D model of init_data/al.pdb """
-
-    #     # to_translate_al: bool = Inputs.bool_input(
-    #     #     to_set, default_value=True, text="To translate AL atomes to fill full volume")
-
-    #     # al_lattice_type_str: str = Inputs.text_input(
-    #     #     to_set, default_value="FCC",
-    #     #     # to_set, default_value="HCP",
-    #     #     text=AlLatticeType.get_info(),
-    #     #     available_values=AlLatticeType.get_available_types())
-    #     al_lattice_type = AlLatticeType(al_lattice_type_str)
-
-    #     # structure_settings: None | StructureSettings = StructureSettingsManager.get_structure_settings(
-    #     #     structure_folder=structure_folder)
-
-    #     if al_lattice_type.is_cell:
-    #         # al_file: str = Inputs.text_input(to_set, default_value=Constants.file_names.AL_FILE, text="Init AL file")
-
-    #         coordinates_al: Points = IntercalatedChannelBuilder.build_al_coordinates_for_cell(
-    #             to_translate_al=to_translate_al,
-    #             al_file=al_file)
-
-    #         num_of_min_distances = 1
-    #         skip_first_distances = 1
-    #     else:
-    #         # Fill the volume with aluminium for close-packed lattice
-    #         coordinates_al: Points = IntercalatedChannelBuilder.build_al_coordinates_for_close_packed(
-    #             al_lattice_type=al_lattice_type,
-    #             coordinate_limits=CoordinateLimits(
-    #                 x_min=0,
-    #                 x_max=5,
-    #                 y_min=0,
-    #                 y_max=5,
-    #                 z_min=0,
-    #                 z_max=5,
-    #             ))  # TODO: set normal limits
-
-    #         num_of_min_distances = 1
-    #         skip_first_distances = 0
-
-    #         # to_build_bonds: bool = Inputs.bool_input(
-    #         #     to_set,
-    #         #     default_value=True,
-    #         #     text="To build bonds between atoms",
-    #         #     env_id="to_build_bonds",
-    #         # )
-    #     StructureVisualizer.show_structure(
-    #         coordinates=coordinates_al.points,
-    #         to_build_bonds=to_build_bonds,
-    #         visual_params=VisualizationParams.al,
-    #         num_of_min_distances=num_of_min_distances,
-    #         skip_first_distances=skip_first_distances,
-    #         title="Aluminium")
-
-    def show_one_channel_structure(self, structure_folder: str) -> None:
+    def show_one_channel_structure(
+            self,
+            project_dir: str,
+            subproject_dir: str,
+            structure_dir: str,
+    ) -> None:
         """
-        Build one channel model from result_data/{structure_folder}/ljout-from-init-dat.pdb atoms
-        based on result_data/{structure_folder}/structure_settings.json channel limits.
+        Build one channel model from result_data/{structure_dir}/ljout-from-init-dat.pdb atoms
+        based on result_data/{structure_dir}/structure_settings.json channel limits.
 
-        Write result to result_data/{structure_folder}/ljout-result-one-channel.pdb if it didn't exist.
+        Write result to result_data/{structure_dir}/ljout-result-one-channel.pdb if it didn't exist.
 
         Use params:
-        structure_folder: str
+        structure_dir: str
         to_build_bonds: bool
         to_show_coordinates: bool
         to_show_indexes: bool
         """
 
-        carbon_points: np.ndarray = FileReader.read_init_data_file(structure_folder, self.file_name)
+        carbon_points: np.ndarray = FileReader.read_init_data_file(
+            project_dir=project_dir,
+            subproject_dir=subproject_dir,
+            structure_dir=structure_dir,
+            file_name=self.file_name,
+        )
 
         carbon_channels: list[CarbonHoneycombChannel] = CarbonHoneycombActions.split_init_structure_into_separate_channels(
             coordinates_carbon=Points(points=carbon_points))
@@ -149,7 +99,7 @@ class VMShowInitData(VMParamsSetter):
             coordinates=carbon_channel.points,
             # coordinates=carbon_channel.planes[0].points,
             to_build_bonds=self.to_build_bonds,
-            title=structure_folder,
+            title=structure_dir,
             to_show_coordinates=self.to_show_coordinates,
             to_show_indexes=self.to_show_c_indexes,
             num_of_min_distances=self.bonds_num_of_min_distances,
@@ -157,29 +107,27 @@ class VMShowInitData(VMParamsSetter):
             coordinate_limits=coordinate_limits,
         )
 
-    def get_channel_details(self, structure_folder: str) -> None:
+    def get_channel_details(
+            self,
+            project_dir: str,
+            subproject_dir: str,
+            structure_dir: str,
+    ) -> None:
         """
-        Get details of the channel from result_data/{structure_folder}/structure_settings.json:
+        Get details of the channel from result_data/{structure_dir}/structure_settings.json:
         - distance from the channel centet to the planes and to the connection edges,
         - angles between the planes on the connection edges.
 
         And shows the details in the console and on the 2D graph.
 
         Use params:
-        structure_folder: str
+        structure_dir: str
         to_show_coordinates: bool
         """
 
-        # to_show_coordinates: bool = Inputs.bool_input(
-        #     to_set,
-        #     default_value=True,
-        #     text="To show coordinates",
-        #     env_id="to_show_coordinates",
-        # )
-
         fontsize: int = 8
 
-        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
+        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_dir)
 
         center_2d: np.ndarray = carbon_channel.center[:2]
         planes: list[CarbonHoneycombPlane] = carbon_channel.planes
@@ -190,7 +138,7 @@ class VMShowInitData(VMParamsSetter):
 
         ax: Axes = StructureVisualizer.get_2d_plot(
             np.concatenate(planes_points_2d),
-            title=structure_folder,
+            title=structure_dir,
             visual_params=VisualizationParams.carbon,
         )
 
@@ -212,9 +160,6 @@ class VMShowInitData(VMParamsSetter):
             va="bottom",
         )
 
-        # distances_from_center_to_planes: list[float] = []
-        # distances_from_center_to_edges: list[float] = []
-
         processed_points: list[np.ndarray] = []
 
         for i, plane_points_2d in enumerate(planes_points_2d):
@@ -235,7 +180,6 @@ class VMShowInitData(VMParamsSetter):
 
             distance_from_center_to_plane: float = DistanceMeasure.calculate_distance_from_plane(
                 np.array([center_2d]), line_equation)
-            # distances_from_center_to_planes.append(distance_from_center_to_plane)
 
             # Center of the plane
             plane_center = np.mean(plane_points_2d, axis=0)

@@ -9,19 +9,19 @@ logger = Logger("Actions")
 
 class AppActionsInitDataParsing:
     @staticmethod
-    def convert_init_dat_to_pdb(structure_folder: str, to_set: bool) -> None:
+    def convert_init_dat_to_pdb(structure_dir: str, to_set: bool) -> None:
         """
-        Convert init_data/{structure_folder}/ljout.dat into result_data/{structure_folder}/ljout-from-init-dat.pdb
-        Also create result_data/{structure_folder}/structure_settings.json template if it didn't exist.
+        Convert init_data/{structure_dir}/ljout.dat into result_data/{structure_dir}/ljout-from-init-dat.pdb
+        Also create result_data/{structure_dir}/structure_settings.json template if it didn't exist.
         """
 
-        # FileConverter.dat_to_pdb(structure_folder=structure_folder)
+        # FileConverter.dat_to_pdb(structure_dir=structure_dir)
         pass
 
     @staticmethod
-    def convert_excel_to_dat(structure_folder: str, to_set: bool) -> None:
+    def convert_excel_to_dat(structure_dir: str, to_set: bool) -> None:
         """
-        Convert result_data/{structure_folder}/{file_name}.xlsx into result_data/{structure_folder}/{file_name}.dat.
+        Convert result_data/{structure_dir}/{file_name}.xlsx into result_data/{structure_dir}/{file_name}.dat.
         """
 
         file_name: str = Inputs.text_input(
@@ -33,7 +33,7 @@ class AppActionsInitDataParsing:
         folder_path: Path = Constants.path.RESULT_DATA_PATH
 
         df: pd.DataFrame | None = FileReader.read_excel_file(
-            structure_folder=structure_folder,
+            structure_dir=structure_dir,
             file_name=file_name,
             folder_path=folder_path,
         )
@@ -46,6 +46,6 @@ class AppActionsInitDataParsing:
 
         FileWriter.write_dat_file(
             data_lines=df.to_numpy(),
-            structure_folder=structure_folder,
-            path_to_file=folder_path / structure_folder / file_name_dat,
+            structure_dir=structure_dir,
+            path_to_file=folder_path / structure_dir / file_name_dat,
         )

@@ -11,23 +11,23 @@ from ..logger import Logger
 from ..data_converter import DataConverter
 
 from .path_builder import PathBuilder
-from .file_manager import FileManager
 
 
 logger = Logger("FileWriter")
 
 
-class FileWriter(FileManager):
+class FileWriter:
     @classmethod
     def write_dat_file(
-        cls,
-        data_lines: list[str] | ndarray,
-        path_to_file: Path | None = None,
-        structure_folder: str | None = None,
-        to_overwrite: bool = True,
-        file_name: str = Constants.file_names.INIT_DAT_FILE,
+            cls,
+            data_lines: list[str] | ndarray,
+            path_to_file: Path,
+            to_overwrite: bool = True,
     ) -> None | Path:
-        """For the path you can provide either path_to_file or structure_folder."""
+        """
+        Write .dat file.
+        If data_lines is ndarray, it will be converted to list[str] using DataConverter.convert_ndarray_to_dat.
+        """
 
         # TODO: refactor to use DataConverter.convert_ndarray_to_dat
         try:
@@ -35,18 +35,13 @@ class FileWriter(FileManager):
                 logger.warning("No data for .dat file.")
                 return
 
-            if path_to_file is None:
-                if structure_folder is None:
-                    raise ValueError(
-                        "Provide either path_to_file or structure_folder param for FileWriter.write_dat_file")
-
-                path_to_file = PathBuilder.build_path_to_result_data_file(
-                    structure_folder,
-                    file=file_name)
-
             if to_overwrite is False and path_to_file.exists():
                 # Don't to_overwrite existing file
                 return
+
+            if not path_to_file.suffix == ".dat":
+                # Set .dat extension
+                path_to_file = path_to_file.with_suffix(".dat")
 
             # Ensure the directory exists
             path_to_file.parent.mkdir(parents=True, exist_ok=True)
@@ -70,31 +65,27 @@ class FileWriter(FileManager):
 
     @staticmethod
     def write_pdb_file(
-        data_lines: list[str] | ndarray,
-        path_to_file: Path | None = None,
-        structure_folder: str | None = None,
-        to_overwrite: bool = True,
+            data_lines: list[str] | ndarray,
+            path_to_file: Path,
+            to_overwrite: bool = True,
     ) -> None | Path:
-        """For the path you can provide either path_to_file or structure_folder."""
+        """
+        Write .pdb file.
+        If data_lines is ndarray, it will be converted to list[str] using DataConverter.convert_ndarray_to_pdb.
+        """
 
-        # TODO: refactor to use DataConverter.convert_ndarray_to_pdb
         try:
             if len(data_lines) == 0:
                 logger.warning("No data for .dat file.")
                 return
 
-            if path_to_file is None:
-                if structure_folder is None:
-                    raise ValueError(
-                        "Provide either path_to_file or structure_folder param for FileWriter.write_pdb_file")
-
-                path_to_file = PathBuilder.build_path_to_result_data_file(
-                    structure_folder,
-                    file=Constants.file_names.INIT_DAT_FILE)
-
             if to_overwrite is False and path_to_file.exists():
                 # Don't to_overwrite existing file
                 return
+
+            if not path_to_file.suffix == ".pdb":
+                # Set .pdb extension
+                path_to_file = path_to_file.with_suffix(".pdb")
 
             # Ensure the directory exists
             path_to_file.parent.mkdir(parents=True, exist_ok=True)
@@ -118,25 +109,24 @@ class FileWriter(FileManager):
     def write_excel_file(
             cls,
             df: pd.DataFrame,
-            structure_folder: str,
             sheet_name: str,
-            file_name: str,
-            folder_path: Path | str | None = None,
-            is_init_data_dir: bool = True,
+            path_to_file: Path,
     ) -> Path | None:
         """
         Write a pandas DataFrame to an Excel file.
 
         Parameters:
         - df: pd.DataFrame, the data to write to the Excel file.
-        - structure_folder: str, the name of the structure folder.
+        - structure_dir: str, the name of the structure folder.
         - folder_path: Path | str | None, the base folder path. If None, uses the default logic from PathBuilder.
         - file_name: str, the Excel file name to write.
         - sheet_name: str, the name of the sheet where data will be written.
         - is_init_data_dir: bool | None: to build path to the specific dir. If it's False - builds path to result data.
         """
 
-        path_to_file: Path = cls._get_path_to_file(structure_folder, file_name, folder_path, is_init_data_dir)
+        if not path_to_file.suffix == ".xlsx":
+            # Set .xlsx extension
+            path_to_file = path_to_file.with_suffix(".xlsx")
 
         # Ensure the directory exists
         path_to_file.parent.mkdir(parents=True, exist_ok=True)

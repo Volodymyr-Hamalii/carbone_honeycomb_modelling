@@ -8,53 +8,57 @@ class PathBuilder:
 
     @staticmethod
     def build_path_to_init_data_dir(
-            path_to_script: Path | str = Constants.path.ROOT_DIR_PATH,
-            init_dir: Path | str = Constants.file_names.INIT_DATA_DIR) -> Path:
-
-        return Path(path_to_script) / init_dir
+            project_dir: str,
+            subproject_dir: str,
+            structure_dir: str,
+            init_data_dir: str = Constants.file_names.INIT_DATA_DIR,
+    ) -> Path:
+        return Constants.path.PROJECT_DATA_PATH / project_dir / subproject_dir / init_data_dir / structure_dir
 
     @classmethod
     def build_path_to_init_data_file(
             cls,
-            structure_folder: str | None = None,
-            path_to_script: Path = Constants.path.ROOT_DIR_PATH,
-            init_dir: Path | str = Constants.file_names.INIT_DATA_DIR,
-            file: Path | str = Constants.file_names.INIT_DAT_FILE) -> Path:
-
-        path_dir: Path = cls.build_path_to_init_data_dir(path_to_script, init_dir)
-
-        if structure_folder is not None:
-            return path_dir / structure_folder / file
-
-        return path_dir / file
+            project_dir: str,
+            subproject_dir: str,
+            structure_dir: str,
+            file_name: str,
+            init_data_dir: str = Constants.file_names.INIT_DATA_DIR,
+    ) -> Path:
+        path_to_init_data_dir: Path = cls.build_path_to_init_data_dir(
+            project_dir=project_dir,
+            subproject_dir=subproject_dir,
+            structure_dir=structure_dir,
+            init_data_dir=init_data_dir,
+        )
+        return path_to_init_data_dir / file_name
 
     ### RESULT DATA ###
 
     @staticmethod
     def build_path_to_result_data_dir(
-            path_to_script: Path | str = Constants.path.ROOT_DIR_PATH,
-            result_dir: Path | str = Constants.file_names.RESULT_DATA_DIR) -> Path:
+            project_dir: str,
+            subproject_dir: str,
+            structure_dir: str,
+            result_dir: str = Constants.file_names.RESULT_DATA_DIR,
+    ) -> Path:
 
-        path_to_result_dir: Path = Path(path_to_script) / result_dir
-
-        # Create directory if it doesn't exist
-        path_to_result_dir.mkdir(parents=True, exist_ok=True)
-
-        return path_to_result_dir
+        return Constants.path.PROJECT_DATA_PATH / project_dir / subproject_dir / result_dir / structure_dir
 
     @classmethod
     def build_path_to_result_data_file(
             cls,
-            structure_folder: str,
-            path_to_script: Path | str = Constants.path.ROOT_DIR_PATH,
-            result_dir: Path | str = Constants.file_names.RESULT_DATA_DIR,
-            file: Path | str = Constants.file_names.INIT_PDB_FILE) -> Path:
+            project_dir: str,
+            subproject_dir: str,
+            structure_dir: str,
+            file_name: str,
+            result_dir: str = Constants.file_names.RESULT_DATA_DIR,
+    ) -> Path:
 
-        path_to_result_dir: Path = cls.build_path_to_result_data_dir(path_to_script, result_dir)
+        path_to_result_dir: Path = cls.build_path_to_result_data_dir(
+            project_dir=project_dir,
+            subproject_dir=subproject_dir,
+            structure_dir=structure_dir,
+            result_dir=result_dir,
+        )
 
-        path_to_data_in_result_dir: Path = path_to_result_dir / structure_folder
-
-        # Create directory if it doesn't exist
-        path_to_data_in_result_dir.mkdir(parents=True, exist_ok=True)
-
-        return path_to_data_in_result_dir / file
+        return path_to_result_dir / file_name

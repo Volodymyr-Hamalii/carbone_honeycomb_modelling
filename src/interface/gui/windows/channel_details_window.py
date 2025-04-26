@@ -4,12 +4,21 @@ from .windows_template import WindowsTemplate
 
 
 class ChannelDetailsWindow(WindowsTemplate):
-    def __init__(self, view_model: VMShowInitData, structure_folder: str) -> None:
+    def __init__(
+            self,
+            view_model: VMShowInitData,
+            project_dir: str,
+            subproject_dir: str,
+            structure_dir: str,
+    ) -> None:
         super().__init__()
-        self.structure_folder: str = structure_folder
+        self.project_dir: str = project_dir
+        self.subproject_dir: str = subproject_dir
+        self.structure_dir: str = structure_dir
+
         self.view_model: VMShowInitData = view_model
         self.create_window(
-            title=f"Show channel parameters ({self.structure_folder})",
+            title=f"Show channel parameters ({self.structure_dir})",
         )
         self.create_ui()
 
@@ -50,7 +59,11 @@ class ChannelDetailsWindow(WindowsTemplate):
         )
 
     def get_channel_details(self) -> None:
-        self.view_model.get_channel_details(self.structure_folder)
+        self.view_model.get_channel_details(
+            project_dir=self.project_dir,
+            subproject_dir=self.subproject_dir,
+            structure_dir=self.structure_dir,
+        )
         self.show_plot_window()
 
     def update_to_show_coordinates(self) -> None:

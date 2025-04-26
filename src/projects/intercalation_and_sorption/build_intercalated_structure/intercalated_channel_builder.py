@@ -18,11 +18,11 @@ logger = Logger("IntercalatedChannelBuilder")
 
 class IntercalatedChannelBuilder:
     @staticmethod
-    def build_carbon_coordinates(structure_folder: str, file_name: str | None = None) -> Points:
+    def build_carbon_coordinates(structure_dir: str, file_name: str | None = None) -> Points:
         if file_name is None:
             file_name = Constants.file_names.INIT_DAT_FILE
 
-        carbon_points: np.ndarray = FileReader.read_init_data_file(structure_folder, file_name)
+        carbon_points: np.ndarray = FileReader.read_init_data_file(structure_dir, file_name)
 
         if len(carbon_points) == 0:
             raise ValueError(f"No carbon atoms found in {file_name} file.")

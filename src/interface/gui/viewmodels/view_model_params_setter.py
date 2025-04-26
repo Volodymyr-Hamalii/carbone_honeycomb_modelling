@@ -1,5 +1,5 @@
 from pathlib import Path
-from src.utils import Constants
+from src.utils import Constants, PathBuilder
 
 
 class VMParamsSetter:
@@ -26,7 +26,7 @@ class VMParamsSetter:
         self.to_show_channel_angles: bool = True
 
         # Files and paths
-        self.data_dir: Path = Constants.path.RESULT_DATA_PATH
+        self.data_dir: Path = Constants.path.PROJECT_DATA_PATH
         self.file_name: str = ""
         self.file_format: str = ""  # "xlsx", "dat", "pdb"
         self.available_formats: list[str] = ["xlsx", "dat", "pdb"]
@@ -110,13 +110,27 @@ class VMParamsSetter:
 
     ######### Files and paths #########
 
-    def set_data_dir(self, value: str) -> None:
-        if value == Constants.file_names.INIT_DATA_DIR:
-            self.data_dir: Path = Constants.path.INIT_DATA_PATH
-        elif value == Constants.file_names.RESULT_DATA_DIR:
-            self.data_dir: Path = Constants.path.RESULT_DATA_PATH
+    def set_data_dir(
+            self,
+            project_dir: str,
+            subproject_dir: str,
+            structure_dir: str,
+            structure_data_dir: str,
+    ) -> None:
+        if structure_data_dir == Constants.file_names.INIT_DATA_DIR:
+            self.data_dir: Path = PathBuilder.build_path_to_init_data_dir(
+                project_dir=project_dir,
+                subproject_dir=subproject_dir,
+                structure_dir=structure_dir,
+            )
+        elif structure_data_dir == Constants.file_names.RESULT_DATA_DIR:
+            self.data_dir: Path = PathBuilder.build_path_to_result_data_dir(
+                project_dir=project_dir,
+                subproject_dir=subproject_dir,
+                structure_dir=structure_dir,
+            )
         else:
-            raise ValueError(f"Invalid data directory: {value}")
+            raise ValueError(f"Invalid data directory: {structure_data_dir}")
 
     def set_file_name(self, value: str) -> None:
         self.file_name: str = value

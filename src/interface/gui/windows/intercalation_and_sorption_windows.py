@@ -30,15 +30,15 @@ logger = Logger("IntercalationAndSorptionWindow")
 
 
 class _IntercalationAndSorptionUtils:
-    def __init__(self, view_model: VMIntercalationAndSorption, structure_folder: str) -> None:
+    def __init__(self, view_model: VMIntercalationAndSorption, structure_dir: str) -> None:
         self.view_model: VMIntercalationAndSorption = view_model
-        self.structure_folder: str = structure_folder
+        self.structure_dir: str = structure_dir
 
         self.file_names: list[str] = []
         self._refresh_file_name_lists()
 
     def _refresh_file_name_lists(self) -> None:
-        path: Path = self.view_model.data_dir / self.structure_folder
+        path: Path = self.view_model.data_dir / self.structure_dir
         self.file_names: list[str] = FileReader.read_list_of_files(
             path, format=".xlsx", to_include_nested_files=True) or ["None"]
 
@@ -49,10 +49,16 @@ class _IntercalationAndSorptionUtils:
 
 
 class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
-    def __init__(self, view_model: VMIntercalationAndSorption, structure_folder: str) -> None:
-        super().__init__(view_model, structure_folder)
+    def __init__(
+            self,
+            view_model: VMIntercalationAndSorption,
+            structure_dir: str,
+            project_dir: str,
+            subproject_dir: str,
+    ) -> None:
+        super().__init__(view_model, structure_dir)
         self.create_window(
-            title=f"Update Al coordinates table ({self.structure_folder})",
+            title=f"Update Al coordinates table ({self.structure_dir})",
             description=(
                 "Allows to plot the selected structure, or update the Excel file with Al coordinates "
                 "(to remove the empty rows and rebuild the dist matrix)."
@@ -162,20 +168,20 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsTemp
 
     def plot_al_in_c_structure(self) -> None:
         try:
-            self.view_model.plot_al_in_c_structure(self.structure_folder)
+            self.view_model.plot_al_in_c_structure(self.structure_dir)
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
     def update_al_plane_coordinates_file(self) -> None:
         try:
-            path_to_file: Path = self.view_model.update_al_plane_coordinates_file(self.structure_folder)
+            path_to_file: Path = self.view_model.update_al_plane_coordinates_file(self.structure_dir)
             messagebox.showinfo("Success", f"Al plane coordinates file saved to {path_to_file}")
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
     def generate_al_plane_coordinates_file(self) -> None:
         try:
-            path_to_file: Path = self.view_model.generate_al_plane_coordinates_file(self.structure_folder)
+            path_to_file: Path = self.view_model.generate_al_plane_coordinates_file(self.structure_dir)
             self._refresh_file_name_lists()
             messagebox.showinfo("Success", f"Al plane coordinates file saved to {path_to_file}")
         except Exception as e:
@@ -226,10 +232,16 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsTemp
 
 
 class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
-    def __init__(self, view_model: VMIntercalationAndSorption, structure_folder: str) -> None:
-        super().__init__(view_model, structure_folder)
+    def __init__(
+            self,
+            view_model: VMIntercalationAndSorption,
+            structure_dir: str,
+            project_dir: str,
+            subproject_dir: str,
+    ) -> None:
+        super().__init__(view_model, structure_dir)
         self.create_window(
-            title=f"Translate Al to other planes ({self.structure_folder})",
+            title=f"Translate Al to other planes ({self.structure_dir})",
             description=(
                 "Read the selected file with coordinates for N planes "
                 "and translate Al atoms to other planes."
@@ -339,13 +351,13 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsTemp
 
     def translate_al_to_other_planes(self) -> None:
         try:
-            self.view_model.translate_al_to_other_planes(self.structure_folder)
+            self.view_model.translate_al_to_other_planes(self.structure_dir)
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
     def update_file(self) -> None:
         try:
-            path_to_file: Path = self.view_model.update_al_channel_coordinates(self.structure_folder)
+            path_to_file: Path = self.view_model.update_al_channel_coordinates(self.structure_dir)
             messagebox.showinfo("Success", f"Al coordinates table saved to {path_to_file}")
         except Exception as e:
             messagebox.showerror("Error", str(e))
@@ -399,10 +411,16 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsTemp
 
 
 class GetAlInChannelDetailsWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
-    def __init__(self, view_model: VMIntercalationAndSorption, structure_folder: str) -> None:
-        super().__init__(view_model, structure_folder)
+    def __init__(
+            self,
+            view_model: VMIntercalationAndSorption,
+            structure_dir: str,
+            project_dir: str,
+            subproject_dir: str,
+    ) -> None:
+        super().__init__(view_model, structure_dir)
         self.create_window(
-            title=f"Get intercalated CH channel details ({self.structure_folder})",
+            title=f"Get intercalated CH channel details ({self.structure_dir})",
             description=(
                 "Build a table with intercalated CH channel details (intercalated atoms coordinates, "
                 "distances to the plane, distances to the carbon atoms, distances to the other intercalated atoms)."
@@ -433,14 +451,14 @@ class GetAlInChannelDetailsWindow(_IntercalationAndSorptionUtils, WindowsTemplat
 
     def get_al_in_channel_details(self) -> None:
         try:
-            path_to_file: Path = self.view_model.save_al_in_channel_details(self.structure_folder)
+            path_to_file: Path = self.view_model.save_al_in_channel_details(self.structure_dir)
             messagebox.showinfo("Success", f"Al in channel details saved to {path_to_file}")
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
     def show_al_in_channel_details(self) -> None:
         try:
-            df: pd.DataFrame = self.view_model.get_al_in_channel_details(self.structure_folder)
+            df: pd.DataFrame = self.view_model.get_al_in_channel_details(self.structure_dir)
 
             # Create a new window
             new_window = ctk.CTkToplevel(self.window)
@@ -455,10 +473,16 @@ class GetAlInChannelDetailsWindow(_IntercalationAndSorptionUtils, WindowsTemplat
 
 
 class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
-    def __init__(self, view_model: VMIntercalationAndSorption, structure_folder: str) -> None:
-        super().__init__(view_model, structure_folder)
+    def __init__(
+            self,
+            view_model: VMIntercalationAndSorption,
+            structure_dir: str,
+            project_dir: str,
+            subproject_dir: str,
+    ) -> None:
+        super().__init__(view_model, structure_dir)
         self.create_window(
-            title=f"Translate Al to all channels ({self.structure_folder})",
+            title=f"Translate Al to all channels ({self.structure_dir})",
             description=(
                 "Translate Al atoms to all channels."
             ),
@@ -567,14 +591,14 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils, WindowsTemp
 
     def plot_al_in_c_structure(self) -> None:
         try:
-            self.view_model.translate_al_to_all_channels_plot(self.structure_folder)
+            self.view_model.translate_al_to_all_channels_plot(self.structure_dir)
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
     def translate_al_to_all_channels_generate_files(self) -> None:
         try:
             paths: tuple[Path, Path, Path] = self.view_model.translate_al_to_all_channels_generate_files(
-                self.structure_folder)
+                self.structure_dir)
             messagebox.showinfo("Success", f"Generated files:\n{paths[0].name}\n{paths[1].name}\n{paths[2].name}")
         except Exception as e:
             messagebox.showerror("Error", str(e))

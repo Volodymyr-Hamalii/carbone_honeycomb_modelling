@@ -1,5 +1,4 @@
-init_data/*
-result_data/*
+project_data/*
 RasMol
 
 .env

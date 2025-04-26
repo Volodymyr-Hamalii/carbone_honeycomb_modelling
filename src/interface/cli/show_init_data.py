@@ -25,10 +25,10 @@ logger = Logger("Actions")
 class AppActionsShowInitData:
 
     @staticmethod
-    def show_init_structure(structure_folder: str, to_set: bool) -> None:
-        """ Show 3D model of result_data/{structure_folder}/ljout-from-init-dat.pdb """
+    def show_init_structure(structure_dir: str, to_set: bool) -> None:
+        """ Show 3D model of result_data/{structure_dir}/ljout-from-init-dat.pdb """
 
-        path_to_init_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_folder)
+        path_to_init_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_dir)
         carbon_points: Points = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
 
         to_build_bonds: bool = Inputs.bool_input(
@@ -38,10 +38,10 @@ class AppActionsShowInitData:
             env_id="to_build_bonds",
         )
         StructureVisualizer.show_structure(
-            carbon_points.points, to_build_bonds=to_build_bonds, to_set_equal_scale=False, title=structure_folder)
+            carbon_points.points, to_build_bonds=to_build_bonds, to_set_equal_scale=False, title=structure_dir)
 
     @staticmethod
-    def show_init_al_structure(structure_folder: str, to_set: bool) -> None:
+    def show_init_al_structure(structure_dir: str, to_set: bool) -> None:
         """ Show 3D model of init_data/al.pdb """
 
         to_translate_al: bool = Inputs.bool_input(
@@ -54,8 +54,6 @@ class AppActionsShowInitData:
             available_values=AlLatticeType.get_available_types())
         al_lattice_type = AlLatticeType(al_lattice_type_str)
 
-        # structure_settings: None | StructureSettings = StructureSettingsManager.get_structure_settings(
-        #     structure_folder=structure_folder)
 
         if al_lattice_type.is_cell:
             al_file: str = Inputs.text_input(to_set, default_value=Constants.file_names.AL_FILE, text="Init AL file")
@@ -97,15 +95,15 @@ class AppActionsShowInitData:
             title="Aluminium")
 
     @staticmethod
-    def show_one_channel_structure(structure_folder: str, to_set: bool) -> None:
+    def show_one_channel_structure(structure_dir: str, to_set: bool) -> None:
         """
-        Build one channel model from result_data/{structure_folder}/ljout-from-init-dat.pdb atoms
-        based on result_data/{structure_folder}/structure_settings.json channel limits.
+        Build one channel model from result_data/{structure_dir}/ljout-from-init-dat.pdb atoms
+        based on result_data/{structure_dir}/structure_settings.json channel limits.
 
-        Write result to result_data/{structure_folder}/ljout-result-one-channel.pdb if it didn't exist.
+        Write result to result_data/{structure_dir}/ljout-result-one-channel.pdb if it didn't exist.
         """
 
-        path_to_init_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_folder)
+        path_to_init_pdb_file: Path = PathBuilder.build_path_to_result_data_file(structure_dir)
 
         coordinates_carbon: Points = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_init_pdb_file)
 
@@ -131,16 +129,16 @@ class AppActionsShowInitData:
             coordinates=carbon_channel.points,
             # coordinates=carbon_channel.planes[0].points,
             to_build_bonds=to_build_bonds,
-            title=structure_folder,
+            title=structure_dir,
             to_show_coordinates=to_show_coordinates,
             # show_coordinates=True,
             # num_of_min_distances=2,
         )
 
     @staticmethod
-    def get_channel_details(structure_folder: str, to_set: bool) -> None:
+    def get_channel_details(structure_dir: str, to_set: bool) -> None:
         """
-        Get details of the channel from result_data/{structure_folder}/structure_settings.json:
+        Get details of the channel from result_data/{structure_dir}/structure_settings.json:
         - distance from the channel centet to the planes and to the connection edges,
         - angles between the planes on the connection edges.
 
@@ -156,7 +154,7 @@ class AppActionsShowInitData:
 
         fontsize: int = 8
 
-        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_folder)
+        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_dir)
 
         center_2d: np.ndarray = carbon_channel.center[:2]
         planes: list[CarbonHoneycombPlane] = carbon_channel.planes
@@ -167,7 +165,7 @@ class AppActionsShowInitData:
 
         ax: Axes = StructureVisualizer.get_2d_plot(
             np.concatenate(planes_points_2d),
-            title=structure_folder,
+            title=structure_dir,
             visual_params=VisualizationParams.carbon,
         )
 

@@ -7,8 +7,8 @@ To build honeycomb models from .dat or .pdb files. Allows intercalation with oth
 1. Run
    pip install -r requirements.txt
 
-2. Create init_data/{structure}/ folder with AAARAS.PDB or ljout.dat files.
-   E.g. init_data/A1-7_h3/AAARAS.PDB, where structure=A1-7_h3.
+2. Create project_data/{project_dir}/{subproject_dir}/{structure}/ folder with AAARAS.PDB or ljout.dat files.
+   E.g. project_data/sorption/al/init_data/A1-7_h3/ljout.dat, where structure=A1-7_h3.
 
 3. Run
    python main.py

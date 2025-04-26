@@ -37,25 +37,24 @@ class _ConstantsSettings:
 
 
 class _ConstantsFilenames:
-    # file_names
+    # Dir names
+    PROJECT_DATA_DIR: str = "project_data"
     INIT_DATA_DIR: str = "init_data"
     RESULT_DATA_DIR: str = "result_data"
 
+    # File names
     INIT_DAT_FILE: str = "ljout.dat"
     INIT_PDB_FILE: str = "ljout-from-init-dat.pdb"
     PDB_FILE_ONE_CHANNEL: str = "ljout-from-init-dat-one-channel.pdb"
 
-    AL_PLANE_COORDINATES_XLSX_FILE: str = "al-plane-coordinates.xlsx"
-    AL_CHANNEL_COORDINATES_XLSX_FILE: str = "al-channel-coordinates.xlsx"
-    AL_FULL_CHANNEL_COORDINATES_XLSX_FILE: str = "al-full-channel-coordinates.xlsx"
-    AL_ALL_CHANNELS_COORDINATES_XLSX_FILE: str = "al-all-channels-coordinates.xlsx"
+    PLANE_COORDINATES_XLSX_FILE: str = "near-plane-coordinates.xlsx"
+    CHANNEL_COORDINATES_XLSX_FILE: str = "sorbed-channel-coordinates.xlsx"
+    FULL_CHANNEL_COORDINATES_XLSX_FILE: str = "intercalated-channel-coordinates.xlsx"
+    ALL_CHANNELS_COORDINATES_XLSX_FILE: str = "all-filled-channels-coordinates.xlsx"
+    CHANNEL_DETAILS_XLSX_FILE: str = "built-structure-details.xlsx"
+
     AL_ALL_CHANNELS_COORDINATES_DAT_FILE: str = "Al.dat"
     C_ALL_CHANNELS_COORDINATES_DAT_FILE: str = "C.dat"
-    AL_CHANNEL_DETAILS_XLSX_FILE: str = "built-al-structure-details.xlsx"
-
-    STRUCTURE_SETTINGS_FILE: str = "structure_settings.json"
-
-    AL_FILE: str = "al.pdb"
 
 
 class _ConstantsPath:
@@ -68,8 +67,10 @@ class _ConstantsPath:
         UTILS_DIR_PATH: Path = Path(__file__).resolve().parent
         ROOT_DIR_PATH: Path = UTILS_DIR_PATH.parent.parent
 
-    INIT_DATA_PATH: Path = ROOT_DIR_PATH / _ConstantsFilenames.INIT_DATA_DIR
-    RESULT_DATA_PATH: Path = ROOT_DIR_PATH / _ConstantsFilenames.RESULT_DATA_DIR
+    # INIT_DATA_PATH: Path = ROOT_DIR_PATH / _ConstantsFilenames.INIT_DATA_DIR
+    # RESULT_DATA_PATH: Path = ROOT_DIR_PATH / _ConstantsFilenames.RESULT_DATA_DIR
+
+    PROJECT_DATA_PATH: Path = ROOT_DIR_PATH / _ConstantsFilenames.PROJECT_DATA_DIR
 
 
 class _ConstantsLogger:
@@ -98,18 +99,33 @@ class _ConstantsMath:
 
 
 class _ConstantsAlParams:
-    # Aluminium
+    """ Aluminium params """
     LATTICE_PARAM: float = 4.049  # A
     DIST_BETWEEN_ATOMS: float = LATTICE_PARAM / sqrt(2)
 
     MIN_ALLOWED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.7
     MIN_RECOMENDED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.92
 
+    MIN_ALLOWED_DIST_TO_C: float = 2.15
+
+
+class _ConstantsArParams:
+    """ Argon params """
+    LATTICE_PARAM: float = 3.755  # A
+    DIST_BETWEEN_ATOMS: float = LATTICE_PARAM / sqrt(2)
+
+    MIN_ALLOWED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.7
+    MIN_RECOMENDED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.92
+
+    MIN_ALLOWED_DIST_TO_C: float = 2.0
+
 
 class _ConstantsPhys:
     al = _ConstantsAlParams
+    ar = _ConstantsArParams
 
-    MIN_ALLOWED_DIST_BETWEEN_AL_C: float = 2.15
+    # MIN_ALLOWED_DIST_BETWEEN_AL_C: float = 2.15  # >> al.MIN_ALLOWED_DIST_TO_C
+    # MIN_ALLOWED_DIST_BETWEEN_AR_C: float = 2.0
 
 
 class Constants:

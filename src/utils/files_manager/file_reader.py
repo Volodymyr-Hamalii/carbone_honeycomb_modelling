@@ -8,18 +8,18 @@ import MDAnalysis as mda
 
 from ..constants import Constants
 from ..logger import Logger
-from .file_manager import FileManager
+from .path_builder import PathBuilder
 
 
 logger = Logger("FileReader")
 
 
-class FileReader(FileManager):
+class FileReader:
     @staticmethod
     def read_list_of_dirs(
-            folder_path: Path | str = Constants.path.INIT_DATA_PATH,
+            folder_path: Path | str,
     ) -> list[str]:
-        """ Read a list of directories in the given folder path. By default uses 'init_data' folder. """
+        """ Read a list of directories in the given folder path. By default uses 'project_data' folder. """
         try:
             return sorted(
                 [
@@ -79,7 +79,7 @@ class FileReader(FileManager):
     @staticmethod
     def read_json_file(
             folder_path: Path | str,
-            file_name: str = Constants.file_names.STRUCTURE_SETTINGS_FILE,
+            file_name: str,
     ) -> Any:
         """
         Read JSON file (by default 'structure_settings.json').
@@ -98,14 +98,8 @@ class FileReader(FileManager):
     @classmethod
     def read_dat_file(
             cls,
-            structure_folder: str,
-            folder_path: Path | str | None = None,
-            file_name: str = Constants.file_names.INIT_DAT_FILE,
-            is_init_data_dir: bool = True,
+            path_to_file: Path,
     ) -> np.ndarray:
-
-        path_to_file: Path = cls._get_path_to_file(structure_folder, file_name, folder_path, is_init_data_dir)
-
         atom_data: list[list[float]] = []
 
         with Path(path_to_file).open("r") as dat_file:
@@ -123,16 +117,13 @@ class FileReader(FileManager):
 
     @staticmethod
     def read_pdb_file(
-            structure_folder: str,
-            folder_path: Path | str | None = None,
-            file_name: str = Constants.file_names.INIT_PDB_FILE,
-            is_init_data_dir: bool = True,
+            path_to_file: Path,
     ) -> np.ndarray:
         """
         Read a PDB file and return its atomic coordinates as a NumPy array.
 
         Parameters:
-        - structure_folder: str, the name of the structure folder.
+        - structure_dir: str, the name of the structure folder.
         - folder_path: Path | str | None, the base folder path. If None, uses default from PathBuilder.
         - file_name: str, the PDB file name to read.
         - is_init_data_dir: bool | None: to build path to the specific dir. If it's False - builds path to result data.
@@ -140,19 +131,8 @@ class FileReader(FileManager):
         Returns:
         - np.ndarray: A NumPy array containing the atomic coordinates from the PDB file.
         """
-        path_to_file: Path = FileManager._get_path_to_file(structure_folder, file_name, folder_path, is_init_data_dir)
-
-        # atom_data: list[list[float]] = []
 
         try:
-            # with path_to_file.open("r") as pdb_file:
-            #     for line in pdb_file:
-            #         if line.startswith(("ATOM", "HETATM")):
-            #             x: float = float(line[30:38].strip())
-            #             y: float = float(line[38:46].strip())
-            #             z: float = float(line[46:54].strip())
-            #             atom_data.append([x, y, z])
-
             # Load a structure from a file
             u = mda.Universe(path_to_file)
 
@@ -173,18 +153,15 @@ class FileReader(FileManager):
     @classmethod
     def read_excel_file(
             cls,
-            structure_folder: str,
-            file_name: str,
-            folder_path: Path | str | None = None,
+            path_to_file: Path,
             sheet_name: str | int = 0,
-            is_init_data_dir: bool = True,
             to_print_warning: bool = True,
     ) -> pd.DataFrame | None:
         """
         Read an Excel file.
 
         Parameters:
-        - structure_folder: str, the name of the structure folder.
+        - structure_dir: str, the name of the structure folder.
         - folder_path: Path | str | None, the base folder path. If None, uses default from PathBuilder.
         - file_name: str, the Excel file name to read.
         - sheet_name: str | int, the sheet name or index to read (default is the first sheet).
@@ -193,8 +170,6 @@ class FileReader(FileManager):
         Returns:
         - pd.DataFrame: A pandas DataFrame containing the data from the specified Excel file and sheet.
         """
-
-        path_to_file: Path = cls._get_path_to_file(structure_folder, file_name, folder_path, is_init_data_dir)
 
         # Check if the file exists
         if not path_to_file.exists():
@@ -217,15 +192,28 @@ class FileReader(FileManager):
             logger.error(f"Failed to read file {path_to_file}: {e}")
 
     @classmethod
-    def read_init_data_file(cls, structure_folder: str, file_name: str) -> np.ndarray:
+    def read_init_data_file(
+            cls,
+            project_dir: str,
+            subproject_dir: str,
+            structure_dir: str,
+            file_name: str,
+    ) -> np.ndarray:
+        path_to_file: Path = PathBuilder.build_path_to_init_data_file(
+            project_dir=project_dir,
+            subproject_dir=subproject_dir,
+            structure_dir=structure_dir,
+            file_name=file_name,
+        )
+
         file_format: str = file_name.split(".")[-1].lower()
 
         if file_format == "pdb":
-            return cls.read_pdb_file(structure_folder, file_name=file_name)
+            return cls.read_pdb_file(path_to_file)
         elif file_format == "dat":
-            return cls.read_dat_file(structure_folder, file_name=file_name)
+            return cls.read_dat_file(path_to_file)
         elif file_format == "xlsx":
-            carbon_points_df: pd.DataFrame | None = cls.read_excel_file(structure_folder, file_name=file_name)
+            carbon_points_df: pd.DataFrame | None = cls.read_excel_file(path_to_file)
             if carbon_points_df is None:
                 raise IOError(f"Failed to read file: {file_name}")
             return carbon_points_df.to_numpy()

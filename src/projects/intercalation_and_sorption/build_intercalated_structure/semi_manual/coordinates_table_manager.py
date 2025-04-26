@@ -18,17 +18,17 @@ class CoordinatesTableManager:
     @classmethod
     def update_plane_tbl_file(
             cls,
-            structure_folder: str,
+            structure_dir: str,
             carbon_channel: CarbonHoneycombChannel,
             number_of_planes: int,
     ) -> Path:
         al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(
-            structure_folder, carbon_channel, number_of_planes)
+            structure_dir, carbon_channel, number_of_planes)
         df: pd.DataFrame = cls._build_updated_df(al_plane_coordinates)
 
         path_to_file: Path | None = FileWriter.write_excel_file(
             df=df,
-            structure_folder=structure_folder,
+            structure_dir=structure_dir,
             sheet_name="Al atoms for the plane",
             file_name=Constants.file_names.AL_PLANE_COORDINATES_XLSX_FILE,
             is_init_data_dir=False,
@@ -40,23 +40,23 @@ class CoordinatesTableManager:
         return path_to_file
 
     @classmethod
-    def update_full_channel_tbl_file(cls, structure_folder: str,) -> Path:
+    def update_full_channel_tbl_file(cls, structure_dir: str,) -> Path:
         al_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
-            structure_folder=structure_folder,
+            structure_dir=structure_dir,
             file_name=Constants.file_names.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
             is_init_data_dir=False,
         )
 
         if al_channel_coordinates_df is None:
             raise FileNotFoundError(
-                f"Excel file with Al atoms for the full channel not found in {structure_folder}.")
+                f"Excel file with Al atoms for the full channel not found in {structure_dir}.")
 
         al_channel_coordinates: Points = AtomsParser.parse_al_coordinates_df(al_channel_coordinates_df)
         df: pd.DataFrame = cls._build_updated_df(al_channel_coordinates)
 
         path_to_file: Path | None = FileWriter.write_excel_file(
             df=df,
-            structure_folder=structure_folder,
+            structure_dir=structure_dir,
             sheet_name="Al atoms for the full channel",
             file_name=Constants.file_names.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
             is_init_data_dir=False,

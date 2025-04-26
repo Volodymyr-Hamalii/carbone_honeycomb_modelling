@@ -19,14 +19,14 @@ class AppGui(ctk.CTk, WindowsTemplate):
 
         self.list_of_projects: list[str] = []
         self.list_of_subprojects: list[str] = []
-        self.list_of_structure_folders: list[str] = []
+        self.list_of_structure_dirs: list[str] = []
 
         self.set_list_of_projects()
         self.project_dir: str = self.list_of_projects[0] if self.list_of_projects else "None"
         self.set_list_of_subprojects()
         self.subproject_dir: str = self.list_of_subprojects[0] if self.list_of_subprojects else "None"
-        self.set_list_of_structure_folders()
-        self.structure_folder: str = self.list_of_structure_folders[0] if self.list_of_structure_folders else "None"
+        self.set_list_of_structure_dirs()
+        self.structure_dir: str = self.list_of_structure_dirs[0] if self.list_of_structure_dirs else "None"
 
         # Create GUI components
         self.projects_dropdown: DropdownList = self.pack_dropdown_list(
@@ -34,6 +34,7 @@ class AppGui(ctk.CTk, WindowsTemplate):
             options=self.list_of_projects,
             command=self.set_project_dir,
             title="Select project",
+            is_disabled=True,  # TEMP untill there is an only one project
         )
 
         self.subprojects_dropdown: DropdownList = self.pack_dropdown_list(
@@ -43,17 +44,17 @@ class AppGui(ctk.CTk, WindowsTemplate):
             title="Select subproject",
         )
 
-        self.structure_folders_dropdown: DropdownList = self.pack_dropdown_list(
+        self.structure_dirs_dropdown: DropdownList = self.pack_dropdown_list(
             self,
-            options=self.list_of_structure_folders,
-            command=self.set_structure_folder,
+            options=self.list_of_structure_dirs,
+            command=self.set_structure_dir,
             title="Select structure folder",
         )
 
         # Set project, subproject and structure folder
         self.set_project_dir()
         self.set_subproject_dir()
-        self.set_structure_folder()
+        self.set_structure_dir()
 
         # Initialize ViewModels
         self.view_model_show_init_data = VMShowInitData()
@@ -75,10 +76,13 @@ class AppGui(ctk.CTk, WindowsTemplate):
         subproject_dirs: list[str] = FileReader.read_list_of_dirs(subprojects_dir_path)
         self.list_of_subprojects: list[str] = subproject_dirs
 
-    def set_list_of_structure_folders(self) -> None:
-        structure_folders_dir_path: Path = Constants.path.PROJECT_DATA_PATH / self.project_dir / self.subproject_dir
-        structure_folders: list[str] = FileReader.read_list_of_dirs(structure_folders_dir_path)
-        self.list_of_structure_folders: list[str] = structure_folders
+    def set_list_of_structure_dirs(self) -> None:
+        data_path: Path = Constants.path.PROJECT_DATA_PATH
+        init_data_dir: str = Constants.file_names.INIT_DATA_DIR
+
+        structure_dirs_dir_path: Path = data_path / self.project_dir / self.subproject_dir / init_data_dir
+        structure_dirs: list[str] = FileReader.read_list_of_dirs(structure_dirs_dir_path)
+        self.list_of_structure_dirs: list[str] = structure_dirs
 
     def set_project_dir(self, project_dir: str = "") -> None:
         if project_dir:
@@ -118,26 +122,29 @@ class AppGui(ctk.CTk, WindowsTemplate):
                 self.subproject_dir: str = self.list_of_subprojects[0]
 
         # Refresh dropdown list
-        self.set_list_of_structure_folders()
-        self.set_structure_folder()
-        self.structure_folders_dropdown.set_options(self.list_of_structure_folders, self.structure_folder)
+        self.set_list_of_structure_dirs()
+        self.set_structure_dir()
+        self.structure_dirs_dropdown.set_options(self.list_of_structure_dirs, self.structure_dir)
 
-    def set_structure_folder(self, structure_folder: str = "") -> None:
-        if structure_folder:
-            self.structure_folder: str = structure_folder
+    def set_structure_dir(self, structure_dir: str = "") -> None:
+        if structure_dir:
+            self.structure_dir: str = structure_dir
 
         else:
-            structure_folders_dir_path: Path = Constants.path.PROJECT_DATA_PATH / self.project_dir / self.subproject_dir
-            structure_folders: list[str] = FileReader.read_list_of_dirs(structure_folders_dir_path)
+            data_path: Path = Constants.path.PROJECT_DATA_PATH
+            init_data_dir: str = Constants.file_names.INIT_DATA_DIR
 
-            if not structure_folders:
+            structure_dirs_dir_path: Path = data_path / self.project_dir / self.subproject_dir / init_data_dir
+            structure_dirs: list[str] = FileReader.read_list_of_dirs(structure_dirs_dir_path)
+
+            if not structure_dirs:
                 messagebox.showerror(
                     "Error",
-                    "Structure folders not found. Please, put 'structure_folders' folder with structure folders data to the root directory:\n"
-                    f"{structure_folders_dir_path}.")
-                self.structure_folder: str = "None"
+                    "Structure folders not found. Please, put 'structure_dirs' folder with structure folders data to the root directory:\n"
+                    f"{structure_dirs_dir_path}.")
+                self.structure_dir: str = "None"
             else:
-                self.structure_folder: str = structure_folders[0]
+                self.structure_dir: str = structure_dirs[0]
 
     ######### Init data info #########
 
@@ -169,13 +176,29 @@ class AppGui(ctk.CTk, WindowsTemplate):
         self.show_channel_parameters_btn.pack(pady=10, padx=10)
 
     def open_show_init_structure_window(self) -> None:
-        InitDataWindow(self.view_model_show_init_data, self.structure_folder)
+        InitDataWindow(
+            view_model=self.view_model_show_init_data,
+            project_dir=self.project_dir,
+            subproject_dir=self.subproject_dir,
+            structure_dir=self.structure_dir,
+        )
 
     def open_show_one_channel_structure_window(self) -> None:
-        InitDataWindow(self.view_model_show_init_data, self.structure_folder, is_one_channel=True)
+        InitDataWindow(
+            view_model=self.view_model_show_init_data,
+            project_dir=self.project_dir,
+            subproject_dir=self.subproject_dir,
+            structure_dir=self.structure_dir,
+            is_one_channel=True,
+        )
 
     def open_get_channel_details_window(self) -> None:
-        ChannelDetailsWindow(self.view_model_show_init_data, self.structure_folder)
+        ChannelDetailsWindow(
+            view_model=self.view_model_show_init_data,
+            project_dir=self.project_dir,
+            subproject_dir=self.subproject_dir,
+            structure_dir=self.structure_dir,
+        )
 
     ######### Data operations #########
 
@@ -195,7 +218,12 @@ class AppGui(ctk.CTk, WindowsTemplate):
         self.show_data_converter_btn.pack(pady=10, padx=10)
 
     def open_data_converter_window(self) -> None:
-        DataConverterWindow(self.view_model_data_operations, self.structure_folder)
+        DataConverterWindow(
+            view_model=self.view_model_data_operations,
+            project_dir=self.project_dir,
+            subproject_dir=self.subproject_dir,
+            structure_dir=self.structure_dir,
+        )
 
     ######### Intercalation and sorption #########
 
@@ -234,13 +262,33 @@ class AppGui(ctk.CTk, WindowsTemplate):
         self.show_intercalation_and_sorption_btn.pack(pady=10, padx=10)
 
     def open_update_al_coordinates_table_window(self) -> None:
-        UpdateAlCoordinatesTableWindow(self.view_model_intercalation_and_sorption, self.structure_folder)
+        UpdateAlCoordinatesTableWindow(
+            view_model=self.view_model_intercalation_and_sorption,
+            project_dir=self.project_dir,
+            subproject_dir=self.subproject_dir,
+            structure_dir=self.structure_dir,
+        )
 
     def open_translate_al_to_other_planes_window(self) -> None:
-        TranslateAlToOtherPlanesWindow(self.view_model_intercalation_and_sorption, self.structure_folder)
+        TranslateAlToOtherPlanesWindow(
+            view_model=self.view_model_intercalation_and_sorption,
+            project_dir=self.project_dir,
+            subproject_dir=self.subproject_dir,
+            structure_dir=self.structure_dir,
+        )
 
     def open_translate_al_to_all_channels_window(self) -> None:
-        TranslateAlToAllChannelsWindow(self.view_model_intercalation_and_sorption, self.structure_folder)
+        TranslateAlToAllChannelsWindow(
+            view_model=self.view_model_intercalation_and_sorption,
+            project_dir=self.project_dir,
+            subproject_dir=self.subproject_dir,
+            structure_dir=self.structure_dir,
+        )
 
     def open_get_al_in_channel_details_window(self) -> None:
-        GetAlInChannelDetailsWindow(self.view_model_intercalation_and_sorption, self.structure_folder)
+        GetAlInChannelDetailsWindow(
+            view_model=self.view_model_intercalation_and_sorption,
+            project_dir=self.project_dir,
+            subproject_dir=self.subproject_dir,
+            structure_dir=self.structure_dir,
+        )

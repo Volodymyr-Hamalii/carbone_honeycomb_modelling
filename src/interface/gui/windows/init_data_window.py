@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from src.utils import Constants, FileReader
+from src.utils import Constants, FileReader, PathBuilder
 from ..viewmodels import VMShowInitData
 from ..components import (
     Button,
@@ -13,21 +13,35 @@ from .windows_template import WindowsTemplate
 
 
 class InitDataWindow(WindowsTemplate):
-    def __init__(self, view_model: VMShowInitData, structure_folder: str, is_one_channel: bool = False) -> None:
+    def __init__(
+            self,
+            view_model: VMShowInitData,
+            project_dir: str,
+            subproject_dir: str,
+            structure_dir: str,
+            is_one_channel: bool = False,
+    ) -> None:
         super().__init__()
-        self.view_model: VMShowInitData = view_model
-        self.view_model.set_data_dir(Constants.file_names.INIT_DATA_DIR)
-
-        self.structure_folder: str = structure_folder
+        self.project_dir: str = project_dir
+        self.subproject_dir: str = subproject_dir
+        self.structure_dir: str = structure_dir
         self.is_one_channel: bool = is_one_channel
+
+        self.view_model: VMShowInitData = view_model
+        self.view_model.set_data_dir(
+            project_dir=self.project_dir,
+            subproject_dir=self.subproject_dir,
+            structure_dir=self.structure_dir,
+            structure_data_dir=Constants.file_names.INIT_DATA_DIR,
+        )
 
         self.file_names: list[str] = []
         self._refresh_file_name_lists()
 
         self.create_window(
-            title=f"Show one channel structure ({self.structure_folder})"
+            title=f"Show one channel structure ({self.structure_dir})"
             if self.is_one_channel
-            else f"Show init full CH structure ({self.structure_folder}) ",
+            else f"Show init full CH structure ({self.structure_dir}) ",
             # description=(
             #     "Write an Excel file with Al atoms in channel details (Al atoms coordinates, "
             #     "Al atoms indexes, Al atoms distances from the C atoms, etc.)"
@@ -36,7 +50,12 @@ class InitDataWindow(WindowsTemplate):
         self.create_ui()
 
     def _refresh_file_name_lists(self) -> None:
-        path: Path = self.view_model.data_dir / self.structure_folder
+        path: Path = PathBuilder.build_path_to_init_data_file(
+            project_dir=self.project_dir,
+            subproject_dir=self.subproject_dir,
+            structure_dir=self.structure_dir,
+            file_name=self.view_model.file_name,
+        )
         self.file_names: list[str] = FileReader.read_list_of_files(path, to_include_nested_files=True) or ["None"]
         if (not self.view_model.file_name) or (
                 self.view_model.file_name == "None") or (
@@ -116,10 +135,17 @@ class InitDataWindow(WindowsTemplate):
 
     def show_structure(self) -> None:
         if self.is_one_channel:
-            self.view_model.show_one_channel_structure(self.structure_folder)
+            self.view_model.show_one_channel_structure(
+                project_dir=self.project_dir,
+                subproject_dir=self.subproject_dir,
+                structure_dir=self.structure_dir,
+            )
         else:
-            self.view_model.show_init_structure(self.structure_folder)
-        # self.show_plot_window()
+            self.view_model.show_init_structure(
+                project_dir=self.project_dir,
+                subproject_dir=self.subproject_dir,
+                structure_dir=self.structure_dir,
+            )
 
     def update_to_build_bonds(self) -> None:
         value = bool(self.to_build_bonds_checkbox.get())
@@ -160,5 +186,5 @@ class InitDataWindow(WindowsTemplate):
         self.view_model.set_z_max(value_max)
 
     # def show_plot_window(self) -> None:
-    #     plot_window = PlotWindow(self.input_window, title=self.structure_folder)
+    #     plot_window = PlotWindow(self.input_window, title=self.structure_dir)
     #     plot_window.destroy()
