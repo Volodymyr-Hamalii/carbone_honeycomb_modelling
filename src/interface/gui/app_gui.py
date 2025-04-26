@@ -2,59 +2,142 @@ from pathlib import Path
 from tkinter import messagebox
 import customtkinter as ctk
 
-from src.utils import Constants, FileReader
+from src.interface.gui.components.dropdown_list import DropdownList
+from src.utils import Constants, FileReader, PathBuilder
 
 from .components import *
 from .viewmodels import *
 from .windows import *
 
 
-class AppGui(ctk.CTk):
+class AppGui(ctk.CTk, WindowsTemplate):
     def __init__(self):
         super().__init__()
         self.title("Carbon Honeycomb Manager")
-
-        # self.geometry("400x700")
         self.pack_propagate(True)
         self.grid_propagate(True)
 
-        folder_path: Path = Constants.path.INIT_DATA_PATH
-        structure_folders: list[str] = FileReader.read_list_of_dirs()
+        self.list_of_projects: list[str] = []
+        self.list_of_subprojects: list[str] = []
+        self.list_of_structure_folders: list[str] = []
 
-        if not structure_folders:
-            messagebox.showerror(
-                "Error",
-                "Data folders not found. Please, put 'init_data' folder with CH channels data in the root directory:\n"
-                f"{folder_path}."
-            )
-            self.structure_folder: str = "None"
-        else:
-            self.structure_folder: str = structure_folders[0]
+        self.set_list_of_projects()
+        self.project_dir: str = self.list_of_projects[0] if self.list_of_projects else "None"
+        self.set_list_of_subprojects()
+        self.subproject_dir: str = self.list_of_subprojects[0] if self.list_of_subprojects else "None"
+        self.set_list_of_structure_folders()
+        self.structure_folder: str = self.list_of_structure_folders[0] if self.list_of_structure_folders else "None"
+
+        # Create GUI components
+        self.projects_dropdown: DropdownList = self.pack_dropdown_list(
+            self,
+            options=self.list_of_projects,
+            command=self.set_project_dir,
+            title="Select project",
+        )
+
+        self.subprojects_dropdown: DropdownList = self.pack_dropdown_list(
+            self,
+            options=self.list_of_subprojects,
+            command=self.set_subproject_dir,
+            title="Select subproject",
+        )
+
+        self.structure_folders_dropdown: DropdownList = self.pack_dropdown_list(
+            self,
+            options=self.list_of_structure_folders,
+            command=self.set_structure_folder,
+            title="Select structure folder",
+        )
+
+        # Set project, subproject and structure folder
+        self.set_project_dir()
+        self.set_subproject_dir()
+        self.set_structure_folder()
 
         # Initialize ViewModels
         self.view_model_show_init_data = VMShowInitData()
-        self.view_model_data_operations = VMDataConverter()
-        self.view_model_intercalation_and_sorption = VMIntercalationAndSorption()
-
-        # Create GUI components
-        self.create_widgets(structure_folders)
-
-    def create_widgets(self, structure_folders: list[str]) -> None:
-        # Create a dropdown for structure folders
-        self.structure_folder_dropdown = DropdownList(
-            self,
-            options=structure_folders,
-            command=self.set_structure_folder,
-            title="Select structure (from 'init_data' folder)",
-        )
-        self.structure_folder_dropdown.pack(pady=10, padx=10)
-
         self._create_init_data_info_frame()
+
+        self.view_model_data_operations = VMDataConverter()
         self._create_data_operations_frame()
+
+        self.view_model_intercalation_and_sorption = VMIntercalationAndSorption()
         self._create_intercalation_and_sorption_frame()
 
-    def set_structure_folder(self, value: str) -> None:
-        self.structure_folder: str = value
+    def set_list_of_projects(self) -> None:
+        projects_dir_path: Path = Constants.path.PROJECT_DATA_PATH
+        projects_dirs: list[str] = FileReader.read_list_of_dirs(projects_dir_path)
+        self.list_of_projects: list[str] = projects_dirs
+
+    def set_list_of_subprojects(self) -> None:
+        subprojects_dir_path: Path = Constants.path.PROJECT_DATA_PATH / self.project_dir
+        subproject_dirs: list[str] = FileReader.read_list_of_dirs(subprojects_dir_path)
+        self.list_of_subprojects: list[str] = subproject_dirs
+
+    def set_list_of_structure_folders(self) -> None:
+        structure_folders_dir_path: Path = Constants.path.PROJECT_DATA_PATH / self.project_dir / self.subproject_dir
+        structure_folders: list[str] = FileReader.read_list_of_dirs(structure_folders_dir_path)
+        self.list_of_structure_folders: list[str] = structure_folders
+
+    def set_project_dir(self, project_dir: str = "") -> None:
+        if project_dir:
+            self.project_dir: str = project_dir
+
+        else:
+            projects_dir_path: Path = Constants.path.PROJECT_DATA_PATH
+            projects_dirs: list[str] = FileReader.read_list_of_dirs(projects_dir_path)
+
+            if not projects_dirs:
+                messagebox.showerror(
+                    "Error",
+                    "Projects data folders not found. Please, put 'project_data' folder with projects data to the root directory:\n"
+                    f"{projects_dir_path}."
+                )
+                self.project_dir: str = "None"
+            else:
+                self.project_dir: str = projects_dirs[0]
+
+        # Refresh dropdown list
+        self.set_list_of_subprojects()
+        self.set_subproject_dir()
+        self.subprojects_dropdown.set_options(self.list_of_subprojects, self.subproject_dir)
+
+    def set_subproject_dir(self, subproject_dir: str = "") -> None:
+        if subproject_dir:
+            self.subproject_dir: str = subproject_dir
+
+        else:
+            if not self.list_of_subprojects:
+                messagebox.showerror(
+                    "Error",
+                    "Subprojects data folders not found."
+                )
+                self.subproject_dir: str = "None"
+            else:
+                self.subproject_dir: str = self.list_of_subprojects[0]
+
+        # Refresh dropdown list
+        self.set_list_of_structure_folders()
+        self.set_structure_folder()
+        self.structure_folders_dropdown.set_options(self.list_of_structure_folders, self.structure_folder)
+
+    def set_structure_folder(self, structure_folder: str = "") -> None:
+        if structure_folder:
+            self.structure_folder: str = structure_folder
+
+        else:
+            structure_folders_dir_path: Path = Constants.path.PROJECT_DATA_PATH / self.project_dir / self.subproject_dir
+            structure_folders: list[str] = FileReader.read_list_of_dirs(structure_folders_dir_path)
+
+            if not structure_folders:
+                messagebox.showerror(
+                    "Error",
+                    "Structure folders not found. Please, put 'structure_folders' folder with structure folders data to the root directory:\n"
+                    f"{structure_folders_dir_path}.")
+                self.structure_folder: str = "None"
+            else:
+                self.structure_folder: str = structure_folders[0]
 
     ######### Init data info #########
 

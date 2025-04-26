@@ -31,7 +31,7 @@ class WindowsTemplate:
 
     def pack_input_field(
             self,
-            parent: ctk.CTkToplevel | ctk.CTkFrame,
+            parent: Any,
             text: str,
             command: Callable,
             default_value: Any,
@@ -49,7 +49,7 @@ class WindowsTemplate:
 
     def pack_input_field_coord_limits(
             self,
-            parent: ctk.CTkToplevel | ctk.CTkFrame,
+            parent: Any,
             text: str,
             command: Callable,
             default_min: float,
@@ -69,7 +69,7 @@ class WindowsTemplate:
 
     def pack_check_box(
             self,
-            parent: ctk.CTkToplevel | ctk.CTkFrame,
+            parent: Any,
             text: str,
             command: Callable,
             default: bool,
@@ -87,7 +87,7 @@ class WindowsTemplate:
 
     def pack_dropdown_list(
             self,
-            parent: ctk.CTkToplevel | ctk.CTkFrame,
+            parent: Any,
             command: Callable,
             options: list[str],
             title: str = "",
@@ -107,7 +107,7 @@ class WindowsTemplate:
 
     def pack_button(
             self,
-            parent: ctk.CTkToplevel | ctk.CTkFrame,
+            parent: Any,
             text: str,
             command: Callable,
             pady: int | tuple[int, int] = 10,
