@@ -136,6 +136,9 @@ class Table(ctk.CTkFrame):
 
         # Create the table cells
         for i, (index, row) in enumerate(data.iterrows()):
+            # Determine the background color for the row
+            row_bg_color: str = "white" if i % 2 == 0 else "#f0f0f0"  # Very light gray for alternate rows
+
             # Add index cell
             index_frame = ctk.CTkFrame(table_frame, bg_color="black")
             index_frame.grid(row=i + data.columns.nlevels, column=0, sticky="nsew", padx=1, pady=1)
@@ -163,7 +166,7 @@ class Table(ctk.CTkFrame):
                     height=1,
                     width=col_widths[j],
                     font=("Arial", 9),  # Reduced font size for cells
-                    bg="white",  # Background color for cells
+                    bg=row_bg_color,  # Alternate background color
                     bd=0,  # No border
                     highlightthickness=0,  # No highlight border
                     wrap="none"  # No text wrapping
