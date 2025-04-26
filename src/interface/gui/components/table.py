@@ -18,7 +18,7 @@ class Table(ctk.CTkFrame):
 
         # Create a label for the title using grid
         title_label = ctk.CTkLabel(self, text=title, bg_color="white")
-        title_label.grid(row=0, column=0, columnspan=len(data.columns), sticky="ew")
+        title_label.grid(row=0, column=0, columnspan=len(data.columns) + 1, sticky="ew")
 
         # Create a canvas to hold the table and scrollbars
         canvas = ctk.CTkCanvas(self, bg="white")
@@ -40,24 +40,25 @@ class Table(ctk.CTkFrame):
         col_widths = []
         for col in data.columns:
             if isinstance(col, tuple):
-                # Calculate the maximum width for each level of the MultiIndex
-                max_content_width: int = max(
+                max_content_width = max(
                     max(data[col].astype(str).apply(len).max() for col in data.columns),
                     max(len(str(subcol)) for subcol in col)
                 )
             else:
-                # Calculate the maximum width for a single-level column
                 max_content_width = max(data[col].astype(str).apply(len).max(), len(str(col)))
 
             col_widths.append(max_content_width + 2)  # Add small padding
+
+        # Add index width
+        index_width = max(data.index.map(lambda x: len(str(x))).max(), len("Index")) + 2
 
         # Handle MultiIndex columns
         if isinstance(data.columns, pd.MultiIndex):
             # Create headers for each level of the MultiIndex
             for level in range(data.columns.nlevels):
-                col_start: int = 0
+                col_start = 0
                 while col_start < len(data.columns):
-                    col_end: int = col_start
+                    col_end = col_start
                     # Find the range of columns with the same top-level header
                     while (col_end + 1 < len(data.columns) and
                            data.columns[col_start][0] == data.columns[col_end + 1][0]):
@@ -67,13 +68,8 @@ class Table(ctk.CTkFrame):
                     if level == 0:
                         header_frame = ctk.CTkFrame(table_frame, bg_color="black")
                         header_frame.grid(
-                            row=level,
-                            column=col_start + 1,
-                            columnspan=(col_end - col_start + 1),
-                            sticky="nsew",
-                            padx=1,
-                            pady=1,
-                        )
+                            row=level, column=col_start + 1, columnspan=(col_end - col_start + 1),
+                            sticky="nsew", padx=1, pady=1)
                         header = tk.Text(
                             header_frame,
                             height=1,
@@ -93,7 +89,7 @@ class Table(ctk.CTkFrame):
                     # Create headers for the second level
                     for col in range(col_start, col_end + 1):
                         header_frame = ctk.CTkFrame(table_frame, bg_color="black")
-                        header_frame.grid(row=level + 1, column=col, sticky="nsew", padx=1, pady=1)
+                        header_frame.grid(row=level + 1, column=col + 1, sticky="nsew", padx=1, pady=1)
                         header = tk.Text(
                             header_frame,
                             height=1,
@@ -110,13 +106,12 @@ class Table(ctk.CTkFrame):
                         header.config(state="disabled")  # Make the text read-only
                         header.pack(fill="both", expand=True)
 
-                    col_start: int = col_end + 1
-
+                    col_start = col_end + 1
         else:
             # Create a single row of headers
             for i, column in enumerate(data.columns):
                 header_frame = ctk.CTkFrame(table_frame, bg_color="black")
-                header_frame.grid(row=0, column=i, sticky="nsew", padx=1, pady=1)
+                header_frame.grid(row=0, column=i + 1, sticky="nsew", padx=1, pady=1)
                 header = tk.Text(
                     header_frame,
                     height=1,
@@ -132,25 +127,6 @@ class Table(ctk.CTkFrame):
                 header.tag_add("center", "1.0", "end")
                 header.config(state="disabled")  # Make the text read-only
                 header.pack(fill="both", expand=True)
-
-        # Add index header
-        index_header_frame = ctk.CTkFrame(table_frame, bg_color="black")
-        index_header_frame.grid(row=0, column=0, sticky="nsew", padx=1, pady=1)
-        index_header = tk.Text(
-            index_header_frame,
-            height=1,
-            width=index_width,
-            font=("Arial", 10, "bold"),  # Bold font for headers
-            bg="lightgray",  # Background color for headers
-            bd=0,  # No border
-            highlightthickness=0,  # No highlight border
-            wrap="none"  # No text wrapping
-        )
-        index_header.insert("1.0", "Index")
-        index_header.tag_configure("center", justify='center')
-        index_header.tag_add("center", "1.0", "end")
-        index_header.config(state="disabled")  # Make the text read-only
-        index_header.pack(fill="both", expand=True)
 
         # Create the table cells
         for i, (index, row) in enumerate(data.iterrows()):
@@ -175,13 +151,7 @@ class Table(ctk.CTkFrame):
 
             for j, value in enumerate(row):
                 cell_frame = ctk.CTkFrame(table_frame, bg_color="black")
-                cell_frame.grid(
-                    row=i + data.columns.nlevels,
-                    column=j + 1,
-                    sticky="nsew",
-                    padx=1,
-                    pady=1,
-                )
+                cell_frame.grid(row=i + data.columns.nlevels, column=j + 1, sticky="nsew", padx=1, pady=1)
                 cell = tk.Text(
                     cell_frame,
                     height=1,
