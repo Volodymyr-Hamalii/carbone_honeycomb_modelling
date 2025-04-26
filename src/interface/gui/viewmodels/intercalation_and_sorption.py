@@ -256,7 +256,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
         # Prepare data for DataFrame
         data: list[dict] = []
 
-        for index, al_coordinate in enumerate(al_coordinates.points):
+        for al_coordinate in al_coordinates.points:
             min_dist_to_plane: float = float("inf")
             min_dist_to_carbon: float = np.min(DistanceMeasure.calculate_min_distances(
                 np.array([al_coordinate]), carbon_channel.points))
@@ -274,7 +274,6 @@ class VMIntercalationAndSorption(VMParamsSetter):
 
             # Collect data for each Al coordinate
             data.append({
-                # ("Al_atom", "index"): index,
                 ("Al_atom", "X"): np.round(al_coordinate[0], 2),
                 ("Al_atom", "Y"): np.round(al_coordinate[1], 2),
                 ("Al_atom", "Z"): np.round(al_coordinate[2], 2),
