@@ -209,7 +209,7 @@ class UpdateInterCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsT
                 subproject_dir=self.subproject_dir,
                 structure_dir=self.structure_dir,
             )
-            messagebox.showinfo("Success", f"Intercalated atoms plane coordinates file saved to {path_to_file}")
+            messagebox.showinfo("Success", f"Intercalated atoms plane coordinates file saved to\n{path_to_file}")
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
@@ -221,7 +221,7 @@ class UpdateInterCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsT
                 structure_dir=self.structure_dir,
             )
             self._refresh_file_name_lists(dropdown_list=self.file_names_dropdown)
-            messagebox.showinfo("Success", f"Intercalated atoms plane coordinates file saved to {path_to_file}")
+            messagebox.showinfo("Success", f"Intercalated atoms plane coordinates file saved to\n{path_to_file}")
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
@@ -408,7 +408,7 @@ class TranslateInterToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsT
                 structure_dir=self.structure_dir,
             )
             self._refresh_file_name_lists(dropdown_list=self.file_names_dropdown)
-            messagebox.showinfo("Success", f"Intercalated atoms coordinates table saved to {path_to_file}")
+            messagebox.showinfo("Success", f"Intercalated atoms coordinates table saved to\n{path_to_file}")
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
@@ -700,7 +700,7 @@ class GetInterChcDetailsTblWindow(_IntercalationAndSorptionUtils, WindowsTemplat
                 subproject_dir=self.subproject_dir,
                 structure_dir=self.structure_dir,
             )
-            messagebox.showinfo("Success", f"Intercalated atoms in channel details saved to {path_to_file}")
+            messagebox.showinfo("Success", f"Intercalated atoms in channel details saved to\n{path_to_file}")
         except Exception as e:
             messagebox.showerror("Error", str(e))
 

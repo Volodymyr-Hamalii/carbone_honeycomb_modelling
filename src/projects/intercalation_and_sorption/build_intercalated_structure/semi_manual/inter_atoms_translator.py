@@ -152,7 +152,7 @@ class InterAtomsTranslator:
                 if min_dist * 0.98 < min_allowed_dist:
                     min_allowed_dist = min_dist
                     logger.warning(
-                        "Min allowed distance betweenintercalated atomsand C atoms "
+                        "Min allowed distance betweenintercalated atoms and C atoms "
                         f"is less than {atom_params.DIST_BETWEEN_ATOMS:.2f}: {min_allowed_dist:.2f}"
                     )
 
@@ -225,7 +225,7 @@ class InterAtomsTranslator:
         1) move inter_atoms from inter_atoms center to the center of the inter_atoms_plane,
         2) move inter_atoms from 1) step point to target_plane center,
         3) move inter_atoms from 2) step point in the direction to the channel_center on the distance,
-        that equals length of the vector from 1) step (to keep the same distance betweenintercalated atomsand plane).
+        that equals length of the vector from 1) step (to keep the same distance betweenintercalated atoms and plane).
         """
 
         # Step 1: Move intercalated atoms to `inter_atoms_plane` center

@@ -107,7 +107,7 @@ class DataConverterWindow(WindowsTemplate):
                 file_name=self.view_model.file_name,
                 target_format=self.view_model.file_format,
             )
-            messagebox.showinfo("Success", f"File converted successfully and saved to {converted_file_path}.")
+            messagebox.showinfo("Success", f"File converted successfully and saved to\n{converted_file_path}.")
 
         except Exception as e:
             logger.error(f"Error converting file: {e}")
