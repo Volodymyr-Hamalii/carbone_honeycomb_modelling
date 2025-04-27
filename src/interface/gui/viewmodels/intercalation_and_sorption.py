@@ -150,11 +150,12 @@ class VMIntercalationAndSorption(VMParamsSetter):
             title=structure_dir,
         )
 
-    def update_al_channel_coordinates(self,
-                                      project_dir: str,
-                                      subproject_dir: str,
-                                      structure_dir: str,
-                                      ) -> Path:
+    def update_al_channel_coordinates(
+            self,
+            project_dir: str,
+            subproject_dir: str,
+            structure_dir: str,
+    ) -> Path:
         atom_params: ConstantsAtomParams = ATOM_PARAMS_MAP[subproject_dir.lower()]
 
         carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(

@@ -509,6 +509,7 @@ class GetAlInChannelDetailsWindow(_IntercalationAndSorptionUtils, WindowsTemplat
             # Create and display the table in the new window
             self.table_window: Table = Table(df, master=new_window)
             self.table_window.pack(fill="both", expand=True)
+
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
