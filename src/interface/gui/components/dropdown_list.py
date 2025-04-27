@@ -24,7 +24,7 @@ class DropdownList(ctk.CTkOptionMenu):
         if is_disabled:
             self.configure(state=ctk.DISABLED)
 
-    def set_options(self, options: list[str], default_value: str = "") -> None:
+    def set_options(self, options: list[str], default_value: str | None = None) -> None:
         self.configure(values=options)
         if default_value:
             self.set(default_value)

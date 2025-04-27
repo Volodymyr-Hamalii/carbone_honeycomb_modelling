@@ -45,7 +45,10 @@ class _IntercalationAndSorptionUtils:
         self.file_names: list[str] = []
         self._refresh_file_name_lists()
 
-    def _refresh_file_name_lists(self) -> None:
+    def _refresh_file_name_lists(
+            self,
+            dropdown_list: DropdownList | None = None,
+    ) -> None:
         path: Path = PathBuilder.build_path_to_result_data_dir(
             project_dir=self.project_dir,
             subproject_dir=self.subproject_dir,
@@ -58,6 +61,13 @@ class _IntercalationAndSorptionUtils:
                 self.view_model.file_name == "None") or (
                 self.view_model.file_name not in self.file_names):
             self.view_model.set_file_name(self.file_names[0])
+
+        if dropdown_list:
+            file_name: str = self.view_model.file_name
+            dropdown_list.set_options(
+                self.file_names,
+                default_value=file_name if (file_name and file_name != "None") else None,
+            )
 
 
 class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
@@ -206,7 +216,7 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsTemp
                 subproject_dir=self.subproject_dir,
                 structure_dir=self.structure_dir,
             )
-            self._refresh_file_name_lists()
+            self._refresh_file_name_lists(dropdown_list=self.file_names_dropdown)
             messagebox.showinfo("Success", f"Al plane coordinates file saved to {path_to_file}")
         except Exception as e:
             messagebox.showerror("Error", str(e))
@@ -391,6 +401,7 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsTemp
                 subproject_dir=self.subproject_dir,
                 structure_dir=self.structure_dir,
             )
+            self._refresh_file_name_lists(dropdown_list=self.file_names_dropdown)
             messagebox.showinfo("Success", f"Al coordinates table saved to {path_to_file}")
         except Exception as e:
             messagebox.showerror("Error", str(e))
@@ -648,6 +659,7 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils, WindowsTemp
                 subproject_dir=self.subproject_dir,
                 structure_dir=self.structure_dir,
             )
+            self._refresh_file_name_lists(dropdown_list=self.file_names_dropdown)
             messagebox.showinfo("Success", f"Generated files:\n{paths[0].name}\n{paths[1].name}\n{paths[2].name}")
         except Exception as e:
             messagebox.showerror("Error", str(e))
