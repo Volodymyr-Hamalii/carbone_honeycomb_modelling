@@ -39,7 +39,7 @@ class ConstantsArParams(ConstantsAtomParams):
     ATOMS_NAME: str = "Argon"
     ATOM_SYMBOL: str = "Ar"
 
-    LATTICE_PARAM: float = 3.755  # A
+    LATTICE_PARAM: float = 5.310  # A
     DIST_BETWEEN_ATOMS: float = LATTICE_PARAM / sqrt(2)
 
     MIN_ALLOWED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.7
