@@ -32,7 +32,7 @@ class Table(ctk.CTkFrame):
         self.configure(bg_color=bg_color)
 
         # Create a label for the title using grid
-        title_label = ctk.CTkLabel(self, text=title, bg_color=bg_color, fg_color=text_color)
+        title_label = ctk.CTkLabel(self, text=title, bg_color=bg_color, fg_color=bg_color)
         title_label.grid(row=0, column=0, columnspan=len(data.columns) + 1, sticky="ew")
 
         # Create a canvas to hold the table and scrollbars
