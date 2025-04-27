@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.utils import Logger, execution_time_logger, Constants
+from src.utils import Logger, execution_time_logger, ConstantsAtomParams
 from src.base_structure_classes import Points
 from src.coordinate_operations import DistanceMeasure
 
@@ -11,7 +11,11 @@ logger = Logger("AtomsFilter")
 class AtomsFilter:
     @classmethod
     # @execution_time_logger
-    def replace_nearby_atoms_with_one_atom(cls, coordinates_al: Points) -> Points:
+    def replace_nearby_atoms_with_one_atom(
+            cls,
+            coordinates_al: Points,
+            atom_params: ConstantsAtomParams,
+    ) -> Points:
         """
         If there are 2 or more atoms have the distance between them less than dist_between_al / 3
         replace these atoms with one that places on the center between the replaced group.
@@ -21,7 +25,7 @@ class AtomsFilter:
 
         dist_matrix: np.ndarray = DistanceMeasure.calculate_dist_matrix(coordinates_al.points)
 
-        min_allowed_dist: float = Constants.phys.al.DIST_BETWEEN_ATOMS / 3
+        min_allowed_dist: float = atom_params.DIST_BETWEEN_ATOMS / 3
 
         # Keep track of groups of atoms to merge
         merged_indices = set()
@@ -52,7 +56,8 @@ class AtomsFilter:
 
         if np.any(dist_matrix_upd < min_allowed_dist):
             # Run replacement one more time
-            return cls.replace_nearby_atoms_with_one_atom(coordinates_al_upd)
+            return cls.replace_nearby_atoms_with_one_atom(
+                coordinates_al_upd, atom_params)
 
         return coordinates_al_upd
 
@@ -60,7 +65,7 @@ class AtomsFilter:
     @execution_time_logger
     def remove_too_close_atoms(
             coordinates_al: Points,
-            min_allowed_dist: float = Constants.phys.al.MIN_ALLOWED_DIST_BETWEEN_ATOMS,
+            atom_params: ConstantsAtomParams,
     ) -> Points:
         """
         If there are 2 or more atoms have the distance between them less allowed
@@ -68,6 +73,8 @@ class AtomsFilter:
 
         Returnes the updated coordinates_al (with removed atoms).
         """
+
+        min_allowed_dist: float = atom_params.MIN_ALLOWED_DIST_BETWEEN_ATOMS
 
         dist_matrix: np.ndarray = DistanceMeasure.calculate_dist_matrix(coordinates_al.points)
         # min_dists: np.ndarray = np.min(dist_matrix, axis=1)

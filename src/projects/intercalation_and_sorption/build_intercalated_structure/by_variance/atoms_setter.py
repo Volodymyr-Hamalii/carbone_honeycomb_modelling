@@ -4,7 +4,6 @@ from scipy.optimize import minimize
 
 from src.utils import Logger, execution_time_logger
 from src.base_structure_classes import Points
-from src.data_preparation import StructureSettings
 from src.coordinate_operations import (
     DistanceMeasure,
     PointsMover,
@@ -14,19 +13,18 @@ from src.projects.carbon_honeycomb_actions import CarbonHoneycombChannel
 
 from ...intercalated_coordinates_utils import IntercalatedCoordinatesUtils
 from .variance_calculator import VarianceCalculator
-from .al_atoms_filter import AlAtomsFilter
+from .atoms_filter import AtomsFilter
 
 
 logger = Logger("equidistant_points_sets_in_channel")
 
 
-class AlAtomsSetter:
+class AtomsSetter:
     @classmethod
     def equidistant_points_sets_in_channel(
             cls,
             carbon_channel: CarbonHoneycombChannel,
             inner_points: Points,
-            structure_settings: StructureSettings,
             # to_rotate: bool = True,
     ) -> Points:
         """
@@ -45,7 +43,6 @@ class AlAtomsSetter:
         return cls.rotate_and_translate_points(
             carbon_channel=carbon_channel,
             inner_points=inner_points,
-            structure_settings=structure_settings,
         )
 
     @classmethod
@@ -53,7 +50,6 @@ class AlAtomsSetter:
             cls,
             carbon_channel: CarbonHoneycombChannel,
             inner_points: Points,
-            structure_settings: StructureSettings,
     ) -> Points:
         # translation coordinates (X and Y) and rotation angles (along Ox and Oy)
         initial_vectors: ndarray = np.array([0.0, 0.0, 0.0, 0.0])
@@ -66,7 +62,7 @@ class AlAtomsSetter:
         result = minimize(
             cls.calculate_distance_and_rotation_variance,
             initial_vectors,
-            args=(inner_points, carbon_channel, structure_settings),
+            args=(inner_points, carbon_channel),
             method="BFGS",
             options={"disp": True}
         )
@@ -85,7 +81,6 @@ class AlAtomsSetter:
             initial_vectors: ndarray,
             inner_points: Points,
             carbon_channel: CarbonHoneycombChannel,
-            structure_settings: StructureSettings,
     ) -> float | floating:
 
         num_of_atoms: int = len(inner_points)
@@ -93,10 +88,10 @@ class AlAtomsSetter:
         moved_points: Points = cls.move_and_rotate_related_xy(
             vectors=initial_vectors, points=inner_points)
 
-        filtered_atoms: Points = AlAtomsFilter.filter_al_atoms_related_carbon(
-            coordinates_al=inner_points,
+        filtered_atoms: Points = AtomsFilter.filter_atoms_related_carbon(
+            inter_points=inner_points,
             carbon_channel=carbon_channel,
-            structure_settings=structure_settings)
+        )
         num_of_atoms_after_filter: int = len(filtered_atoms)
 
         if num_of_atoms_after_filter < num_of_atoms:

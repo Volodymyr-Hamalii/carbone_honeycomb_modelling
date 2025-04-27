@@ -3,7 +3,14 @@ from pathlib import Path
 
 import numpy as np
 
-from src.utils import Constants, Logger, execution_time_logger, PathBuilder, FileReader
+from src.utils import (
+    Constants,
+    ConstantsAtomParams,
+    Logger,
+    execution_time_logger,
+    PathBuilder,
+    FileReader,
+)
 from src.data_preparation import StructureSettings, AtomsUniverseBuilder
 from src.base_structure_classes import Points, AlLatticeType, CoordinateLimits
 from src.projects.carbon_honeycomb_actions import CarbonHoneycombChannel
@@ -18,11 +25,21 @@ logger = Logger("IntercalatedChannelBuilder")
 
 class IntercalatedChannelBuilder:
     @staticmethod
-    def build_carbon_coordinates(structure_dir: str, file_name: str | None = None) -> Points:
+    def build_carbon_coordinates(
+            project_dir: str,
+            subproject_dir: str,
+            structure_dir: str,
+            file_name: str | None = None,
+    ) -> Points:
         if file_name is None:
             file_name = Constants.file_names.INIT_DAT_FILE
 
-        carbon_points: np.ndarray = FileReader.read_init_data_file(structure_dir, file_name)
+        carbon_points: np.ndarray = FileReader.read_init_data_file(
+            project_dir=project_dir,
+            subproject_dir=subproject_dir,
+            structure_dir=structure_dir,
+            file_name=file_name,
+        )
 
         if len(carbon_points) == 0:
             raise ValueError(f"No carbon atoms found in {file_name} file.")
@@ -33,36 +50,47 @@ class IntercalatedChannelBuilder:
 
     @staticmethod
     def build_al_coordinates_for_cell(
+            project_dir: str,
+            subproject_dir: str,
+            structure_dir: str,
+            file_name: str,
             to_translate_al: bool,
-            al_file: str,
             coordinate_limits: CoordinateLimits = CoordinateLimits(),
     ) -> Points:
-        path_to_al_pdb_file: Path = PathBuilder.build_path_to_init_data_file(file=al_file)
-        coordinates_al: Points = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_al_pdb_file)
+        path_to_al_pdb_file: Path = PathBuilder.build_path_to_init_data_file(
+            project_dir=project_dir,
+            subproject_dir=subproject_dir,
+            structure_dir=structure_dir,
+            file_name=file_name,
+        )
+        inter_points: Points = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_al_pdb_file)
 
         if to_translate_al:
             return StructureTranslator.translate_cell(
-                cell_coordinates=coordinates_al,
+                cell_coordinates=inter_points,
                 translation_limits=coordinate_limits)
 
-        return coordinates_al
+        return inter_points
 
     @staticmethod
     def build_al_coordinates_for_close_packed(
             al_lattice_type: AlLatticeType,
             coordinate_limits: CoordinateLimits,
+            atom_params: ConstantsAtomParams,
             # to_translate_al: bool,  # TODO
     ) -> Points:
 
+        dist_between_atoms: float = atom_params.DIST_BETWEEN_ATOMS
+
         if al_lattice_type.is_fcc:
             return AtomsUniverseBuilder.build_fcc_lattice_type(
-                dist_between_atoms=Constants.phys.al.DIST_BETWEEN_ATOMS,
+                dist_between_atoms=dist_between_atoms,
                 coordinate_limits=coordinate_limits,
             )
 
         if al_lattice_type.is_hcp:
             return AtomsUniverseBuilder.build_hcp_lattice_type(
-                dist_between_atoms=Constants.phys.al.DIST_BETWEEN_ATOMS,
+                dist_between_atoms=dist_between_atoms,
                 coordinate_limits=coordinate_limits,
             )
 
@@ -73,15 +101,13 @@ class IntercalatedChannelBuilder:
     def build_al_in_carbon_by_variance(
         cls,
         carbon_channel: CarbonHoneycombChannel,
-        coordinates_al: Points,
-        structure_settings: StructureSettings,
+        inter_points: Points,
         to_filter_al_atoms: bool = True,
         equidistant_al_points: bool = True
     ) -> Points:
-        return IntercalatedChannelBuilderByVariance.build_al_in_carbon(
+        return IntercalatedChannelBuilderByVariance.build_intercalated_atoms_in_carbon(
             carbon_channel,
-            coordinates_al,
-            structure_settings,
+            inter_points,
             to_filter_al_atoms,
             equidistant_al_points,
         )
@@ -90,21 +116,21 @@ class IntercalatedChannelBuilder:
     def build_al_in_carbon(
         cls,
         carbon_channel: CarbonHoneycombChannel,
-        coordinates_al: Points,
-        structure_settings: StructureSettings,
+        inter_points: Points,
+        atom_params: ConstantsAtomParams,
         to_filter_al_atoms: bool = True,
-        equidistant_al_points: bool = True
+        equidistant_al_points: bool = True,
     ) -> Points:
         # return IntercalatedChannelBuilderByVariance.build_al_in_carbon(
         #     carbon_channel,
-        #     coordinates_al,
+        #     inter_points,
         #     structure_settings,
         #     to_filter_al_atoms,
         #     equidistant_al_points,
         # )
         return IntercalatedChannelBuilderBasedOnPlaneConfigs.build_al_in_carbon(
             carbon_channel,
-            structure_settings,
+            atom_params,
             equidistant_al_points,
         )
 

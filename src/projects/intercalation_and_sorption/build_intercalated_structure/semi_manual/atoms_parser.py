@@ -1,8 +1,9 @@
+from pathlib import Path
 import numpy as np
 import pandas as pd
 
 from src.projects.carbon_honeycomb_actions.channel.planes.carbon_honeycomb_plane import CarbonHoneycombPlane
-from src.utils import Constants, Logger, FileReader
+from src.utils import Constants, ConstantsAtomParams, Logger, FileReader, PathBuilder
 from src.base_structure_classes import Points
 from src.projects.carbon_honeycomb_actions import (
     CarbonHoneycombChannel,
@@ -26,46 +27,53 @@ class AtomsParser:
     @classmethod
     def get_al_channel_coordinates(
             cls,
+            project_dir: str,
+            subproject_dir: str,
             structure_dir: str,
             carbon_channel: CarbonHoneycombChannel,
             number_of_planes: int,
             try_to_reflect_al_atoms: bool,
+            atom_params: ConstantsAtomParams,
     ) -> Points:
         """ Read Al coordinates from the Excel file or build them if there is no Excel file. """
 
         # Try to read the full channel coordinates
-        file_name: str = Constants.file_names.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE
-        al_full_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
+        file_name: str = Constants.file_names.FULL_CHANNEL_COORDINATES_XLSX_FILE
+        path_to_file: Path = PathBuilder.build_path_to_result_data_file(
+            project_dir=project_dir,
+            subproject_dir=subproject_dir,
             structure_dir=structure_dir,
             file_name=file_name,
-            is_init_data_dir=False,
-            to_print_warning=False,
         )
+        al_full_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(path_to_file)
+
         if al_full_channel_coordinates_df is not None:
             logger.info(f"Read {file_name} file.")
             return cls.parse_al_coordinates_df(al_full_channel_coordinates_df)
 
         # Try to read the channel Al plane coordinates
-        file_name: str = Constants.file_names.AL_CHANNEL_COORDINATES_XLSX_FILE
-        al_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
+        file_name: str = Constants.file_names.CHANNEL_COORDINATES_XLSX_FILE
+        path_to_file: Path = PathBuilder.build_path_to_result_data_file(
+            project_dir=project_dir,
+            subproject_dir=subproject_dir,
             structure_dir=structure_dir,
             file_name=file_name,
-            is_init_data_dir=False,
-            to_print_warning=False,
         )
+        al_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(path_to_file)
         if al_channel_coordinates_df is not None:
             logger.info(f"Read {file_name} file.")
             return cls.parse_al_coordinates_df(al_channel_coordinates_df)
 
         # logger.warning(f"Excel table with Al atoms for {structure_dir} structure not found. Al atoms builder.")
 
-        file_name: str = Constants.file_names.AL_PLANE_COORDINATES_XLSX_FILE
-        al_plane_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
+        file_name: str = Constants.file_names.PLANE_COORDINATES_XLSX_FILE
+        path_to_file: Path = PathBuilder.build_path_to_result_data_file(
+            project_dir=project_dir,
+            subproject_dir=subproject_dir,
             structure_dir=structure_dir,
             file_name=file_name,
-            is_init_data_dir=False,
-            to_print_warning=False,
         )
+        al_plane_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(path_to_file)
         if al_plane_coordinates_df is not None:
             logger.info(f"Read {file_name} file.")
             al_plane_coordinates: Points = cls.parse_al_coordinates_df(al_plane_coordinates_df)
@@ -73,11 +81,11 @@ class AtomsParser:
             # Build atoms
             logger.info(f"Building Al atoms for {structure_dir} structure...")
             al_plane_coordinates: Points = cls._build_al_plane_coordinates(
-                carbon_channel, num_of_planes=number_of_planes)
+                carbon_channel, num_of_planes=number_of_planes, atom_params=atom_params)
 
         try:
             al_coordinates: Points = AlAtomsTranslator.translate_for_all_planes(
-                carbon_channel, al_plane_coordinates, number_of_planes, try_to_reflect_al_atoms)
+                carbon_channel, al_plane_coordinates, number_of_planes, try_to_reflect_al_atoms, atom_params)
         except Exception as e:
             logger.error(f"Error translating Al atoms: {e}", exc_info=False)
             logger.warning(f"Structure for {structure_dir} is not translated. Using the original structure.")
@@ -88,19 +96,24 @@ class AtomsParser:
     @classmethod
     def get_al_plane_coordinates(
             cls,
+            project_dir: str,
+            subproject_dir: str,
             structure_dir: str,
             carbon_channel: CarbonHoneycombChannel,
             number_of_planes: int,
+            atom_params: ConstantsAtomParams,
             file_name: str | None = None,
     ) -> Points:
         """ Read Al coordinates from the file or build them if there is no Excel file. """
 
         if file_name and file_name != "None":
-            al_plane_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
+            path_to_file: Path = PathBuilder.build_path_to_init_data_file(
+                project_dir=project_dir,
+                subproject_dir=subproject_dir,
                 structure_dir=structure_dir,
                 file_name=file_name,
-                is_init_data_dir=False,
             )
+            al_plane_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(path_to_file)
 
             if al_plane_coordinates_df is not None:
                 return cls.parse_al_coordinates_df(al_plane_coordinates_df)
@@ -110,14 +123,23 @@ class AtomsParser:
         # Build atoms
         # carbon_channel: CarbonHoneycombChannel = cls.build_carbon_channel(structure_dir)
         coordinates_al: Points = cls._build_al_plane_coordinates(
-            carbon_channel, num_of_planes=number_of_planes)
+            carbon_channel, num_of_planes=number_of_planes, atom_params=atom_params)
 
         return coordinates_al
 
     @staticmethod
-    def build_carbon_channel(structure_dir: str, file_name: str | None = None) -> CarbonHoneycombChannel:
+    def build_carbon_channel(
+            project_dir: str,
+            subproject_dir: str,
+            structure_dir: str,
+            file_name: str | None = None,
+    ) -> CarbonHoneycombChannel:
         coordinates_carbon: Points = IntercalatedChannelBuilder.build_carbon_coordinates(
-            structure_dir=structure_dir, file_name=file_name)
+            project_dir=project_dir,
+            subproject_dir=subproject_dir,
+            structure_dir=structure_dir,
+            file_name=file_name,
+        )
 
         carbon_channels: list[CarbonHoneycombChannel] = CarbonHoneycombActions.split_init_structure_into_separate_channels(
             coordinates_carbon=coordinates_carbon)
@@ -127,11 +149,13 @@ class AtomsParser:
     def _build_al_plane_coordinates(
             carbon_channel: CarbonHoneycombChannel,
             num_of_planes: int,
+            atom_params: ConstantsAtomParams,
     ) -> Points:
         """ Build Al atoms for one plane """
-        coordinates_al: Points = AtomsBuilder._build_al_atoms_near_planes(carbon_channel, planes_limit=num_of_planes)
-        coordinates_al = AtomsFilter.replace_nearby_atoms_with_one_atom(coordinates_al)
-        coordinates_al = AtomsFilter.remove_too_close_atoms(coordinates_al)
+        coordinates_al: Points = AtomsBuilder._build_al_atoms_near_planes(
+            carbon_channel, planes_limit=num_of_planes, atom_params=atom_params)
+        coordinates_al = AtomsFilter.replace_nearby_atoms_with_one_atom(coordinates_al, atom_params)
+        coordinates_al = AtomsFilter.remove_too_close_atoms(coordinates_al, atom_params)
 
         # Round coordinates to 3 decimal places
         coordinates_al = Points(points=np.round(coordinates_al.points, 2))

@@ -101,12 +101,10 @@ class DataConverterWindow(WindowsTemplate):
                 return
 
             converted_file_path: Path = self.view_model.convert_file(
-                init_file_path=PathBuilder.build_path_to_result_data_file(
-                    project_dir=self.project_dir,
-                    subproject_dir=self.subproject_dir,
-                    structure_dir=self.structure_dir,
-                    file_name=self.view_model.file_name,
-                ),
+                project_dir=self.project_dir,
+                subproject_dir=self.subproject_dir,
+                structure_dir=self.structure_dir,
+                file_name=self.view_model.file_name,
                 target_format=self.view_model.file_format,
             )
             messagebox.showinfo("Success", f"File converted successfully and saved to {converted_file_path}.")

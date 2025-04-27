@@ -2,7 +2,7 @@ from dataclasses import asdict, dataclass
 from typing import Any, Generator
 import numpy as np
 
-from src.utils import Logger, execution_time_logger, Constants
+from src.utils import Logger, execution_time_logger, ConstantsAtomParams
 from src.coordinate_operations import DistanceMeasure
 from src.base_structure_classes import Points
 from src.projects.carbon_honeycomb_actions import CarbonHoneycombChannel
@@ -48,13 +48,18 @@ class AtomConfigurator:
 
     @classmethod
     @execution_time_logger
-    def reorganize_al_atoms(cls, coordinates_al: Points, carbon_channel: CarbonHoneycombChannel) -> Points:
+    def reorganize_al_atoms(
+        cls,
+        inter_points: Points,
+        carbon_channel: CarbonHoneycombChannel,
+        atom_params: ConstantsAtomParams,
+    ) -> Points:
         """
         Move Al atoms to have the correct minimal distance between them
         (or remove them if we can't achive optimal configuration just by moving).
         """
 
-        logger.info(f"Number of atoms before reorganizing: {len(coordinates_al.points)}")
+        logger.info(f"Number of atoms before reorganizing: {len(inter_points.points)}")
 
         # # Take a step as 1% of the distance between atoms
         # step: float = Constants.phys.al.DIST_BETWEEN_ATOMS * 0.05
@@ -62,23 +67,23 @@ class AtomConfigurator:
         # start: float = Constants.phys.al.DIST_BETWEEN_ATOMS * 1.2
         # end: float = Constants.phys.al.DIST_BETWEEN_ATOMS * 1.21
 
-        # best_result: Points = coordinates_al
+        # best_result: Points = inter_points
         # best_result_len: int = 0
 
         # for min_dist in np.arange(start, end, step):
         #     logger.info(f"Min dist: {min_dist}")
 
-        #     coordinates_al_upd: Points = AtomsFilter.remove_some_close_atoms(coordinates_al, min_dist)
+        #     inter_points_upd: Points = AtomsFilter.remove_some_close_atoms(inter_points, min_dist)
 
-        #     if len(coordinates_al_upd.points) > best_result_len:
-        #         best_result = coordinates_al_upd
-        #         best_result_len = len(coordinates_al_upd.points)
+        #     if len(inter_points_upd.points) > best_result_len:
+        #         best_result = inter_points_upd
+        #         best_result_len = len(inter_points_upd.points)
 
-        #     elif len(coordinates_al_upd.points) == len(coordinates_al.points):
+        #     elif len(inter_points_upd.points) == len(inter_points.points):
         #         break
 
         # Filter and move Al atoms to have the correct minimal distance between them
-        dist_between_al_atoms: float = Constants.phys.al.DIST_BETWEEN_ATOMS
+        dist_between_al_atoms: float = atom_params.DIST_BETWEEN_ATOMS
         min_dist: float = dist_between_al_atoms * 1.2
         step: float = dist_between_al_atoms * 0.025
 
@@ -96,30 +101,31 @@ class AtomConfigurator:
 
             while True:
                 try:
-                    coordinates_al_upd, max_neighbours = cls.space_al_atoms_equidistantly(
-                        coordinates_al,
+                    inter_points_upd, max_neighbours = cls.space_al_atoms_equidistantly(
+                        inter_points,
                         carbon_channel,
                         min_dist,
                         max_neighbours,
                         config_params,
+                        atom_params,
                     )
 
                     if max_neighbours > max_neighbours_start:
                         max_neighbours_start = max_neighbours
 
-                    # logger.info(f"Number of atoms after reorganizing: {len(coordinates_al.points)}")
-                    if len(coordinates_al_upd.points) > len(best_result.points):
-                        best_result = coordinates_al_upd
+                    # logger.info(f"Number of atoms after reorganizing: {len(inter_points.points)}")
+                    if len(inter_points_upd.points) > len(best_result.points):
+                        best_result = inter_points_upd
                         min_distances = DistanceMeasure.calculate_min_distances(
-                            carbon_channel.points, coordinates_al_upd.points)
+                            carbon_channel.points, inter_points_upd.points)
 
-                    elif len(coordinates_al.points) == len(coordinates_al_upd.points):
+                    elif len(inter_points.points) == len(inter_points_upd.points):
                         # Get the set with the minimal sum of distances to carbon atoms
                         min_distances_upd: np.ndarray = DistanceMeasure.calculate_min_distances(
-                            carbon_channel.points, coordinates_al_upd.points)
+                            carbon_channel.points, inter_points_upd.points)
 
                         if np.sum(min_distances_upd) < np.sum(min_distances):
-                            best_result = coordinates_al_upd
+                            best_result = inter_points_upd
                             min_distances = min_distances_upd
 
                 except NotOptimalStructureError as e:
@@ -144,19 +150,20 @@ class AtomConfigurator:
     # @execution_time_logger
     def space_al_atoms_equidistantly(
         cls,
-        coordinates_al: Points,
+        inter_points: Points,
         carbon_channel: CarbonHoneycombChannel,
         min_dist: float,
         max_neighbours: int,
         config_params: _ConfigParams,
+        atom_params: ConstantsAtomParams,
     ) -> tuple[Points, int]:
         """ 
-        To space Al atoms equally apart from each other
+        To space intercalated atoms equally apart from each other
         to keep the minimal distance between atoms equals dist_between_al_atoms.
 
-        Algorithm: iterate all Al points until the cycle is not stopped:
-        1. Calculate the distance matrix between the Al points.
-        2. Get the Al points that have a dist to the closest neighbor < min_dist_between_al_atoms. 
+        Algorithm: iterate all intercalated atoms until the cycle is not stopped:
+        1. Calculate the distance matrix between the intercalated atoms.
+        2. Get the intercalated atoms that have a dist to the closest neighbor < min_dist_between_al_atoms. 
             If there are no such points -- stop the cycle.
         3. Find the point that have the minimal average distance to the neighbors.
         4. Move the point in the direction to the channel center to have the distance
@@ -176,32 +183,30 @@ class AtomConfigurator:
         num_of_points_to_skip_to_space: float = config_params.num_of_points_to_skip_to_space
         percent_to_remove: float = config_params.percent_to_remove
 
-        al_points: np.ndarray = coordinates_al.points
-
-        dist_between_al_atoms: float = Constants.phys.al.DIST_BETWEEN_ATOMS
-        min_dist_between_al_atoms: float = Constants.phys.al.MIN_RECOMENDED_DIST_BETWEEN_ATOMS
+        dist_between_al_atoms: float = atom_params.DIST_BETWEEN_ATOMS
+        min_dist_between_al_atoms: float = atom_params.MIN_RECOMENDED_DIST_BETWEEN_ATOMS
         moved_point_indexes: set[np.intp] = set()
 
         counter = 0
-        max_counter: int = len(coordinates_al) * 15
+        max_counter: int = len(inter_points) * 15
 
         logger.info(f"Min dist: {min_dist}; max neighbours: {max_neighbours}")
 
         result: tuple[Points, int] = AtomsFilter.remove_some_close_atoms(
-            coordinates_al, min_dist, max_neighbours, num_of_points_to_skip=num_of_points_to_skip_to_remove, percent_to_remove=percent_to_remove)
+            inter_points, min_dist, max_neighbours, num_of_points_to_skip=num_of_points_to_skip_to_remove, percent_to_remove=percent_to_remove)
 
-        coordinates_al_upd: Points = result[0]
+        inter_points_upd: Points = result[0]
         max_neighbours = result[1]
-        logger.info(f"Number of atoms after filtering to reorganize: {len(coordinates_al_upd.points)}")
+        logger.info(f"Number of atoms after filtering to reorganize: {len(inter_points_upd.points)}")
 
         # if max_neighbours > max_neighbours_start:
         #     max_neighbours_start = max_neighbours
 
         # For debugging purposes
-        # if len(coordinates_al_upd) <= 30:
+        # if len(inter_points_upd) <= 30:
         #     pass
         max_points_to_move_before_reset: int = round(
-            len(coordinates_al_upd) * max_points_to_move_before_reset_coef)
+            len(inter_points_upd) * max_points_to_move_before_reset_coef)
 
         while True:
             dist_matrix: np.ndarray = DistanceMeasure.calculate_dist_matrix(al_points)
@@ -275,14 +280,15 @@ class AtomConfigurator:
 
         logger.info(f"Number of iterations in space_al_atoms_equidistantly: {counter}/{max_counter}")
 
-        coordinates_al_processed: Points = AtomsFilter.remove_too_close_atoms(
-            Points(points=al_points), min_allowed_dist=min_dist_between_al_atoms)
+        inter_points_processed: Points = AtomsFilter.remove_too_close_atoms(
+            Points(points=al_points), atom_params=atom_params)
 
         # Try to add some allowed points
         final_result: Points = cls._add_allowed_init_al_atoms(
-            coordinates_al_init=coordinates_al,
-            coordinates_al_processed=coordinates_al_processed,
+            inter_points_init=inter_points,
+            inter_points_processed=inter_points_processed,
             allowed_min_dist=min_dist_between_al_atoms,
+            atom_params=atom_params,
         )
 
         return final_result, max_neighbours
@@ -435,30 +441,31 @@ class AtomConfigurator:
 
     @staticmethod
     def _add_allowed_init_al_atoms(
-        coordinates_al_init: Points,
-        coordinates_al_processed: Points,
+        inter_points_init: Points,
+        inter_points_processed: Points,
         allowed_min_dist: float,
+        atom_params: ConstantsAtomParams,
     ) -> Points:
         """
-        Add allowed atoms from coordinates_al_init to coordinates_al_processed.
-        'Allowed' means that added only atoms from coordinates_al_init, that are no closer
-        to the closest atom from the coordinates_al_processed on allowed_min_dist dist.
+        Add allowed atoms from inter_points_init to inter_points_processed.
+        'Allowed' means that added only atoms from inter_points_init, that are no closer
+        to the closest atom from the inter_points_processed on allowed_min_dist dist.
         """
 
         min_dists: np.ndarray = DistanceMeasure.calculate_min_distances(
-            coordinates_al_init.points, coordinates_al_processed.points
+            inter_points_init.points, inter_points_processed.points
         )
 
-        # Filter atoms from `coordinates_al_init` based on `allowed_min_dist`
+        # Filter atoms from `inter_points_init` based on `allowed_min_dist`
         allowed_atom_indexes: np.ndarray = np.where(min_dists >= allowed_min_dist)[0]
 
         # Get the coordinates of the allowed atoms
-        allowed_atoms: np.ndarray = coordinates_al_init.points[allowed_atom_indexes]
+        allowed_atoms: np.ndarray = inter_points_init.points[allowed_atom_indexes]
 
         # Combine allowed atoms with already processed atoms
         combined_points: Points = Points(
-            points=np.vstack([coordinates_al_processed.points, allowed_atoms])
+            points=np.vstack([inter_points_processed.points, allowed_atoms])
         )
 
         # Return the updated filtered Points object
-        return AtomsFilter.remove_too_close_atoms(combined_points, allowed_min_dist)
+        return AtomsFilter.remove_too_close_atoms(combined_points, atom_params)

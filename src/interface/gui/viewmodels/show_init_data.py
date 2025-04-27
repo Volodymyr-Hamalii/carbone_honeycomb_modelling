@@ -42,6 +42,15 @@ class VMShowInitData(VMParamsSetter):
             file_name=self.file_name,
         )
 
+        coordinate_limits: CoordinateLimits = CoordinateLimits(
+            x_min=self.x_min,
+            x_max=self.x_max,
+            y_min=self.y_min,
+            y_max=self.y_max,
+            z_min=self.z_min,
+            z_max=self.z_max,
+        )
+
         StructureVisualizer.show_structure(
             carbon_points,
             to_build_bonds=self.to_build_bonds,
@@ -51,6 +60,7 @@ class VMShowInitData(VMParamsSetter):
             to_set_equal_scale=True,
             num_of_min_distances=self.bonds_num_of_min_distances,
             skip_first_distances=self.bonds_skip_first_distances,
+            coordinate_limits=coordinate_limits,
         )
 
     def show_one_channel_structure(
@@ -127,7 +137,11 @@ class VMShowInitData(VMParamsSetter):
 
         fontsize: int = 8
 
-        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(structure_dir)
+        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(
+            project_dir=project_dir,
+            subproject_dir=subproject_dir,
+            structure_dir=structure_dir,
+        )
 
         center_2d: np.ndarray = carbon_channel.center[:2]
         planes: list[CarbonHoneycombPlane] = carbon_channel.planes

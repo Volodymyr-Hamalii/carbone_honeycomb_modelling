@@ -3,7 +3,7 @@ import numpy as np
 from scipy.spatial.distance import cdist
 from scipy.optimize import minimize_scalar, OptimizeResult
 
-from src.utils import Constants, Logger, execution_time_logger
+from src.utils import ConstantsAtomParams, Logger, execution_time_logger
 # from src.coordinate_operations import DistanceMeasure
 from src.base_structure_classes import Points, FlatFigure
 from src.projects.carbon_honeycomb_actions import CarbonHoneycombChannel, CarbonHoneycombPlane
@@ -17,6 +17,7 @@ class AtomsBuilder:
     def _build_al_atoms_near_planes(
             cls,
             carbon_channel: CarbonHoneycombChannel,
+            atom_params: ConstantsAtomParams,
             planes_limit: int | None = None,
     ) -> Points:
         """
@@ -30,7 +31,7 @@ class AtomsBuilder:
 
         # Calculate the average distance between Al and C atoms
         dist_between_carbon_atoms: float = float(carbon_channel.ave_dist_between_closest_atoms)
-        distance_from_carbon_atoms: float = (Constants.phys.al.DIST_BETWEEN_ATOMS + dist_between_carbon_atoms) / 2
+        distance_from_carbon_atoms: float = (atom_params.DIST_BETWEEN_ATOMS + dist_between_carbon_atoms) / 2
 
         for i, plane in enumerate(carbon_channel.planes):  # To build only part of the planes
 

@@ -50,11 +50,10 @@ class InitDataWindow(WindowsTemplate):
         self.create_ui()
 
     def _refresh_file_name_lists(self) -> None:
-        path: Path = PathBuilder.build_path_to_init_data_file(
+        path: Path = PathBuilder.build_path_to_init_data_dir(
             project_dir=self.project_dir,
             subproject_dir=self.subproject_dir,
             structure_dir=self.structure_dir,
-            file_name=self.view_model.file_name,
         )
         self.file_names: list[str] = FileReader.read_list_of_files(path, to_include_nested_files=True) or ["None"]
         if (not self.view_model.file_name) or (
@@ -71,7 +70,7 @@ class InitDataWindow(WindowsTemplate):
 
         # Checkbox for to_build_bonds
         self.to_build_bonds_checkbox: CheckBox = self.pack_check_box(
-            self.window, text="Build Bonds",
+            self.window, text="Build bonds",
             command=self.update_to_build_bonds,
             default=self.view_model.to_build_bonds,
         )
@@ -184,7 +183,3 @@ class InitDataWindow(WindowsTemplate):
         value_max: str = self.coord_z_limits_input_field.max_entry.get()
         self.view_model.set_z_min(value_min)
         self.view_model.set_z_max(value_max)
-
-    # def show_plot_window(self) -> None:
-    #     plot_window = PlotWindow(self.input_window, title=self.structure_dir)
-    #     plot_window.destroy()

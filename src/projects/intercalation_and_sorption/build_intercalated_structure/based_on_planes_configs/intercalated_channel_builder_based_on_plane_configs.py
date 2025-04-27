@@ -1,6 +1,6 @@
 import numpy as np
 
-from src.utils import Logger, Constants, execution_time_logger
+from src.utils import Logger, ConstantsAtomParams, execution_time_logger
 from src.data_preparation import StructureSettings
 from src.base_structure_classes import Points
 from src.projects.carbon_honeycomb_actions import CarbonHoneycombChannel
@@ -20,14 +20,15 @@ class IntercalatedChannelBuilderBasedOnPlaneConfigs:
     def build_al_in_carbon(
             cls,
             carbon_channel: CarbonHoneycombChannel,
-            structure_settings: StructureSettings,
+            atom_params: ConstantsAtomParams,
             equidistant_al_points: bool = True,
     ) -> Points:
         """ Returns coordinates_al """
 
-        coordinates_al: Points = AtomsBuilder._build_al_atoms_near_planes(carbon_channel)
-        coordinates_al = AtomsFilter.replace_nearby_atoms_with_one_atom(coordinates_al)
-        coordinates_al = AtomsFilter.remove_too_close_atoms(coordinates_al)
+        coordinates_al: Points = AtomsBuilder._build_al_atoms_near_planes(
+            carbon_channel, atom_params, equidistant_al_points)
+        coordinates_al = AtomsFilter.replace_nearby_atoms_with_one_atom(coordinates_al, atom_params)
+        coordinates_al = AtomsFilter.remove_too_close_atoms(coordinates_al, atom_params)
 
         # StructureVisualizer.show_two_structures(
         #     coordinates_first=carbon_channel.points, coordinates_second=coordinates_al.points, to_build_bonds=True)

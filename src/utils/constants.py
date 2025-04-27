@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-from math import sqrt
 import logging
 import dotenv
 import sys
@@ -47,10 +46,10 @@ class _ConstantsFilenames:
     INIT_PDB_FILE: str = "ljout-from-init-dat.pdb"
     PDB_FILE_ONE_CHANNEL: str = "ljout-from-init-dat-one-channel.pdb"
 
-    PLANE_COORDINATES_XLSX_FILE: str = "near-plane-coordinates.xlsx"
+    PLANE_COORDINATES_XLSX_FILE: str = "sorbed-plane-coordinates.xlsx"
     CHANNEL_COORDINATES_XLSX_FILE: str = "sorbed-channel-coordinates.xlsx"
     FULL_CHANNEL_COORDINATES_XLSX_FILE: str = "intercalated-channel-coordinates.xlsx"
-    ALL_CHANNELS_COORDINATES_XLSX_FILE: str = "all-filled-channels-coordinates.xlsx"
+    ALL_CHANNELS_COORDINATES_XLSX_FILE: str = "intercalated-all-channels-coordinates.xlsx"
     CHANNEL_DETAILS_XLSX_FILE: str = "built-structure-details.xlsx"
 
     AL_ALL_CHANNELS_COORDINATES_DAT_FILE: str = "Al.dat"
@@ -98,41 +97,10 @@ class _ConstantsMath:
     }
 
 
-class _ConstantsAlParams:
-    """ Aluminium params """
-    LATTICE_PARAM: float = 4.049  # A
-    DIST_BETWEEN_ATOMS: float = LATTICE_PARAM / sqrt(2)
-
-    MIN_ALLOWED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.7
-    MIN_RECOMENDED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.92
-
-    MIN_ALLOWED_DIST_TO_C: float = 2.15
-
-
-class _ConstantsArParams:
-    """ Argon params """
-    LATTICE_PARAM: float = 3.755  # A
-    DIST_BETWEEN_ATOMS: float = LATTICE_PARAM / sqrt(2)
-
-    MIN_ALLOWED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.7
-    MIN_RECOMENDED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.92
-
-    MIN_ALLOWED_DIST_TO_C: float = 2.0
-
-
-class _ConstantsPhys:
-    al = _ConstantsAlParams
-    ar = _ConstantsArParams
-
-    # MIN_ALLOWED_DIST_BETWEEN_AL_C: float = 2.15  # >> al.MIN_ALLOWED_DIST_TO_C
-    # MIN_ALLOWED_DIST_BETWEEN_AR_C: float = 2.0
-
-
 class Constants:
     path = _ConstantsPath
     logger = _ConstantsLogger
     file_names = _ConstantsFilenames
-    phys = _ConstantsPhys
     math = _ConstantsMath
     settings = _ConstantsSettings
 

@@ -1,7 +1,7 @@
 import numpy as np
 from scipy.optimize import minimize
 
-from src.utils import Logger, Constants
+from src.utils import Logger, ConstantsAtomParams
 from src.base_structure_classes import Points
 from src.coordinate_operations import (
     PointsOrganizer,
@@ -61,6 +61,7 @@ class AlAtomsTranslator:
         al_plane_coordinates: Points,
         number_of_planes: int,
         try_to_reflect_al_atoms: bool,
+        atom_params: ConstantsAtomParams,
     ) -> Points:
 
         planes: list[CarbonHoneycombPlane] = carbon_channel.planes[:number_of_planes]
@@ -70,32 +71,11 @@ class AlAtomsTranslator:
             al_plane_coordinates, planes)
 
         all_al_points: Points = cls._copy_al_points_to_rest_planes(
-            plane_group_map, carbon_channel, try_to_reflect_al_atoms)
+            plane_group_map, carbon_channel, try_to_reflect_al_atoms, atom_params)
 
-        al_points_upd: Points = AtomsFilter.replace_nearby_atoms_with_one_atom(all_al_points)
+        al_points_upd: Points = AtomsFilter.replace_nearby_atoms_with_one_atom(all_al_points, atom_params)
 
         return al_points_upd
-
-    # @staticmethod
-    # def _group_by_lines(al_plane_coordinates: Points) -> list[np.ndarray]:
-    #     # Create groups with the same X and Y coordinate
-    #     # (like, to split all points into columns)
-    #     groups_by_xy: dict[
-    #         tuple[np.float32, np.float32], np.ndarray
-    #     ] = PointsOrganizer.group_by_unique_xy(al_plane_coordinates.points)
-
-    #     # Define groups that lie on the same line
-    #     groups_by_the_xy_lines: list[
-    #         dict[tuple[np.float32, np.float32], np.ndarray]
-    #     ] = PointsOrganizer.group_by_the_xy_lines(groups_by_xy, epsilon=1e-3, min_points_in_line=3)
-
-    #     grouped_by_lines: list[np.ndarray] = []
-
-    #     for i in groups_by_the_xy_lines:
-    #         group: np.ndarray = np.concatenate(list(i.values()))
-    #         grouped_by_lines.append(group)
-
-    #     return grouped_by_lines
 
     @staticmethod
     def _match_plane_with_group(
@@ -125,14 +105,6 @@ class AlAtomsTranslator:
 
             for plane_i in plane_indexes:
                 plane_group_map[plane_i].append(atom)
-            # Find the plane with the minimum distance sum
-            # closest_plane_index: float = min(
-            #     range(len(planes)),
-            #     key=lambda i: DistanceMeasure.calculate_min_distances(np.array([atom]), planes[i].points)
-            # )
-            # plane_group_map[closest_plane_index] = atom
-
-        # max_len: int = max(len(value) for value in plane_group_map.values())
 
         # Filter plane groups with the max length
         plane_group_map = {
@@ -154,11 +126,12 @@ class AlAtomsTranslator:
             plane_group_map: dict[int, np.ndarray],
             carbon_channel: CarbonHoneycombChannel,
             try_to_reflect_al_atoms: bool,
+            atom_params: ConstantsAtomParams,
     ) -> Points:
         planes: list[CarbonHoneycombPlane] = carbon_channel.planes
         # channel_center: np.ndarray = carbon_channel.center
         all_al_points: list[np.ndarray] = []
-        min_allowed_dist: float = Constants.phys.MIN_ALLOWED_DIST_BETWEEN_AL_C
+        min_allowed_dist: float = atom_params.MIN_ALLOWED_DIST_BETWEEN_ATOMS
 
         for plane_i, plane in enumerate(planes):
             if plane_i in plane_group_map:
@@ -176,7 +149,7 @@ class AlAtomsTranslator:
                     min_allowed_dist = min_dist
                     logger.warning(
                         "Min allowed distance between Al and C atoms "
-                        f"is less than {Constants.phys.al.DIST_BETWEEN_ATOMS:.2f}: {min_allowed_dist:.2f}"
+                        f"is less than {atom_params.DIST_BETWEEN_ATOMS:.2f}: {min_allowed_dist:.2f}"
                     )
 
             # Get the index of the related plane

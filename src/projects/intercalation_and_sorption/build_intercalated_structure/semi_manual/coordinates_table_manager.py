@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from scipy.spatial.distance import cdist
 
-from src.utils import Constants, Logger, FileReader, FileWriter
+from src.utils import Constants, ConstantsAtomParams,   Logger, FileReader, FileWriter, PathBuilder
 from src.base_structure_classes import Points
 from src.projects.carbon_honeycomb_actions import (
     CarbonHoneycombChannel,
@@ -18,34 +18,51 @@ class CoordinatesTableManager:
     @classmethod
     def update_plane_tbl_file(
             cls,
+            project_dir: str,
+            subproject_dir: str,
             structure_dir: str,
             carbon_channel: CarbonHoneycombChannel,
             number_of_planes: int,
+            atom_params: ConstantsAtomParams,
     ) -> Path:
         al_plane_coordinates: Points = AtomsParser.get_al_plane_coordinates(
-            structure_dir, carbon_channel, number_of_planes)
+            project_dir, subproject_dir, structure_dir, carbon_channel, number_of_planes, atom_params)
         df: pd.DataFrame = cls._build_updated_df(al_plane_coordinates)
+
+        path_to_file = PathBuilder.build_path_to_init_data_file(
+            project_dir=project_dir,
+            subproject_dir=subproject_dir,
+            structure_dir=structure_dir,
+            file_name=Constants.file_names.PLANE_COORDINATES_XLSX_FILE,
+        )
 
         path_to_file: Path | None = FileWriter.write_excel_file(
             df=df,
-            structure_dir=structure_dir,
+            path_to_file=path_to_file,
             sheet_name="Al atoms for the plane",
-            file_name=Constants.file_names.AL_PLANE_COORDINATES_XLSX_FILE,
-            is_init_data_dir=False,
         )
 
         if path_to_file is None:
-            raise IOError(f"Failed to write {Constants.file_names.AL_PLANE_COORDINATES_XLSX_FILE} file.")
+            raise IOError(f"Failed to write {Constants.file_names.PLANE_COORDINATES_XLSX_FILE} file.")
 
         return path_to_file
 
     @classmethod
-    def update_full_channel_tbl_file(cls, structure_dir: str,) -> Path:
-        al_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(
+    def update_full_channel_tbl_file(
+            cls,
+            project_dir: str,
+            subproject_dir: str,
+            structure_dir: str,
+    ) -> Path:
+        file_name: str = Constants.file_names.FULL_CHANNEL_COORDINATES_XLSX_FILE
+        path_to_file = PathBuilder.build_path_to_init_data_file(
+            project_dir=project_dir,
+            subproject_dir=subproject_dir,
             structure_dir=structure_dir,
-            file_name=Constants.file_names.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
-            is_init_data_dir=False,
+            file_name=file_name,
         )
+
+        al_channel_coordinates_df: pd.DataFrame | None = FileReader.read_excel_file(path_to_file)
 
         if al_channel_coordinates_df is None:
             raise FileNotFoundError(
@@ -56,14 +73,12 @@ class CoordinatesTableManager:
 
         path_to_file: Path | None = FileWriter.write_excel_file(
             df=df,
-            structure_dir=structure_dir,
+            path_to_file=path_to_file,
             sheet_name="Al atoms for the full channel",
-            file_name=Constants.file_names.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE,
-            is_init_data_dir=False,
         )
 
         if path_to_file is None:
-            raise IOError(f"Failed to write {Constants.file_names.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE} file.")
+            raise IOError(f"Failed to write {file_name} file.")
 
         return path_to_file
 

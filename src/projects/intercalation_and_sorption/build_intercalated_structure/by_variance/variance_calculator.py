@@ -1,5 +1,5 @@
 import numpy as np
-from numpy import ndarray, floating
+from numpy import floating
 from scipy.spatial.distance import cdist
 
 from src.base_structure_classes import Points
@@ -10,7 +10,7 @@ class VarianceCalculator:
     @classmethod
     def _calculate_distance_variance(
             cls,
-            translation_vector: ndarray,
+            translation_vector: np.ndarray,
             channel_points: Points,
             inner_points: Points,
     ) -> floating | float:
@@ -25,7 +25,7 @@ class VarianceCalculator:
         translated_inner_points.points[:, 1] += translation_vector[1]  # Along Oy
 
         # Calculate distances between each translated inner point and all channel points
-        # distances: ndarray = cdist(translated_inner_points, channel_points)
+        # distances: np.ndarray = cdist(translated_inner_points, channel_points)
 
         # # Get minimum distance from each inner point to any channel point
         # min_distances: floating = np.min(distances, axis=1)
@@ -33,7 +33,6 @@ class VarianceCalculator:
         # # Calculate the variance of these minimum distances
         # variance: floating = np.var(min_distances)
 
-        # TO CHECK ValueError: The user-provided objective function must return a scalar value.
         return -DistanceMeasure.calculate_min_distance_sum(translated_inner_points.points, channel_points.points)
 
     @staticmethod
@@ -42,8 +41,8 @@ class VarianceCalculator:
     ) -> floating:
         """ Calculate variance of the minimum distances after translation and rotation. """
 
-        distances: ndarray = cdist(inner_points.points, channel_points.points)
-        min_distances: ndarray = np.min(distances, axis=1)
+        distances: np.ndarray = cdist(inner_points.points, channel_points.points)
+        min_distances: np.ndarray = np.min(distances, axis=1)
         variance: floating = np.var(min_distances)
         return variance
 
