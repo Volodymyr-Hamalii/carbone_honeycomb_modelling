@@ -539,6 +539,8 @@ class VMIntercalationAndSorption(VMParamsSetter):
             z_max=self.z_max,
         )
 
+        to_show_inter_atoms_indexes: bool = self.to_show_inter_atoms_indexes
+
         inter_atoms_visual_params_map: dict[str, list[StructureVisualParams]] = {
             "al": [VisualizationParams.al_1, VisualizationParams.al_2, VisualizationParams.al_3],
             "ar": [VisualizationParams.ar_1, VisualizationParams.ar_2, VisualizationParams.ar_3],
@@ -554,7 +556,8 @@ class VMIntercalationAndSorption(VMParamsSetter):
                 num_of_min_distances=self.bonds_num_of_min_distances,
                 skip_first_distances=self.bonds_skip_first_distances,
                 to_show_coordinates=self.to_show_coordinates,
-                to_show_indexes=self.to_show_inter_atoms_indexes,
+                to_show_indexes_first=False,
+                to_show_indexes_second=to_show_inter_atoms_indexes,
                 # is_interactive_mode=self.interactive_mode,
                 coordinate_limits_first=coordinate_limits,
                 coordinate_limits_second=coordinate_limits,
@@ -590,11 +593,15 @@ class VMIntercalationAndSorption(VMParamsSetter):
                     False,
                     False,
                 ],
+                to_show_indexes_list=[
+                    False,
+                    to_show_inter_atoms_indexes,
+                    to_show_inter_atoms_indexes,
+                ],
                 title=title,
                 num_of_min_distances=self.bonds_num_of_min_distances,
                 skip_first_distances=self.bonds_skip_first_distances,
                 to_show_coordinates=self.to_show_coordinates,
-                to_show_indexes=self.to_show_inter_atoms_indexes,
                 # is_interactive_mode=self.interactive_mode,
                 custom_indices_list=[None, a_layer_indices, b_layer_indices],
                 coordinate_limits_list=[coordinate_limits for _ in range(3)],
@@ -634,11 +641,16 @@ class VMIntercalationAndSorption(VMParamsSetter):
                     False,
                     False,
                 ],
+                to_show_indexes_list=[
+                    False,
+                    to_show_inter_atoms_indexes,
+                    to_show_inter_atoms_indexes,
+                    to_show_inter_atoms_indexes,
+                ],
                 title=title,
                 num_of_min_distances=self.bonds_num_of_min_distances,
                 skip_first_distances=self.bonds_skip_first_distances,
                 to_show_coordinates=self.to_show_coordinates,
-                to_show_indexes=self.to_show_inter_atoms_indexes,
                 # is_interactive_mode=self.interactive_mode,
                 custom_indices_list=[None, a_layer_indices, b_layer_indices, c_layer_indices],
                 coordinate_limits_list=[coordinate_limits for _ in range(4)],
