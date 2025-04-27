@@ -460,79 +460,6 @@ class TranslateInterToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsT
         self.view_model.set_z_max(value_max)
 
 
-class GetInterChcDetailsTblWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
-    """ Get intercalated CH channel details table """
-
-    def __init__(
-            self,
-            view_model: VMIntercalationAndSorption,
-            structure_dir: str,
-            project_dir: str,
-            subproject_dir: str,
-    ) -> None:
-        super().__init__(view_model, structure_dir, project_dir, subproject_dir)
-        self.create_window(
-            title=f"Get intercalated CH channel details ({self.structure_dir})",
-            description=(
-                "Build a table with intercalated CH channel details (intercalated atoms coordinates, "
-                "distances to the plane, distances to the carbon atoms, distances to the other intercalated atoms)."
-            ),
-        )
-        self.create_ui()
-
-    def create_ui(self) -> None:
-        self.file_names_dropdown: DropdownList = self.pack_dropdown_list(
-            self.window,
-            options=self.file_names,
-            command=self.view_model.set_file_name,
-            title="Intercalated atoms coordinates to analyze",
-        )
-
-        self.btn_show_table: Button = self.pack_button(
-            self.window,
-            text="Show table",
-            command=self.show_inter_atoms_in_channel_details,
-        )
-
-        self.btn_save_file: Button = self.pack_button(
-            self.window,
-            text="Save Excel file",
-            command=self.get_inter_atoms_in_channel_details,
-            pady=(10, 25),
-        )
-
-    def get_inter_atoms_in_channel_details(self) -> None:
-        try:
-            path_to_file: Path = self.view_model.save_inter_in_channel_details(
-                project_dir=self.project_dir,
-                subproject_dir=self.subproject_dir,
-                structure_dir=self.structure_dir,
-            )
-            messagebox.showinfo("Success", f"Intercalated atoms in channel details saved to {path_to_file}")
-        except Exception as e:
-            messagebox.showerror("Error", str(e))
-
-    def show_inter_atoms_in_channel_details(self) -> None:
-        try:
-            df: pd.DataFrame = self.view_model.get_inter_in_channel_details(
-                project_dir=self.project_dir,
-                subproject_dir=self.subproject_dir,
-                structure_dir=self.structure_dir,
-            )
-
-            # Create a new window
-            new_window = ctk.CTkToplevel(self.window)
-            new_window.title("Intercalated CH channel details")
-            new_window.geometry("800x500")
-
-            # Create and display the table in the new window
-            self.table_window: Table = Table(df, master=new_window)
-            self.table_window.pack(fill="both", expand=True)
-
-        except Exception as e:
-            messagebox.showerror("Error", str(e))
-
-
 class TranslateInterToAllChannelsWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
     """ Translate intercalated to CHC atoms to all channels """
 
@@ -719,3 +646,79 @@ class TranslateInterToAllChannelsWindow(_IntercalationAndSorptionUtils, WindowsT
         value_max: str = self.coord_z_limits_input_field.max_entry.get()
         self.view_model.set_z_min(value_min)
         self.view_model.set_z_max(value_max)
+
+
+### Model analysis windows ###
+
+
+class GetInterChcDetailsTblWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
+    """ Get intercalated CH channel details table """
+
+    def __init__(
+            self,
+            view_model: VMIntercalationAndSorption,
+            structure_dir: str,
+            project_dir: str,
+            subproject_dir: str,
+    ) -> None:
+        super().__init__(view_model, structure_dir, project_dir, subproject_dir)
+        self.create_window(
+            title=f"Get intercalated CH channel details ({self.structure_dir})",
+            description=(
+                "Build a table with intercalated CH channel details (intercalated atoms coordinates, "
+                "distances to the plane, distances to the carbon atoms, distances to the other intercalated atoms)."
+            ),
+        )
+        self.create_ui()
+
+    def create_ui(self) -> None:
+        self.file_names_dropdown: DropdownList = self.pack_dropdown_list(
+            self.window,
+            options=self.file_names,
+            command=self.view_model.set_file_name,
+            title="Intercalated atoms coordinates to analyze",
+        )
+
+        self.btn_show_table: Button = self.pack_button(
+            self.window,
+            text="Show table",
+            command=self.show_inter_atoms_in_channel_details,
+        )
+
+        self.btn_save_file: Button = self.pack_button(
+            self.window,
+            text="Save Excel file",
+            command=self.get_inter_atoms_in_channel_details,
+            pady=(10, 25),
+        )
+
+    def get_inter_atoms_in_channel_details(self) -> None:
+        try:
+            path_to_file: Path = self.view_model.save_inter_in_channel_details(
+                project_dir=self.project_dir,
+                subproject_dir=self.subproject_dir,
+                structure_dir=self.structure_dir,
+            )
+            messagebox.showinfo("Success", f"Intercalated atoms in channel details saved to {path_to_file}")
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+    def show_inter_atoms_in_channel_details(self) -> None:
+        try:
+            df: pd.DataFrame = self.view_model.get_inter_in_channel_details(
+                project_dir=self.project_dir,
+                subproject_dir=self.subproject_dir,
+                structure_dir=self.structure_dir,
+            )
+
+            # Create a new window
+            new_window = ctk.CTkToplevel(self.window)
+            new_window.title("Intercalated CH channel details")
+            new_window.geometry("800x500")
+
+            # Create and display the table in the new window
+            self.table_window: Table = Table(df, master=new_window)
+            self.table_window.pack(fill="both", expand=True)
+
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
