@@ -107,7 +107,7 @@ class InterAtomsParser:
         """ Read intercalated atoms coordinates from the file or build them if there is no Excel file. """
 
         if file_name and file_name != "None":
-            path_to_file: Path = PathBuilder.build_path_to_init_data_file(
+            path_to_file: Path = PathBuilder.build_path_to_result_data_file(
                 project_dir=project_dir,
                 subproject_dir=subproject_dir,
                 structure_dir=structure_dir,
@@ -118,7 +118,8 @@ class InterAtomsParser:
             if inter_atoms_plane_coordinates_df is not None:
                 return cls.parse_inter_atoms_coordinates_df(inter_atoms_plane_coordinates_df)
 
-        # logger.warning(f"Excel table withintercalated atoms for {structure_dir} structure not found.intercalated atoms builder.")
+        logger.warning(
+            f"Excel table with intercalated atoms for {structure_dir} structure not found. Intercalated atoms builder.")
 
         # Build atoms
         # carbon_channel: CarbonHoneycombChannel = cls.build_carbon_channel(structure_dir)

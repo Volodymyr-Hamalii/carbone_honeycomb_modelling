@@ -45,13 +45,13 @@ class VMIntercalationAndSorption(VMParamsSetter):
             project_dir, subproject_dir, structure_dir, file_name=Constants.file_names.INIT_DAT_FILE)
 
         inter_atoms_plane_coordinates: Points = InterAtomsParser.get_inter_atoms_plane_coordinates(
-            project_dir,
-            subproject_dir,
-            structure_dir,
-            carbon_channel,
-            self.number_of_planes,
-            atom_params,
-            self.file_name,
+            project_dir=project_dir,
+            subproject_dir=subproject_dir,
+            structure_dir=structure_dir,
+            carbon_channel=carbon_channel,
+            number_of_planes=self.number_of_planes,
+            atom_params=atom_params,
+            file_name=self.file_name,
         )
 
         plane_points: np.ndarray = np.vstack(
@@ -105,7 +105,14 @@ class VMIntercalationAndSorption(VMParamsSetter):
             project_dir, subproject_dir, structure_dir, file_name=Constants.file_names.INIT_DAT_FILE)
 
         path_to_file: Path = CoordinatesTableManager.update_plane_tbl_file(
-            project_dir, subproject_dir, structure_dir, carbon_channel, self.number_of_planes, atom_params)
+            project_dir=project_dir,
+            subproject_dir=subproject_dir,
+            structure_dir=structure_dir,
+            carbon_channel=carbon_channel,
+            number_of_planes=self.number_of_planes,
+            atom_params=atom_params,
+            file_name=self.file_name,
+        )
 
         return path_to_file
 

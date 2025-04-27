@@ -21,19 +21,27 @@ class CoordinatesTableManager:
             project_dir: str,
             subproject_dir: str,
             structure_dir: str,
+            file_name: str,
             carbon_channel: CarbonHoneycombChannel,
             number_of_planes: int,
             atom_params: ConstantsAtomParams,
     ) -> Path:
         inter_atoms_plane: Points = InterAtomsParser.get_inter_atoms_plane_coordinates(
-            project_dir, subproject_dir, structure_dir, carbon_channel, number_of_planes, atom_params)
-        df: pd.DataFrame = cls._build_updated_df(inter_atoms_plane)
-
-        path_to_file = PathBuilder.build_path_to_init_data_file(
             project_dir=project_dir,
             subproject_dir=subproject_dir,
             structure_dir=structure_dir,
-            file_name=Constants.file_names.PLANE_COORDINATES_XLSX_FILE,
+            carbon_channel=carbon_channel,
+            number_of_planes=number_of_planes,
+            atom_params=atom_params,
+            file_name=file_name,
+        )
+        df: pd.DataFrame = cls._build_updated_df(inter_atoms_plane)
+
+        path_to_file = PathBuilder.build_path_to_result_data_file(
+            project_dir=project_dir,
+            subproject_dir=subproject_dir,
+            structure_dir=structure_dir,
+            file_name=file_name,
         )
 
         path_to_file: Path | None = FileWriter.write_excel_file(
@@ -43,7 +51,7 @@ class CoordinatesTableManager:
         )
 
         if path_to_file is None:
-            raise IOError(f"Failed to write {Constants.file_names.PLANE_COORDINATES_XLSX_FILE} file.")
+            raise IOError(f"Failed to write {file_name} file.")
 
         return path_to_file
 
@@ -55,7 +63,7 @@ class CoordinatesTableManager:
             structure_dir: str,
     ) -> Path:
         file_name: str = Constants.file_names.FULL_CHANNEL_COORDINATES_XLSX_FILE
-        path_to_file = PathBuilder.build_path_to_init_data_file(
+        path_to_file = PathBuilder.build_path_to_result_data_file(
             project_dir=project_dir,
             subproject_dir=subproject_dir,
             structure_dir=structure_dir,
