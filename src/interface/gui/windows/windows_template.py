@@ -1,5 +1,6 @@
 from typing import Any, Callable
 import customtkinter as ctk
+import pandas as pd
 
 from src.utils import Logger
 from ..components import (
@@ -8,6 +9,7 @@ from ..components import (
     DropdownList,
     Button,
     InputFieldCoordLimits,
+    Table,
 )
 
 logger = Logger("WindowsTemplate")
@@ -16,10 +18,18 @@ logger = Logger("WindowsTemplate")
 class WindowsTemplate:
     window: ctk.CTkToplevel
 
-    def create_window(self, title: str, description: str = "") -> None:
+    def create_window(
+            self,
+            title: str,
+            description: str = "",
+            geometry: tuple[int, int] | None = None,
+    ) -> None:
         self.window = ctk.CTkToplevel()
         self.window.pack_propagate(True)
         self.window.grid_propagate(True)
+
+        if geometry:
+            self.window.geometry(f"{geometry[0]}x{geometry[1]}")
 
         self.window.title(title)
 
@@ -28,6 +38,20 @@ class WindowsTemplate:
                 self.window, text=description, wraplength=500
             )
             description_label.pack(pady=10, padx=10)
+
+    def pack_label(
+            self,
+            parent: Any,
+            text: str,
+            pady: int | tuple[int, int] = 10,
+            padx: int | tuple[int, int] = 10,
+    ) -> ctk.CTkLabel:
+        label: ctk.CTkLabel = ctk.CTkLabel(
+            parent,
+            text=text,
+        )
+        label.pack(pady=pady, padx=padx)
+        return label
 
     def pack_input_field(
             self,
@@ -122,3 +146,14 @@ class WindowsTemplate:
         )
         button.pack(pady=pady, padx=padx)
         return button
+
+    def pack_table(
+            self,
+            parent: Any,
+            df: pd.DataFrame,
+            title: str = "",
+            to_show_index: bool = True,
+    ) -> Table:
+        table: Table = Table(df, master=parent, title=title, to_show_index=to_show_index)
+        table.pack(fill="both", expand=True)
+        return table
