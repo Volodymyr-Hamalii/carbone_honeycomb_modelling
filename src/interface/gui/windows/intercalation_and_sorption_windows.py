@@ -739,7 +739,7 @@ class GetInterChcConstantsWindow(_IntercalationAndSorptionUtils, WindowsTemplate
         try:
             self.create_window(
                 title=f"Get intercalated CH channel constants ({self.structure_dir})",
-                geometry=(600, 500),
+                geometry=(500, 600),
             )
             self.create_ui()
         except Exception as e:
