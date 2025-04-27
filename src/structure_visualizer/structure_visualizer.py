@@ -67,7 +67,7 @@ class StructureVisualizer:
             coordinates_first: ndarray,
             coordinates_second: ndarray,
             visual_params_first: StructureVisualParams = VisualizationParams.carbon,
-            visual_params_second: StructureVisualParams = VisualizationParams.al,
+            visual_params_second: StructureVisualParams = VisualizationParams.al_1,
             coordinate_limits_first: CoordinateLimits | None = None,
             coordinate_limits_second: CoordinateLimits | None = None,
             to_build_bonds: bool = False,

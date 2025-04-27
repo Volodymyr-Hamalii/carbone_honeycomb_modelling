@@ -58,7 +58,9 @@ class VisualizationParams:
         to_show_indexes=False,
     )
 
-    al = StructureVisualParams(
+    # Aluminum
+
+    al_1 = StructureVisualParams(
         label="Aluminum",
 
         color_atoms=Colors.aluminum_1_atoms,
@@ -92,6 +94,56 @@ class VisualizationParams:
 
     al_3 = StructureVisualParams(
         label="Aluminum",
+
+        color_atoms=Colors.aluminum_3_atoms,
+        transparency=0.5,
+        size=400,
+
+        color_bonds=Colors.aluminum_3_bonds,
+        transparency_bonds=1,
+        bonds_width=1,
+
+        to_set_equal_scale=False,
+        to_show_coordinates=False,
+        to_show_indexes=True,
+    )
+
+    # Argon
+
+    ar_1 = StructureVisualParams(
+        label="Argon",
+
+        color_atoms=Colors.aluminum_1_atoms,
+        transparency=0.5,
+        size=400,
+
+        color_bonds=Colors.aluminum_1_bonds,
+        transparency_bonds=1,
+        bonds_width=1,
+
+        to_set_equal_scale=False,
+        to_show_coordinates=False,
+        to_show_indexes=True,
+    )
+
+    ar_2 = StructureVisualParams(
+        label="Argon",
+
+        color_atoms=Colors.aluminum_2_atoms,
+        transparency=0.5,
+        size=400,
+
+        color_bonds=Colors.aluminum_2_bonds,
+        transparency_bonds=1,
+        bonds_width=1,
+
+        to_set_equal_scale=False,
+        to_show_coordinates=False,
+        to_show_indexes=True,
+    )
+
+    ar_3 = StructureVisualParams(
+        label="Argon",
 
         color_atoms=Colors.aluminum_3_atoms,
         transparency=0.5,

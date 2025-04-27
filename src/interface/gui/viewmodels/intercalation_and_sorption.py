@@ -12,8 +12,12 @@ from src.utils import (
     PathBuilder,
 )
 from src.base_structure_classes import LatticeType, Points, CoordinateLimits
-from src.structure_visualizer import StructureVisualizer, VisualizationParams
 from src.coordinate_operations import DistanceMeasure
+from src.structure_visualizer import (
+    StructureVisualizer,
+    VisualizationParams,
+    StructureVisualParams,
+)
 from src.projects import (
     IntercalatedChannelBuilder,
     CarbonHoneycombChannel,
@@ -56,6 +60,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
         self._show_structures(
             carbon_channel_points=plane_points,
             inter_atoms=inter_atoms_plane_coordinates.points,
+            subproject_dir=subproject_dir,
             title=structure_dir,
         )
 
@@ -148,6 +153,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
         self._show_structures(
             carbon_channel_points=carbon_channel_points,
             inter_atoms=inter_atoms_coordinates.points,
+            subproject_dir=subproject_dir,
             title=structure_dir,
         )
 
@@ -391,6 +397,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
         self._show_structures(
             carbon_channel_points=coordinates_carbon.points,
             inter_atoms=inter_atoms.points,
+            subproject_dir=subproject_dir,
             title=structure_dir,
         )
 
@@ -444,6 +451,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
         self._show_structures(
             carbon_channel_points=coordinates_carbon.points,
             inter_atoms=inter_atoms.points,
+            subproject_dir=subproject_dir,
             title=structure_dir,
         )
 
@@ -517,6 +525,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
         self,
         carbon_channel_points: np.ndarray,
         inter_atoms: np.ndarray,
+        subproject_dir: str,
         title: str | None = None,
     ) -> None:
         # TODO: refactor
@@ -529,6 +538,12 @@ class VMIntercalationAndSorption(VMParamsSetter):
             z_min=self.z_min,
             z_max=self.z_max,
         )
+
+        inter_atoms_visual_params_map: dict[str, list[StructureVisualParams]] = {
+            "al": [VisualizationParams.al_1, VisualizationParams.al_2, VisualizationParams.al_3],
+            "ar": [VisualizationParams.ar_1, VisualizationParams.ar_2, VisualizationParams.ar_3],
+        }
+        inter_atoms_visual_params: list[StructureVisualParams] = inter_atoms_visual_params_map[subproject_dir.lower()]
 
         if self.num_of_inter_atoms_layers == 1:
             StructureVisualizer.show_two_structures(
@@ -543,6 +558,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
                 # is_interactive_mode=self.interactive_mode,
                 coordinate_limits_first=coordinate_limits,
                 coordinate_limits_second=coordinate_limits,
+                visual_params_second=inter_atoms_visual_params[0],
             )
 
         elif self.num_of_inter_atoms_layers == 2:
@@ -566,8 +582,8 @@ class VMIntercalationAndSorption(VMParamsSetter):
                 ],
                 visual_params_list=[
                     VisualizationParams.carbon,
-                    VisualizationParams.al,
-                    VisualizationParams.al_2,
+                    inter_atoms_visual_params[0],
+                    inter_atoms_visual_params[1],
                 ],
                 to_build_bonds_list=[
                     self.to_build_bonds,
@@ -608,9 +624,9 @@ class VMIntercalationAndSorption(VMParamsSetter):
                 ],
                 visual_params_list=[
                     VisualizationParams.carbon,
-                    VisualizationParams.al,
-                    VisualizationParams.al_2,
-                    VisualizationParams.al_3,
+                    inter_atoms_visual_params[0],
+                    inter_atoms_visual_params[1],
+                    inter_atoms_visual_params[2],
                 ],
                 to_build_bonds_list=[
                     self.to_build_bonds,

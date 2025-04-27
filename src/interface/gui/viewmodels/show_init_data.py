@@ -160,7 +160,7 @@ class VMShowInitData(VMParamsSetter):
         ax.scatter(
             center_2d[0],
             center_2d[1],
-            color=VisualizationParams.al.color_atoms,
+            color=VisualizationParams.al_1.color_atoms,
             alpha=0.5,
             label='Center',
         )
