@@ -323,7 +323,6 @@ class VMIntercalationAndSorption(VMParamsSetter):
 
         atom_params: ConstantsAtomParams = ATOM_PARAMS_MAP[subproject_dir.lower()]
 
-        atom_name: str = atom_params.ATOM_SYMBOL
         min_distances_between_c_points: np.ndarray = DistanceMeasure.calculate_min_distances_between_points(
             carbon_channel.points
         )
@@ -342,7 +341,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
             "Equilibrium distance between atoms (Å)": round(atom_params.DIST_BETWEEN_ATOMS, 4),
             "Min recomended distance between atoms (Å)": round(atom_params.MIN_RECOMENDED_DIST_BETWEEN_ATOMS, 4),
             "Min allowed distance between atoms (Å)": round(atom_params.MIN_ALLOWED_DIST_BETWEEN_ATOMS, 4),
-            f"Average {atom_name}-C distance (Å)": round(float(mean_inter_c_dist), 4),
+            f"Average {atom_params.ATOM_SYMBOL}-C distance (Å)": round(float(mean_inter_c_dist), 4),
         }
 
         # Convert the dictionary to a DataFrame
@@ -352,7 +351,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
 
         return {
             "Carbon honeycomb channel constants": carbon_channel_constants_df,
-            f"Intercalation constants for {atom_name}": intercalation_constants_df,
+            f"Intercalation constants for {atom_params.ATOMS_NAME}": intercalation_constants_df,
         }
 
     def translate_inter_to_all_channels_plot(
