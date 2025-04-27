@@ -13,15 +13,30 @@ class Table(ctk.CTkFrame):
     ) -> None:
         super().__init__(master, **kwargs)
 
+        # Automatically determine the theme
+        current_theme: str = ctk.get_appearance_mode().lower()
+
+        # Define colors based on theme
+        if current_theme == "dark":
+            bg_color = "#333333"  # Dark background
+            header_bg_color = "#444444"  # Slightly lighter for headers
+            text_color = "white"
+            alt_row_color = "#3a3a3a"  # Alternate row color for dark theme
+        else:
+            bg_color = "white"
+            header_bg_color = "lightgray"
+            text_color = "black"
+            alt_row_color = "#f0f0f0"  # Alternate row color for light theme
+
         # Set the background color for the entire table
-        self.configure(bg_color="white")
+        self.configure(bg_color=bg_color)
 
         # Create a label for the title using grid
-        title_label = ctk.CTkLabel(self, text=title, bg_color="white")
+        title_label = ctk.CTkLabel(self, text=title, bg_color=bg_color, fg_color=text_color)
         title_label.grid(row=0, column=0, columnspan=len(data.columns) + 1, sticky="ew")
 
         # Create a canvas to hold the table and scrollbars
-        canvas = ctk.CTkCanvas(self, bg="white")
+        canvas = ctk.CTkCanvas(self, bg=bg_color)
         canvas.grid(row=1, column=0, sticky="nsew")
 
         # Add scrollbars
@@ -33,7 +48,7 @@ class Table(ctk.CTkFrame):
         canvas.configure(yscrollcommand=v_scrollbar.set, xscrollcommand=h_scrollbar.set)
 
         # Create a frame inside the canvas
-        table_frame = ctk.CTkFrame(canvas, bg_color="white")
+        table_frame = ctk.CTkFrame(canvas, bg_color=bg_color)
         canvas.create_window((0, 0), window=table_frame, anchor='nw')
 
         # Calculate column widths based on content
@@ -81,7 +96,8 @@ class Table(ctk.CTkFrame):
                             height=1,
                             width=sum(col_widths[col_start:col_end + 1]),
                             font=("Arial", 10, "bold"),  # Bold font for headers
-                            bg="lightgray",  # Background color for headers
+                            bg=header_bg_color,  # Use theme-based header background color
+                            fg=text_color,  # Use theme-based text color
                             bd=0,  # No border
                             highlightthickness=0,  # No highlight border
                             wrap="none"  # No text wrapping
@@ -101,7 +117,8 @@ class Table(ctk.CTkFrame):
                             height=1,
                             width=col_widths[col],
                             font=("Arial", 10, "bold"),  # Bold font for headers
-                            bg="lightgray",  # Background color for headers
+                            bg=header_bg_color,  # Use theme-based header background color
+                            fg=text_color,  # Use theme-based text color
                             bd=0,  # No border
                             highlightthickness=0,  # No highlight border
                             wrap="none"  # No text wrapping
@@ -123,7 +140,8 @@ class Table(ctk.CTkFrame):
                     height=1,
                     width=col_widths[i],
                     font=("Arial", 10, "bold"),  # Bold font for headers
-                    bg="lightgray",  # Background color for headers
+                    bg=header_bg_color,  # Use theme-based header background color
+                    fg=text_color,  # Use theme-based text color
                     bd=0,  # No border
                     highlightthickness=0,  # No highlight border
                     wrap="none"  # No text wrapping
@@ -137,7 +155,7 @@ class Table(ctk.CTkFrame):
         # Create the table cells
         for i, (index, row) in enumerate(data.iterrows()):
             # Determine the background color for the row
-            row_bg_color: str = "white" if i % 2 == 0 else "#f0f0f0"  # Very light gray for alternate rows
+            row_bg_color: str = bg_color if i % 2 == 0 else alt_row_color
 
             # Add index cell
             index_frame = ctk.CTkFrame(table_frame, bg_color="black")
@@ -147,7 +165,8 @@ class Table(ctk.CTkFrame):
                 height=1,
                 width=index_width,
                 font=("Arial", 9),  # Reduced font size for cells
-                bg="lightgray",  # Background color for index cells
+                bg=header_bg_color,  # Use theme-based index cell background color
+                fg=text_color,  # Use theme-based text color
                 bd=0,  # No border
                 highlightthickness=0,  # No highlight border
                 wrap="none"  # No text wrapping
@@ -166,7 +185,8 @@ class Table(ctk.CTkFrame):
                     height=1,
                     width=col_widths[j],
                     font=("Arial", 9),  # Reduced font size for cells
-                    bg=row_bg_color,  # Alternate background color
+                    bg=row_bg_color,  # Use theme-based row background color
+                    fg=text_color,  # Use theme-based text color
                     bd=0,  # No border
                     highlightthickness=0,  # No highlight border
                     wrap="none"  # No text wrapping
