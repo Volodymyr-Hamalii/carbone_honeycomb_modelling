@@ -280,6 +280,69 @@ class VMIntercalationAndSorption(VMParamsSetter):
 
         return df
 
+    def get_inter_chc_constants(
+            self,
+            project_dir: str,
+            subproject_dir: str,
+            structure_dir: str,
+    ) -> dict[str, pd.DataFrame]:
+        """ Returns the dict with name of the table and the table itself. """
+
+        ### CH channel constants ###
+
+        carbon_channel: CarbonHoneycombChannel = InterAtomsParser.build_carbon_channel(
+            project_dir, subproject_dir, structure_dir, file_name=Constants.file_names.INIT_DAT_FILE)
+
+        min_dist_between_atoms: np.floating = np.mean(
+            DistanceMeasure.calculate_min_distances_between_points(carbon_channel.points)
+        )
+
+        hexagons: list = [hexagon for plane in carbon_channel.planes for hexagon in plane.hexagons]
+        # hexagons: list = [hexagon for hexagon in carbon_channel.planes[0].hexagons]
+        hexagon_centers: np.ndarray = np.array([hexagon.center for hexagon in hexagons])
+
+        # Get all possible distances between hexagon center Z coordinates
+        dists_between_hexagon_center_layers: np.ndarray = np.abs(
+            hexagon_centers[:, 2][:, None] - hexagon_centers[:, 2][None, :]
+        )
+        min_dists_between_hexagon_layers: np.floating = np.min(
+            dists_between_hexagon_center_layers[dists_between_hexagon_center_layers > 0.1]
+        )
+
+        carbon_channel_constants: dict[str, float] = {
+            "Average distance between atoms (A)": round(float(min_dist_between_atoms), 4),
+            "Average distance between hexagon layers (A)": round(float(min_dists_between_hexagon_layers), 4),
+        }
+
+        # Convert the dictionary to a DataFrame
+        carbon_channel_constants_df: pd.DataFrame = pd.DataFrame.from_dict(
+            carbon_channel_constants, orient='index', columns=['Value']
+        ).reset_index().rename(columns={'index': 'Name'})
+
+        ### Intercalation constants ###
+
+        atom_params: ConstantsAtomParams = ATOM_PARAMS_MAP[subproject_dir.lower()]
+
+        atom_name: str = atom_params.ATOM_SYMBOL
+
+        intercalation_constants: dict[str, float] = {
+            "Lattice parameter (A)": round(atom_params.LATTICE_PARAM, 4),
+            "Equilibrium distance between atoms (A)": round(atom_params.DIST_BETWEEN_ATOMS, 4),
+            "Min recomended distance between atoms (A)": round(atom_params.MIN_RECOMENDED_DIST_BETWEEN_ATOMS, 4),
+            "Min allowed distance between atoms (A)": round(atom_params.MIN_ALLOWED_DIST_BETWEEN_ATOMS, 4),
+            "Min allowed distance to C (A)": round(atom_params.MIN_ALLOWED_DIST_TO_C, 4),
+        }
+
+        # Convert the dictionary to a DataFrame
+        intercalation_constants_df: pd.DataFrame = pd.DataFrame.from_dict(
+            intercalation_constants, orient='index', columns=['Value']
+        ).reset_index().rename(columns={'index': 'Name'})
+
+        return {
+            "Carbon honeycomb channel constants": carbon_channel_constants_df,
+            f"Intercalation constants for {atom_name}": intercalation_constants_df,
+        }
+
     def translate_inter_to_all_channels_plot(
             self,
             project_dir: str,

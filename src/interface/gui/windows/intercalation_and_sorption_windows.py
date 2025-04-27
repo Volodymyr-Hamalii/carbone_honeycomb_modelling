@@ -23,6 +23,7 @@ __all__: list[str] = [
     "TranslateInterToOtherPlanesWindow",
     "TranslateInterToAllChannelsWindow",
     "GetInterChcDetailsTblWindow",
+    "GetInterChcConstantsWindow",
 ]
 
 
@@ -722,3 +723,40 @@ class GetInterChcDetailsTblWindow(_IntercalationAndSorptionUtils, WindowsTemplat
 
         except Exception as e:
             messagebox.showerror("Error", str(e))
+
+
+class GetInterChcConstantsWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
+    """ Get intercalated CH channel constants """
+
+    def __init__(
+            self,
+            view_model: VMIntercalationAndSorption,
+            structure_dir: str,
+            project_dir: str,
+            subproject_dir: str,
+    ) -> None:
+        super().__init__(view_model, structure_dir, project_dir, subproject_dir)
+        try:
+            self.create_window(
+                title=f"Get intercalated CH channel constants ({self.structure_dir})",
+                geometry=(600, 500),
+            )
+            self.create_ui()
+        except Exception as e:
+            messagebox.showerror("Error", str(e))
+
+    def create_ui(self) -> None:
+        tables: dict[str, pd.DataFrame] = self.view_model.get_inter_chc_constants(
+            project_dir=self.project_dir,
+            subproject_dir=self.subproject_dir,
+            structure_dir=self.structure_dir,
+        )
+
+        # Pack all tables in the current window
+        for table_name, df in tables.items():
+            self.table_window: Table = self.pack_table(
+                self.window,
+                df,
+                title=table_name,
+                to_show_index=False,
+            )

@@ -267,6 +267,12 @@ class AppGui(ctk.CTk, WindowsTemplate):
             command=self.open_get_inter_chc_details_tbl_window)
         self.show_intercalation_and_sorption_btn.pack(pady=10, padx=10)
 
+        # Button to show intercalation and sorption constants
+        self.show_intercalation_and_sorption_btn = Button(
+            intercalation_and_sorption_frame, text="Get intercalated CH channel constants",
+            command=self.open_get_inter_chc_constants_window)
+        self.show_intercalation_and_sorption_btn.pack(pady=10, padx=10)
+
     def open_update_inter_atoms_coordinates_table_window(self) -> None:
         UpdateInterCoordinatesTableWindow(
             view_model=self.view_model_intercalation_and_sorption,
@@ -293,6 +299,14 @@ class AppGui(ctk.CTk, WindowsTemplate):
 
     def open_get_inter_chc_details_tbl_window(self) -> None:
         GetInterChcDetailsTblWindow(
+            view_model=self.view_model_intercalation_and_sorption,
+            project_dir=self.project_dir,
+            subproject_dir=self.subproject_dir,
+            structure_dir=self.structure_dir,
+        )
+
+    def open_get_inter_chc_constants_window(self) -> None:
+        GetInterChcConstantsWindow(
             view_model=self.view_model_intercalation_and_sorption,
             project_dir=self.project_dir,
             subproject_dir=self.subproject_dir,
