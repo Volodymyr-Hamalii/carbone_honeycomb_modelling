@@ -9,6 +9,7 @@ class Table(ctk.CTkFrame):
             data: pd.DataFrame,
             master: ctk.CTk | ctk.CTkToplevel,
             title: str = "",
+            to_show_index: bool = True,
             **kwargs,
     ) -> None:
         super().__init__(master, **kwargs)
@@ -33,7 +34,7 @@ class Table(ctk.CTkFrame):
 
         # Create a label for the title using grid
         title_label = ctk.CTkLabel(self, text=title, bg_color=bg_color, fg_color=bg_color)
-        title_label.grid(row=0, column=0, columnspan=len(data.columns) + 1, sticky="ew")
+        title_label.grid(row=0, column=0, columnspan=len(data.columns) + (1 if to_show_index else 0), sticky="ew")
 
         # Create a canvas to hold the table and scrollbars
         canvas = ctk.CTkCanvas(self, bg=bg_color)
@@ -85,7 +86,7 @@ class Table(ctk.CTkFrame):
                         header_frame = ctk.CTkFrame(table_frame, bg_color="black")
                         header_frame.grid(
                             row=level,
-                            column=col_start + 1,
+                            column=col_start + (1 if to_show_index else 0),
                             columnspan=(col_end - col_start + 1),
                             sticky="nsew",
                             padx=1,
@@ -111,7 +112,13 @@ class Table(ctk.CTkFrame):
                     # Create headers for the second level
                     for col in range(col_start, col_end + 1):
                         header_frame = ctk.CTkFrame(table_frame, bg_color="black")
-                        header_frame.grid(row=level + 1, column=col + 1, sticky="nsew", padx=1, pady=1)
+                        header_frame.grid(
+                            row=level + 1,
+                            column=col + (1 if to_show_index else 0),
+                            sticky="nsew",
+                            padx=1,
+                            pady=1,
+                        )
                         header = tk.Text(
                             header_frame,
                             height=1,
@@ -134,7 +141,7 @@ class Table(ctk.CTkFrame):
             # Create a single row of headers
             for i, column in enumerate(data.columns):
                 header_frame = ctk.CTkFrame(table_frame, bg_color="black")
-                header_frame.grid(row=0, column=i + 1, sticky="nsew", padx=1, pady=1)
+                header_frame.grid(row=0, column=i + (1 if to_show_index else 0), sticky="nsew", padx=1, pady=1)
                 header = tk.Text(
                     header_frame,
                     height=1,
@@ -157,29 +164,32 @@ class Table(ctk.CTkFrame):
             # Determine the background color for the row
             row_bg_color: str = bg_color if i % 2 == 0 else alt_row_color
 
-            # Add index cell
-            index_frame = ctk.CTkFrame(table_frame, bg_color="black")
-            index_frame.grid(row=i + data.columns.nlevels, column=0, sticky="nsew", padx=1, pady=1)
-            index_cell = tk.Text(
-                index_frame,
-                height=1,
-                width=index_width,
-                font=("Arial", 9),  # Reduced font size for cells
-                bg=header_bg_color,  # Use theme-based index cell background color
-                fg=text_color,  # Use theme-based text color
-                bd=0,  # No border
-                highlightthickness=0,  # No highlight border
-                wrap="none"  # No text wrapping
-            )
-            index_cell.insert("1.0", str(index))
-            index_cell.tag_configure("center", justify='center')
-            index_cell.tag_add("center", "1.0", "end")
-            index_cell.config(state="disabled")  # Make the text read-only
-            index_cell.pack(fill="both", expand=True)
+            # Add index cell only if to_show_index is True
+            if to_show_index:
+                index_frame = ctk.CTkFrame(table_frame, bg_color="black")
+                index_frame.grid(row=i + data.columns.nlevels, column=0, sticky="nsew", padx=1, pady=1)
+                index_cell = tk.Text(
+                    index_frame,
+                    height=1,
+                    width=index_width,
+                    font=("Arial", 9),  # Reduced font size for cells
+                    bg=header_bg_color,  # Use theme-based index cell background color
+                    fg=text_color,  # Use theme-based text color
+                    bd=0,  # No border
+                    highlightthickness=0,  # No highlight border
+                    wrap="none"  # No text wrapping
+                )
+                index_cell.insert("1.0", str(index))
+                index_cell.tag_configure("center", justify='center')
+                index_cell.tag_add("center", "1.0", "end")
+                index_cell.config(state="disabled")  # Make the text read-only
+                index_cell.pack(fill="both", expand=True)
 
             for j, value in enumerate(row):
+                # Adjust column index if index column is not shown
+                col_index = j + 1 if to_show_index else j
                 cell_frame = ctk.CTkFrame(table_frame, bg_color="black")
-                cell_frame.grid(row=i + data.columns.nlevels, column=j + 1, sticky="nsew", padx=1, pady=1)
+                cell_frame.grid(row=i + data.columns.nlevels, column=col_index, sticky="nsew", padx=1, pady=1)
                 cell = tk.Text(
                     cell_frame,
                     height=1,
