@@ -29,13 +29,13 @@ class AppGui(ctk.CTk, WindowsTemplate):
         self.structure_dir: str = self.list_of_structure_dirs[0] if self.list_of_structure_dirs else "None"
 
         # Create GUI components
-        self.projects_dropdown: DropdownList = self.pack_dropdown_list(
-            self,
-            options=self.list_of_projects,
-            command=self.set_project_dir,
-            title="Select project",
-            is_disabled=True,  # TEMP untill there is an only one project
-        )
+        # self.projects_dropdown: DropdownList = self.pack_dropdown_list(
+        #     self,
+        #     options=self.list_of_projects,
+        #     command=self.set_project_dir,
+        #     title="Select project",
+        #     is_disabled=True,  # TEMP untill there is an only one project
+        # )
 
         self.subprojects_dropdown: DropdownList = self.pack_dropdown_list(
             self,
@@ -213,7 +213,7 @@ class AppGui(ctk.CTk, WindowsTemplate):
 
         # Button to show data converter
         self.show_data_converter_btn = Button(
-            data_operations_frame, text="Data converter", command=self.open_data_converter_window
+            data_operations_frame, text="Files converter", command=self.open_data_converter_window
         )
         self.show_data_converter_btn.pack(pady=10, padx=10)
 
