@@ -310,8 +310,8 @@ class VMIntercalationAndSorption(VMParamsSetter):
         )
 
         carbon_channel_constants: dict[str, float] = {
-            "Average distance between atoms (A)": round(float(min_dist_between_atoms), 4),
-            "Average distance between hexagon layers (A)": round(float(min_dists_between_hexagon_layers), 4),
+            "Average distance between atoms (Å)": round(float(min_dist_between_atoms), 4),
+            "Average distance between hexagon layers (Å)": round(float(min_dists_between_hexagon_layers), 4),
         }
 
         # Convert the dictionary to a DataFrame
@@ -324,13 +324,25 @@ class VMIntercalationAndSorption(VMParamsSetter):
         atom_params: ConstantsAtomParams = ATOM_PARAMS_MAP[subproject_dir.lower()]
 
         atom_name: str = atom_params.ATOM_SYMBOL
+        min_distances_between_c_points: np.ndarray = DistanceMeasure.calculate_min_distances_between_points(
+            carbon_channel.points
+        )
+
+        mean_inter_c_dist = float(
+            np.mean(
+                (
+                    float(np.mean(min_distances_between_c_points)),
+                    atom_params.DIST_BETWEEN_ATOMS,
+                )
+            )
+        )
 
         intercalation_constants: dict[str, float] = {
-            "Lattice parameter (A)": round(atom_params.LATTICE_PARAM, 4),
-            "Equilibrium distance between atoms (A)": round(atom_params.DIST_BETWEEN_ATOMS, 4),
-            "Min recomended distance between atoms (A)": round(atom_params.MIN_RECOMENDED_DIST_BETWEEN_ATOMS, 4),
-            "Min allowed distance between atoms (A)": round(atom_params.MIN_ALLOWED_DIST_BETWEEN_ATOMS, 4),
-            "Min allowed distance to C (A)": round(atom_params.MIN_ALLOWED_DIST_TO_C, 4),
+            "Lattice parameter (Å)": round(atom_params.LATTICE_PARAM, 4),
+            "Equilibrium distance between atoms (Å)": round(atom_params.DIST_BETWEEN_ATOMS, 4),
+            "Min recomended distance between atoms (Å)": round(atom_params.MIN_RECOMENDED_DIST_BETWEEN_ATOMS, 4),
+            "Min allowed distance between atoms (Å)": round(atom_params.MIN_ALLOWED_DIST_BETWEEN_ATOMS, 4),
+            f"Average {atom_name}-C distance (Å)": round(float(mean_inter_c_dist), 4),
         }
 
         # Convert the dictionary to a DataFrame

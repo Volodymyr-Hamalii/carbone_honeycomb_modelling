@@ -21,8 +21,6 @@ class ConstantsAtomParams(ABC):
     MIN_ALLOWED_DIST_BETWEEN_ATOMS: float
     MIN_RECOMENDED_DIST_BETWEEN_ATOMS: float
 
-    MIN_ALLOWED_DIST_TO_C: float
-
 
 class ConstantsAlParams(ConstantsAtomParams):
     """ Aluminium params """
@@ -35,8 +33,6 @@ class ConstantsAlParams(ConstantsAtomParams):
     MIN_ALLOWED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.7
     MIN_RECOMENDED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.92
 
-    MIN_ALLOWED_DIST_TO_C: float = 2.15
-
 
 class ConstantsArParams(ConstantsAtomParams):
     """ Argon params """
@@ -48,8 +44,6 @@ class ConstantsArParams(ConstantsAtomParams):
 
     MIN_ALLOWED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.7
     MIN_RECOMENDED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.92
-
-    MIN_ALLOWED_DIST_TO_C: float = 2.0
 
 
 ATOM_PARAMS_MAP: dict = {
