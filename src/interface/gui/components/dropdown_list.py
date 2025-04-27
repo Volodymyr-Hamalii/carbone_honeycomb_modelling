@@ -10,6 +10,7 @@ class DropdownList(ctk.CTkOptionMenu):
             command: Callable,
             title: str = "",
             is_disabled: bool = False,
+            title_pady: int | tuple[int, int] = 0,
             **kwargs,
     ) -> None:
         kwargs['fg_color'] = 'white'
@@ -19,7 +20,7 @@ class DropdownList(ctk.CTkOptionMenu):
 
         if title:
             self.title: ctk.CTkLabel = ctk.CTkLabel(master, text=title)
-            self.title.pack(pady=(10, 0), padx=10)
+            self.title.pack(pady=title_pady, padx=10)
 
         if is_disabled:
             self.configure(state=ctk.DISABLED)

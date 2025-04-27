@@ -92,8 +92,9 @@ class WindowsTemplate:
             options: list[str],
             title: str = "",
             is_disabled: bool = False,
-            pady: int | tuple[int, int] = 10,
-            padx: int | tuple[int, int] = 10,
+            pady: int | tuple[int, int] = 0,
+            padx: int | tuple[int, int] = 0,
+            title_pady: int | tuple[int, int] = (10, 0),
     ) -> DropdownList:
         dropdown_list: DropdownList = DropdownList(
             parent,
@@ -101,6 +102,7 @@ class WindowsTemplate:
             command=command,
             options=options,
             is_disabled=is_disabled,
+            title_pady=title_pady,
         )
         dropdown_list.pack(pady=pady, padx=padx)
         return dropdown_list

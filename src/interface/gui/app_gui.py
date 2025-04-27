@@ -49,6 +49,7 @@ class AppGui(ctk.CTk, WindowsTemplate):
             options=self.list_of_structure_dirs,
             command=self.set_structure_dir,
             title="Select structure folder",
+            pady=(0, 10),
         )
 
         # Set project, subproject and structure folder

@@ -66,6 +66,8 @@ class InitDataWindow(WindowsTemplate):
             self.window,
             options=self.file_names,
             command=self.view_model.set_file_name,
+            title="Select the file to plot",
+            pady=(0, 10),
         )
 
         # Checkbox for to_build_bonds
