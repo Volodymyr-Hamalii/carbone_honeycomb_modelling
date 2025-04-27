@@ -15,8 +15,8 @@ def _clear_env_cache() -> None:
         "number_of_planes",
         "number_of_layers",
         "number_of_min_distances",
-        "try_to_reflect_al_atoms",
-        "show_al_layers",
+        "try_to_reflect_inter_atoms",
+        "show_inter_atoms_layers",
         "interactive_mode",
     ]
 
@@ -43,8 +43,6 @@ class _ConstantsFilenames:
 
     # File names
     INIT_DAT_FILE: str = "ljout.dat"
-    INIT_PDB_FILE: str = "ljout-from-init-dat.pdb"
-    PDB_FILE_ONE_CHANNEL: str = "ljout-from-init-dat-one-channel.pdb"
 
     PLANE_COORDINATES_XLSX_FILE: str = "sorbed-plane-coordinates.xlsx"
     CHANNEL_COORDINATES_XLSX_FILE: str = "sorbed-channel-coordinates.xlsx"

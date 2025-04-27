@@ -17,7 +17,7 @@ from .variance_calculator import VarianceCalculator
 logger = Logger("AlAtomsFilter")
 
 
-class AtomsFilter:
+class InterAtomsFilter:
     @classmethod
     def get_filtered_atoms_atoms(
             cls,
@@ -44,24 +44,24 @@ class AtomsFilter:
             coordinates_atoms_result = atoms_filtered
             max_atoms_result = len(coordinates_atoms_result)
 
-            # Update min distances between Al atoms
-            min_dist_between_atoms_sum_result = cls._calculate_min_dist_between_intercalated_atoms_sum(
+            # Update min distances betweenintercalated atoms
+            min_dist_between_atoms_sum_result = cls._calculate_min_dist_between_inter_atoms_sum(
                 atoms_filtered)
 
             # Reset dist_and_rotation_variance
             dist_and_rotation_variance_result = 0
 
             if num_of_atoms > 1:
-                logger.info(f"Number of Al atoms: {num_of_atoms}")
+                logger.info(f"Number ofintercalated atoms: {num_of_atoms}")
 
-                # Print average min distance between Al atoms
+                # Print average min distance betweenintercalated atoms
                 ave_min_dist: float = round(min_dist_between_atoms_sum_result / max_atoms_result, 4)
-                logger.info(f"Average min distance between Al atoms: {ave_min_dist}")
+                logger.info(f"Average min distance betweenintercalated atoms: {ave_min_dist}")
 
         elif num_of_atoms > 0 and num_of_atoms == max_atoms:
 
-            # Calculate min distances between Al atoms
-            current_min_dist: float = cls._calculate_min_dist_between_intercalated_atoms_sum(
+            # Calculate min distances betweenintercalated atoms
+            current_min_dist: float = cls._calculate_min_dist_between_inter_atoms_sum(
                 atoms_filtered)
 
             # The nearest atoms have priority
@@ -70,9 +70,9 @@ class AtomsFilter:
                 max_atoms_result = len(coordinates_atoms_result)
                 min_dist_between_atoms_sum_result = current_min_dist
 
-                # Print average min distance between Al atoms
+                # Print average min distance betweenintercalated atoms
                 ave_min_dist: float = round(min_dist_between_atoms_sum_result / max_atoms_result, 4)
-                logger.info(f"Average min distance between Al atoms: {ave_min_dist}")
+                logger.info(f"Average min distance betweenintercalated atoms: {ave_min_dist}")
 
                 # Reset dist_and_rotation_variance
                 dist_and_rotation_variance_result = 0
@@ -99,7 +99,7 @@ class AtomsFilter:
         )
 
     @staticmethod
-    def _calculate_min_dist_between_intercalated_atoms_sum(inter_points: Points) -> float:
+    def _calculate_min_dist_between_inter_atoms_sum(inter_points: Points) -> float:
         min_dist: ndarray = DistanceMeasure.calculate_min_distances_between_points(
             inter_points.points)
         return round(np.sum(min_dist), 4)
@@ -111,7 +111,7 @@ class AtomsFilter:
             carbon_channel: CarbonHoneycombChannel,
             # structure_settings: StructureSettings,
     ) -> Points:
-        """Filter Al atoms related planes and then related carbon atoms."""
+        """Filter intercalated atoms related planes and then related carbon atoms."""
 
         inter_points_filtered: Points = cls.filter_atoms_related_clannel_planes(
             inter_points=inter_points,

@@ -234,59 +234,64 @@ class AppGui(ctk.CTk, WindowsTemplate):
 
         # Add a label for the section
         intercalation_and_sorption_label = ctk.CTkLabel(
-            intercalation_and_sorption_frame, text="Al intercalation and sorption")
+            intercalation_and_sorption_frame, text="Intercalation and sorption")
         intercalation_and_sorption_label.pack(pady=5)
 
         # Button to show intercalation and sorption
         self.show_intercalation_and_sorption_btn = Button(
-            intercalation_and_sorption_frame, text="Build Al atoms in the CH channel",
-            command=self.open_update_al_coordinates_table_window)
+            intercalation_and_sorption_frame, text="Build intercalated atoms in the CH channel",
+            command=self.open_update_inter_atoms_coordinates_table_window)
         self.show_intercalation_and_sorption_btn.pack(pady=10, padx=10)
 
         # Button to show intercalation and sorption
         self.show_intercalation_and_sorption_btn = Button(
-            intercalation_and_sorption_frame, text="Translate Al to other planes",
-            command=self.open_translate_al_to_other_planes_window)
+            intercalation_and_sorption_frame, text="Translate intercalated atoms to other planes",
+            command=self.open_translate_inter_atoms_to_other_planes_window)
         self.show_intercalation_and_sorption_btn.pack(pady=10, padx=10)
 
         # Button to show intercalation and sorption
         self.show_intercalation_and_sorption_btn = Button(
-            intercalation_and_sorption_frame, text="Get Al in channel details",
-            command=self.open_get_al_in_channel_details_window)
+            intercalation_and_sorption_frame, text="Translate intercalated atoms to all channels",
+            command=self.open_translate_inter_atoms_to_all_channels_window)
         self.show_intercalation_and_sorption_btn.pack(pady=10, padx=10)
+
+        # Add a label for the subsection
+        model_analysis_label = ctk.CTkLabel(
+            intercalation_and_sorption_frame, text="Model analysis")
+        model_analysis_label.pack(pady=5)
 
         # Button to show intercalation and sorption
         self.show_intercalation_and_sorption_btn = Button(
-            intercalation_and_sorption_frame, text="Translate Al to all channels",
-            command=self.open_translate_al_to_all_channels_window)
+            intercalation_and_sorption_frame, text="Get intercalated CH channel details table",
+            command=self.open_get_inter_chc_details_tbl_window)
         self.show_intercalation_and_sorption_btn.pack(pady=10, padx=10)
 
-    def open_update_al_coordinates_table_window(self) -> None:
-        UpdateAlCoordinatesTableWindow(
+    def open_update_inter_atoms_coordinates_table_window(self) -> None:
+        UpdateInterCoordinatesTableWindow(
             view_model=self.view_model_intercalation_and_sorption,
             project_dir=self.project_dir,
             subproject_dir=self.subproject_dir,
             structure_dir=self.structure_dir,
         )
 
-    def open_translate_al_to_other_planes_window(self) -> None:
-        TranslateAlToOtherPlanesWindow(
+    def open_translate_inter_atoms_to_other_planes_window(self) -> None:
+        TranslateInterToOtherPlanesWindow(
             view_model=self.view_model_intercalation_and_sorption,
             project_dir=self.project_dir,
             subproject_dir=self.subproject_dir,
             structure_dir=self.structure_dir,
         )
 
-    def open_translate_al_to_all_channels_window(self) -> None:
-        TranslateAlToAllChannelsWindow(
+    def open_translate_inter_atoms_to_all_channels_window(self) -> None:
+        TranslateInterToAllChannelsWindow(
             view_model=self.view_model_intercalation_and_sorption,
             project_dir=self.project_dir,
             subproject_dir=self.subproject_dir,
             structure_dir=self.structure_dir,
         )
 
-    def open_get_al_in_channel_details_window(self) -> None:
-        GetAlInChannelDetailsWindow(
+    def open_get_inter_chc_details_tbl_window(self) -> None:
+        GetInterChcDetailsTblWindow(
             view_model=self.view_model_intercalation_and_sorption,
             project_dir=self.project_dir,
             subproject_dir=self.subproject_dir,

@@ -9,7 +9,7 @@ from src.structure_visualizer import StructureVisualizer, VisualizationParams
 from src.projects import (
     CarbonHoneycombActions,
     CarbonHoneycombChannel,
-    AtomsParser,
+    InterAtomsParser,
     CarbonHoneycombPlane,
 )
 from .view_model_params_setter import VMParamsSetter
@@ -137,7 +137,7 @@ class VMShowInitData(VMParamsSetter):
 
         fontsize: int = 8
 
-        carbon_channel: CarbonHoneycombChannel = AtomsParser.build_carbon_channel(
+        carbon_channel: CarbonHoneycombChannel = InterAtomsParser.build_carbon_channel(
             project_dir=project_dir,
             subproject_dir=subproject_dir,
             structure_dir=structure_dir,

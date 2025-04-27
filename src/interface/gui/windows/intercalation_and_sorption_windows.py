@@ -19,10 +19,10 @@ from .windows_template import WindowsTemplate
 
 
 __all__: list[str] = [
-    "UpdateAlCoordinatesTableWindow",
-    "TranslateAlToOtherPlanesWindow",
-    "TranslateAlToAllChannelsWindow",
-    "GetAlInChannelDetailsWindow",
+    "UpdateInterCoordinatesTableWindow",
+    "TranslateInterToOtherPlanesWindow",
+    "TranslateInterToAllChannelsWindow",
+    "GetInterChcDetailsTblWindow",
 ]
 
 
@@ -70,7 +70,9 @@ class _IntercalationAndSorptionUtils:
             )
 
 
-class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
+class UpdateInterCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
+    """ Update intercalated to CHC atoms coordinates table """
+
     def __init__(
             self,
             view_model: VMIntercalationAndSorption,
@@ -80,11 +82,12 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsTemp
     ) -> None:
         super().__init__(view_model, structure_dir, project_dir, subproject_dir)
         self.create_window(
-            title=f"Update Al coordinates table ({self.structure_dir})",
+            title=f"Update coordinates table ({self.structure_dir})",
             description=(
-                "Allows to plot the selected structure, or update the Excel file with Al coordinates "
-                "(to remove the empty rows and rebuild the dist matrix)."
-                "If the file is not found, the program will build the Al atoms for the provided number of planes."
+                "Allows to plot the selected structure, or update the Excel file with intercalated "
+                "atoms coordinates (to remove the empty rows and rebuild the dist matrix). "
+                "If the file is not found, the program will build "
+                "the intercalated atoms for the provided number of planes."
             ),
         )
         self.create_ui()
@@ -129,11 +132,11 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsTemp
             default_value=self.view_model.bonds_skip_first_distances,
         )
 
-        self.num_of_al_layers_input_field: InputField = self.pack_input_field(
+        self.num_of_inter_atoms_layers_input_field: InputField = self.pack_input_field(
             left_frame,
-            text="Number of Al layers on the plot",
-            command=self.update_num_of_al_layers,
-            default_value=self.view_model.num_of_al_layers,
+            text="Number of intercalated layers on the plot",
+            command=self.update_num_of_inter_atoms_layers,
+            default_value=self.view_model.num_of_inter_atoms_layers,
         )
 
         # Right column inputs
@@ -161,36 +164,36 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsTemp
             default_max=self.view_model.z_max,
         )
 
-        self.to_show_al_indexes_checkbox: CheckBox = self.pack_check_box(
+        self.to_show_inter_atoms_indexes_checkbox: CheckBox = self.pack_check_box(
             right_frame,
             text="Show atom's indexes on the plot",
-            command=self.update_to_show_al_indexes,
-            default=self.view_model.to_show_al_indexes,
+            command=self.update_to_show_inter_atoms_indexes,
+            default=self.view_model.to_show_inter_atoms_indexes,
         )
 
         # Remaining widgets below the columns
         self.plot_btn: Button = self.pack_button(
             self.window,
             text="Plot the model",
-            command=self.plot_al_in_c_structure,
+            command=self.plot_inter_in_c_structure,
         )
 
         self.btn: Button = self.pack_button(
             self.window,
             text="Update the Excel file for plane",
-            command=self.update_al_plane_coordinates_file,
+            command=self.update_inter_plane_coordinates_file,
         )
 
         self.generate_tbl_btn: Button = self.pack_button(
             self.window,
-            text="Generate the Excel file with Al coordinates for plane",
-            command=self.generate_al_plane_coordinates_file,
+            text="Generate the Excel file with intercalated atoms coordinates for plane",
+            command=self.generate_inter_plane_coordinates_file,
             pady=(10, 25),
         )
 
-    def plot_al_in_c_structure(self) -> None:
+    def plot_inter_in_c_structure(self) -> None:
         try:
-            self.view_model.plot_intercalated_in_c_structure(
+            self.view_model.plot_inter_in_c_structure(
                 project_dir=self.project_dir,
                 subproject_dir=self.subproject_dir,
                 structure_dir=self.structure_dir,
@@ -198,32 +201,32 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsTemp
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
-    def update_al_plane_coordinates_file(self) -> None:
+    def update_inter_plane_coordinates_file(self) -> None:
         try:
-            path_to_file: Path = self.view_model.update_al_plane_coordinates_file(
+            path_to_file: Path = self.view_model.update_inter_plane_coordinates_file(
                 project_dir=self.project_dir,
                 subproject_dir=self.subproject_dir,
                 structure_dir=self.structure_dir,
             )
-            messagebox.showinfo("Success", f"Al plane coordinates file saved to {path_to_file}")
+            messagebox.showinfo("Success", f"Intercalated atoms plane coordinates file saved to {path_to_file}")
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
-    def generate_al_plane_coordinates_file(self) -> None:
+    def generate_inter_plane_coordinates_file(self) -> None:
         try:
-            path_to_file: Path = self.view_model.generate_al_plane_coordinates_file(
+            path_to_file: Path = self.view_model.generate_inter_plane_coordinates_file(
                 project_dir=self.project_dir,
                 subproject_dir=self.subproject_dir,
                 structure_dir=self.structure_dir,
             )
             self._refresh_file_name_lists(dropdown_list=self.file_names_dropdown)
-            messagebox.showinfo("Success", f"Al plane coordinates file saved to {path_to_file}")
+            messagebox.showinfo("Success", f"Intercalated atoms plane coordinates file saved to {path_to_file}")
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
-    def update_to_show_al_indexes(self) -> None:
-        value = bool(self.to_show_al_indexes_checkbox.get())
-        self.view_model.set_to_show_al_indexes(value)
+    def update_to_show_inter_atoms_indexes(self) -> None:
+        value = bool(self.to_show_inter_atoms_indexes_checkbox.get())
+        self.view_model.set_to_show_inter_atoms_indexes(value)
 
     def update_number_of_planes(self) -> None:
         value = int(self.number_of_planes_input_field.get())
@@ -237,14 +240,14 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsTemp
         value = int(self.bonds_skip_first_distances_input_field.get())
         self.view_model.set_bonds_skip_first_distances(value)
 
-    def update_num_of_al_layers(self) -> None:
-        value = int(self.num_of_al_layers_input_field.get())
+    def update_num_of_inter_atoms_layers(self) -> None:
+        value = int(self.num_of_inter_atoms_layers_input_field.get())
 
         if value > 3:
-            messagebox.showerror("Error", "The number of AL layers cannot be greater than 3.")
+            messagebox.showerror("Error", "The number of intercalated layers cannot be greater than 3.")
             return
 
-        self.view_model.set_num_of_al_layers(value)
+        self.view_model.set_num_of_inter_atoms_layers(value)
 
     def update_x_coord_limits(self) -> None:
         value_min: str = self.coord_x_limits_input_field.min_entry.get()
@@ -265,7 +268,9 @@ class UpdateAlCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsTemp
         self.view_model.set_z_max(value_max)
 
 
-class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
+class TranslateInterToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
+    """ Translate intercalated to CHC atoms to other planes """
+
     def __init__(
             self,
             view_model: VMIntercalationAndSorption,
@@ -275,10 +280,10 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsTemp
     ) -> None:
         super().__init__(view_model, structure_dir, project_dir, subproject_dir)
         self.create_window(
-            title=f"Translate Al to other planes ({self.structure_dir})",
+            title=f"Translate intercalated atoms to other planes ({self.structure_dir})",
             description=(
                 "Read the selected file with coordinates for N planes "
-                "and translate Al atoms to other planes."
+                "and translate intercalated atoms to other planes."
             ),
         )
         self.create_ui()
@@ -288,7 +293,7 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsTemp
             self.window,
             options=self.file_names,
             command=self.view_model.set_file_name,
-            title="Al coordinates table to translate",
+            title="Intercalated atoms coordinates table to translate",
         )
 
         # Create a frame to hold the columns
@@ -303,11 +308,11 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsTemp
         right_frame.pack(side="right", fill="both", expand=True, padx=10, pady=10)
 
         # Left column inputs
-        self.try_to_reflect_al_atoms_checkbox: CheckBox = self.pack_check_box(
+        self.try_to_reflect_inter_atoms_checkbox: CheckBox = self.pack_check_box(
             left_frame,
-            text="Try to reflect Al atoms to fit the plane",
-            command=self.update_to_try_to_reflect_al_atoms,
-            default=self.view_model.to_try_to_reflect_al_atoms,
+            text="Try to reflect intercalated atoms to fit the plane",
+            command=self.update_to_try_to_reflect_inter_atoms,
+            default=self.view_model.to_try_to_reflect_inter_atoms,
         )
 
         self.number_of_planes_input_field: InputField = self.pack_input_field(
@@ -331,11 +336,11 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsTemp
             default_value=self.view_model.bonds_skip_first_distances,
         )
 
-        self.num_of_al_layers_input_field: InputField = self.pack_input_field(
+        self.num_of_inter_atoms_layers_input_field: InputField = self.pack_input_field(
             left_frame,
-            text="Number of Al layers on the plot",
-            command=self.update_num_of_al_layers,
-            default_value=self.view_model.num_of_al_layers,
+            text="Number ofintercalated atoms layers on the plot",
+            command=self.update_num_of_inter_atoms_layers,
+            default_value=self.view_model.num_of_inter_atoms_layers,
         )
 
         # Right column inputs
@@ -363,17 +368,17 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsTemp
             default_max=self.view_model.z_max,
         )
 
-        self.to_show_al_indexes_checkbox: CheckBox = self.pack_check_box(
+        self.to_show_inter_atoms_indexes_checkbox: CheckBox = self.pack_check_box(
             right_frame,
             text="Show atom's indexes on the plot",
-            command=self.update_to_show_al_indexes,
-            default=self.view_model.to_show_al_indexes,
+            command=self.update_to_show_inter_atoms_indexes,
+            default=self.view_model.to_show_inter_atoms_indexes,
         )
 
         self.translate_btn: Button = self.pack_button(
             self.window,
             text="Build the model",
-            command=self.translate_al_to_other_planes,
+            command=self.translate_inter_atoms_to_other_planes,
         )
 
         self.btn: Button = self.pack_button(
@@ -383,10 +388,10 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsTemp
             pady=(10, 25),
         )
 
-    def translate_al_to_other_planes(self) -> None:
+    def translate_inter_atoms_to_other_planes(self) -> None:
         try:
             atom_params: ConstantsAtomParams = ATOM_PARAMS_MAP[self.subproject_dir.lower()]
-            self.view_model.translate_al_to_other_planes(
+            self.view_model.translate_inter_atoms_to_other_planes(
                 project_dir=self.project_dir,
                 subproject_dir=self.subproject_dir,
                 structure_dir=self.structure_dir,
@@ -396,19 +401,19 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsTemp
 
     def update_file(self) -> None:
         try:
-            path_to_file: Path = self.view_model.update_al_channel_coordinates(
+            path_to_file: Path = self.view_model.update_inter_channel_coordinates(
                 project_dir=self.project_dir,
                 subproject_dir=self.subproject_dir,
                 structure_dir=self.structure_dir,
             )
             self._refresh_file_name_lists(dropdown_list=self.file_names_dropdown)
-            messagebox.showinfo("Success", f"Al coordinates table saved to {path_to_file}")
+            messagebox.showinfo("Success", f"Intercalated atoms coordinates table saved to {path_to_file}")
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
-    def update_to_show_al_indexes(self) -> None:
-        value = bool(self.to_show_al_indexes_checkbox.get())
-        self.view_model.set_to_show_al_indexes(value)
+    def update_to_show_inter_atoms_indexes(self) -> None:
+        value = bool(self.to_show_inter_atoms_indexes_checkbox.get())
+        self.view_model.set_to_show_inter_atoms_indexes(value)
 
     def update_number_of_planes(self) -> None:
         value = int(self.number_of_planes_input_field.get())
@@ -422,18 +427,19 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsTemp
         value = int(self.bonds_skip_first_distances_input_field.get())
         self.view_model.set_bonds_skip_first_distances(value)
 
-    def update_to_try_to_reflect_al_atoms(self) -> None:
-        value = bool(self.try_to_reflect_al_atoms_checkbox.get())
-        self.view_model.set_to_try_to_reflect_al_atoms(value)
+    def update_to_try_to_reflect_inter_atoms(self) -> None:
+        value = bool(self.try_to_reflect_inter_atoms_checkbox.get())
+        self.view_model.set_to_try_to_reflect_inter_atoms(value)
 
-    def update_num_of_al_layers(self) -> None:
-        value = int(self.num_of_al_layers_input_field.get())
+    def update_num_of_inter_atoms_layers(self) -> None:
+        value = int(self.num_of_inter_atoms_layers_input_field.get())
 
         if value > 3:
-            self.num_of_al_layers_input_field.label.configure(text="The number of AL layers cannot be greater than 3.")
+            self.num_of_inter_atoms_layers_input_field.label.configure(
+                text="The number of AL layers cannot be greater than 3.")
             return
 
-        self.view_model.set_num_of_al_layers(value)
+        self.view_model.set_num_of_inter_atoms_layers(value)
 
     def update_x_coord_limits(self) -> None:
         value_min: str = self.coord_x_limits_input_field.min_entry.get()
@@ -454,7 +460,9 @@ class TranslateAlToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsTemp
         self.view_model.set_z_max(value_max)
 
 
-class GetAlInChannelDetailsWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
+class GetInterChcDetailsTblWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
+    """ Get intercalated CH channel details table """
+
     def __init__(
             self,
             view_model: VMIntercalationAndSorption,
@@ -483,30 +491,30 @@ class GetAlInChannelDetailsWindow(_IntercalationAndSorptionUtils, WindowsTemplat
         self.btn_show_table: Button = self.pack_button(
             self.window,
             text="Show table",
-            command=self.show_al_in_channel_details,
+            command=self.show_inter_atoms_in_channel_details,
         )
 
         self.btn_save_file: Button = self.pack_button(
             self.window,
             text="Save Excel file",
-            command=self.get_al_in_channel_details,
+            command=self.get_inter_atoms_in_channel_details,
             pady=(10, 25),
         )
 
-    def get_al_in_channel_details(self) -> None:
+    def get_inter_atoms_in_channel_details(self) -> None:
         try:
-            path_to_file: Path = self.view_model.save_al_in_channel_details(
+            path_to_file: Path = self.view_model.save_inter_in_channel_details(
                 project_dir=self.project_dir,
                 subproject_dir=self.subproject_dir,
                 structure_dir=self.structure_dir,
             )
-            messagebox.showinfo("Success", f"Al in channel details saved to {path_to_file}")
+            messagebox.showinfo("Success", f"Intercalated atoms in channel details saved to {path_to_file}")
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
-    def show_al_in_channel_details(self) -> None:
+    def show_inter_atoms_in_channel_details(self) -> None:
         try:
-            df: pd.DataFrame = self.view_model.get_al_in_channel_details(
+            df: pd.DataFrame = self.view_model.get_inter_in_channel_details(
                 project_dir=self.project_dir,
                 subproject_dir=self.subproject_dir,
                 structure_dir=self.structure_dir,
@@ -525,7 +533,9 @@ class GetAlInChannelDetailsWindow(_IntercalationAndSorptionUtils, WindowsTemplat
             messagebox.showerror("Error", str(e))
 
 
-class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
+class TranslateInterToAllChannelsWindow(_IntercalationAndSorptionUtils, WindowsTemplate):
+    """ Translate intercalated to CHC atoms to all channels """
+
     def __init__(
             self,
             view_model: VMIntercalationAndSorption,
@@ -535,9 +545,9 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils, WindowsTemp
     ) -> None:
         super().__init__(view_model, structure_dir, project_dir, subproject_dir)
         self.create_window(
-            title=f"Translate Al to all channels ({self.structure_dir})",
+            title=f"Translate intercalated atoms to all channels ({self.structure_dir})",
             description=(
-                "Translate Al atoms to all channels."
+                "Translate intercalated atoms to all channels."
             ),
         )
         self.create_ui()
@@ -547,7 +557,7 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils, WindowsTemp
             self.window,
             options=self.file_names,
             command=self.view_model.set_file_name,
-            title="Al coordinates table to translate",
+            title="Intercalated atoms coordinates table to translate",
         )
 
         # Create a frame to hold the columns
@@ -576,25 +586,26 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils, WindowsTemp
             default_value=self.view_model.bonds_skip_first_distances,
         )
 
-        self.num_of_al_layers_input_field: InputField = self.pack_input_field(
+        self.num_of_inter_atoms_layers_input_field: InputField = self.pack_input_field(
             left_frame,
-            text="Number of Al layers on the plot",
-            command=self.update_num_of_al_layers,
-            default_value=self.view_model.num_of_al_layers,
+            text="Number ofintercalated atoms layers on the plot",
+            command=self.update_num_of_inter_atoms_layers,
+            default_value=self.view_model.num_of_inter_atoms_layers,
         )
 
-        self.try_to_reflect_al_atoms_checkbox: CheckBox = self.pack_check_box(
+        self.try_to_reflect_inter_atoms_checkbox: CheckBox = self.pack_check_box(
             left_frame,
-            text="Try to reflect Al atoms to fit the plane\n(if no init file and the Al atoms will be calculated)",
-            command=self.update_to_try_to_reflect_al_atoms,
-            default=self.view_model.to_try_to_reflect_al_atoms,
+            text="Try to reflect intercalated atoms to fit the plane\n"
+            "(if no init file and the intercalated atoms will be calculated)",
+            command=self.update_to_try_to_reflect_inter_atoms,
+            default=self.view_model.to_try_to_reflect_inter_atoms,
         )
 
-        self.to_remove_al_atoms_with_min_and_max_x_coordinates_checkbox: CheckBox = self.pack_check_box(
+        self.to_remove_inter_atoms_with_min_and_max_x_coordinates_checkbox: CheckBox = self.pack_check_box(
             left_frame,
-            text="Remove Al atoms with min and max X coordinates",
-            command=self.update_to_remove_al_atoms_with_min_and_max_x_coordinates,
-            default=self.view_model.to_remove_al_atoms_with_min_and_max_x_coordinates,
+            text="Remove intercalated atoms with min and max X coordinates",
+            command=self.update_to_remove_inter_atoms_with_min_and_max_x_coordinates,
+            default=self.view_model.to_remove_inter_atoms_with_min_and_max_x_coordinates,
         )
 
         # Right column inputs
@@ -622,29 +633,29 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils, WindowsTemp
             default_max=self.view_model.z_max,
         )
 
-        self.to_show_al_indexes_checkbox: CheckBox = self.pack_check_box(
+        self.to_show_inter_atoms_indexes_checkbox: CheckBox = self.pack_check_box(
             right_frame,
             text="Show atom's indexes on the plot",
-            command=self.update_to_show_al_indexes,
-            default=self.view_model.to_show_al_indexes,
+            command=self.update_to_show_inter_atoms_indexes,
+            default=self.view_model.to_show_inter_atoms_indexes,
         )
 
         self.translate_btn: Button = self.pack_button(
             self.window,
             text="Generate output files",
-            command=self.translate_al_to_all_channels_generate_files,
+            command=self.translate_inter_atoms_to_all_channels_generate_files,
         )
 
         self.plot_btn: Button = self.pack_button(
             self.window,
             text="Plot structure",
-            command=self.plot_al_in_c_structure,
+            command=self.plot_inter_atoms_in_c_structure,
             pady=(10, 25),
         )
 
-    def plot_al_in_c_structure(self) -> None:
+    def plot_inter_atoms_in_c_structure(self) -> None:
         try:
-            self.view_model.translate_al_to_all_channels_plot(
+            self.view_model.translate_inter_to_all_channels_plot(
                 project_dir=self.project_dir,
                 subproject_dir=self.subproject_dir,
                 structure_dir=self.structure_dir,
@@ -652,9 +663,9 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils, WindowsTemp
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
-    def translate_al_to_all_channels_generate_files(self) -> None:
+    def translate_inter_atoms_to_all_channels_generate_files(self) -> None:
         try:
-            paths: tuple[Path, Path, Path] = self.view_model.translate_al_to_all_channels_generate_files(
+            paths: tuple[Path, Path, Path] = self.view_model.translate_inter_to_all_channels_generate_files(
                 project_dir=self.project_dir,
                 subproject_dir=self.subproject_dir,
                 structure_dir=self.structure_dir,
@@ -667,9 +678,9 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils, WindowsTemp
     def update_file_name(self, value: str) -> None:
         self.view_model.set_file_name(value)
 
-    def update_to_show_al_indexes(self) -> None:
-        value = bool(self.to_show_al_indexes_checkbox.get())
-        self.view_model.set_to_show_al_indexes(value)
+    def update_to_show_inter_atoms_indexes(self) -> None:
+        value = bool(self.to_show_inter_atoms_indexes_checkbox.get())
+        self.view_model.set_to_show_inter_atoms_indexes(value)
 
     def update_num_of_min_distances(self) -> None:
         value = int(self.num_of_min_distances_input_field.get())
@@ -679,17 +690,17 @@ class TranslateAlToAllChannelsWindow(_IntercalationAndSorptionUtils, WindowsTemp
         value = int(self.bonds_skip_first_distances_input_field.get())
         self.view_model.set_bonds_skip_first_distances(value)
 
-    def update_to_try_to_reflect_al_atoms(self) -> None:
-        value = bool(self.try_to_reflect_al_atoms_checkbox.get())
-        self.view_model.set_to_try_to_reflect_al_atoms(value)
+    def update_to_try_to_reflect_inter_atoms(self) -> None:
+        value = bool(self.try_to_reflect_inter_atoms_checkbox.get())
+        self.view_model.set_to_try_to_reflect_inter_atoms(value)
 
-    def update_to_remove_al_atoms_with_min_and_max_x_coordinates(self) -> None:
-        value = bool(self.to_remove_al_atoms_with_min_and_max_x_coordinates_checkbox.get())
-        self.view_model.set_to_remove_al_atoms_with_min_and_max_x_coordinates(value)
+    def update_to_remove_inter_atoms_with_min_and_max_x_coordinates(self) -> None:
+        value = bool(self.to_remove_inter_atoms_with_min_and_max_x_coordinates_checkbox.get())
+        self.view_model.set_to_remove_inter_atoms_with_min_and_max_x_coordinates(value)
 
-    def update_num_of_al_layers(self) -> None:
-        value = int(self.num_of_al_layers_input_field.get())
-        self.view_model.set_num_of_al_layers(value)
+    def update_num_of_inter_atoms_layers(self) -> None:
+        value = int(self.num_of_inter_atoms_layers_input_field.get())
+        self.view_model.set_num_of_inter_atoms_layers(value)
 
     def update_x_coord_limits(self) -> None:
         value_min: str = self.coord_x_limits_input_field.min_entry.get()

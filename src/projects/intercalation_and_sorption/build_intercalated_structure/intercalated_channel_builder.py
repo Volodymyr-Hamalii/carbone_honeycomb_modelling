@@ -12,12 +12,12 @@ from src.utils import (
     FileReader,
 )
 from src.data_preparation import StructureSettings, AtomsUniverseBuilder
-from src.base_structure_classes import Points, AlLatticeType, CoordinateLimits
+from src.base_structure_classes import Points, LatticeType, CoordinateLimits
 from src.projects.carbon_honeycomb_actions import CarbonHoneycombChannel
 
 from ..structure_operations import StructureTranslator
-from .by_variance import IntercalatedChannelBuilderByVariance
-from .based_on_planes_configs import IntercalatedChannelBuilderBasedOnPlaneConfigs
+from .by_variance import InterChannelBuilderByVariance
+from .based_on_planes_configs import InterChannelBuilderBasedOnPlaneConfigs
 
 
 logger = Logger("IntercalatedChannelBuilder")
@@ -49,23 +49,23 @@ class IntercalatedChannelBuilder:
         return Points(points=carbon_points)
 
     @staticmethod
-    def build_al_coordinates_for_cell(
+    def build_inter_coordinates_for_cell(
             project_dir: str,
             subproject_dir: str,
             structure_dir: str,
             file_name: str,
-            to_translate_al: bool,
+            to_translate_inter: bool,
             coordinate_limits: CoordinateLimits = CoordinateLimits(),
     ) -> Points:
-        path_to_al_pdb_file: Path = PathBuilder.build_path_to_init_data_file(
+        path_to_inter_atoms_pdb_file: Path = PathBuilder.build_path_to_init_data_file(
             project_dir=project_dir,
             subproject_dir=subproject_dir,
             structure_dir=structure_dir,
             file_name=file_name,
         )
-        inter_points: Points = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_al_pdb_file)
+        inter_points: Points = AtomsUniverseBuilder.builds_atoms_coordinates(path_to_inter_atoms_pdb_file)
 
-        if to_translate_al:
+        if to_translate_inter:
             return StructureTranslator.translate_cell(
                 cell_coordinates=inter_points,
                 translation_limits=coordinate_limits)
@@ -73,70 +73,70 @@ class IntercalatedChannelBuilder:
         return inter_points
 
     @staticmethod
-    def build_al_coordinates_for_close_packed(
-            al_lattice_type: AlLatticeType,
+    def build_inter_coordinates_for_close_packed(
+            inter_atoms_lattice_type: LatticeType,
             coordinate_limits: CoordinateLimits,
             atom_params: ConstantsAtomParams,
-            # to_translate_al: bool,  # TODO
+            # to_translate_inter: bool,  # TODO
     ) -> Points:
 
         dist_between_atoms: float = atom_params.DIST_BETWEEN_ATOMS
 
-        if al_lattice_type.is_fcc:
+        if inter_atoms_lattice_type.is_fcc:
             return AtomsUniverseBuilder.build_fcc_lattice_type(
                 dist_between_atoms=dist_between_atoms,
                 coordinate_limits=coordinate_limits,
             )
 
-        if al_lattice_type.is_hcp:
+        if inter_atoms_lattice_type.is_hcp:
             return AtomsUniverseBuilder.build_hcp_lattice_type(
                 dist_between_atoms=dist_between_atoms,
                 coordinate_limits=coordinate_limits,
             )
 
-        logger.warning("No Al atoms built for closed packed structure.")
+        logger.warning("No intercalated atoms built for closed packed structure.")
         return Points(points=np.array([]))
 
     @classmethod
-    def build_al_in_carbon_by_variance(
+    def build_inter_in_carbon_by_variance(
         cls,
         carbon_channel: CarbonHoneycombChannel,
         inter_points: Points,
-        to_filter_al_atoms: bool = True,
-        equidistant_al_points: bool = True
+        to_filter_inter_atoms: bool = True,
+        equidistant_inter_points: bool = True
     ) -> Points:
-        return IntercalatedChannelBuilderByVariance.build_intercalated_atoms_in_carbon(
+        return InterChannelBuilderByVariance.build_inter_atoms_in_carbon(
             carbon_channel,
             inter_points,
-            to_filter_al_atoms,
-            equidistant_al_points,
+            to_filter_inter_atoms,
+            equidistant_inter_points,
         )
 
     @classmethod
-    def build_al_in_carbon(
+    def build_inter_in_carbon(
         cls,
         carbon_channel: CarbonHoneycombChannel,
         inter_points: Points,
         atom_params: ConstantsAtomParams,
-        to_filter_al_atoms: bool = True,
-        equidistant_al_points: bool = True,
+        to_filter_inter_atoms: bool = True,
+        equidistant_inter_points: bool = True,
     ) -> Points:
-        # return IntercalatedChannelBuilderByVariance.build_al_in_carbon(
+        # return InterChannelBuilderByVariance.build_inter_atoms_in_carbon(
         #     carbon_channel,
         #     inter_points,
         #     structure_settings,
-        #     to_filter_al_atoms,
-        #     equidistant_al_points,
+        #     to_filter_inter_atoms,
+        #     equidistant_inter_atoms,
         # )
-        return IntercalatedChannelBuilderBasedOnPlaneConfigs.build_al_in_carbon(
+        return InterChannelBuilderBasedOnPlaneConfigs.build_inter_in_carbon(
             carbon_channel,
             atom_params,
-            equidistant_al_points,
+            equidistant_inter_points,
         )
 
     @staticmethod
-    def translate_al_points_through_channels(
-            al_points: np.ndarray,
+    def translate_inter_points_through_channels(
+            inter_atoms: np.ndarray,
             carbon_channels: list[CarbonHoneycombChannel],
     ) -> np.ndarray:
         """ Translate the built structure to all channels. """
@@ -146,14 +146,14 @@ class IntercalatedChannelBuilder:
 
         filled_channel_center: np.ndarray = carbon_channels[0].channel_center
 
-        result_al_points: np.ndarray = al_points.copy()
+        result_inter_points: np.ndarray = inter_atoms.copy()
 
         for channel in carbon_channels[1:]:
             channel_center: np.ndarray = channel.channel_center
             vector: np.ndarray = channel_center - filled_channel_center
 
-            translated_al_points: np.ndarray = al_points + vector
+            translated_inter_points: np.ndarray = inter_atoms + vector
 
-            result_al_points = np.concatenate([result_al_points, translated_al_points])
+            result_inter_points = np.concatenate([result_inter_points, translated_inter_points])
 
-        return result_al_points
+        return result_inter_points

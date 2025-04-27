@@ -1,3 +1,3 @@
-from .intercalated_channel_builder_based_on_plane_configs import IntercalatedChannelBuilderBasedOnPlaneConfigs
-from .atoms_builder import AtomsBuilder
-from .atoms_filter import AtomsFilter
+from .inter_channel_builder_based_on_plane_configs import InterChannelBuilderBasedOnPlaneConfigs
+from .inter_atoms_builder import InterAtomsBuilder
+from .inter_atoms_filter import InterAtomsFilter

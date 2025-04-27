@@ -16,10 +16,10 @@ from ..build_intercalated_structure.by_variance.variance_calculator import Varia
 from ..intercalated_coordinates_utils import IntercalatedCoordinatesUtils
 
 
-logger = Logger("IntercalatedPointsOptimizer")
+logger = Logger("InterAtomsOptimizer")
 
 
-class IntercalatedPointsOptimizer:
+class InterAtomsOptimizer:
     """ To find equilibrium positions of the intercalated (or sorbed) points. """
 
     @classmethod

@@ -8,7 +8,7 @@ class VMParamsSetter:
         self.to_build_bonds: bool = True
         self.to_show_coordinates: bool = False
         self.to_show_c_indexes: bool = False
-        self.to_show_al_indexes: bool = False
+        self.to_show_inter_atoms_indexes: bool = False
 
         self.x_min: float = -float("inf")
         self.x_max: float = float("inf")
@@ -30,22 +30,19 @@ class VMParamsSetter:
         self.file_name: str = ""
         self.file_format: str = ""  # "xlsx", "dat", "pdb"
         self.available_formats: list[str] = ["xlsx", "dat", "pdb"]
-        # self.excel_file_name: str = Constants.file_names.AL_FULL_CHANNEL_COORDINATES_XLSX_FILE
-        # self.dat_file_name: str = Constants.file_names.AL_ALL_CHANNELS_COORDINATES_DAT_FILE
-        # self.pdb_file_name: str = Constants.file_names.PDB_FILE_ONE_CHANNEL
         self.excel_file_name: str = ""
         self.dat_file_name: str = ""
         self.pdb_file_name: str = ""
 
         # Intercalation and sorption
         self.number_of_planes: int = 1
-        self.num_of_al_layers: int = 1
-        self.to_translate_al: bool = True
-        self.to_try_to_reflect_al_atoms: bool = True
-        self.to_equidistant_al_points: bool = True
-        self.to_filter_al_atoms: bool = True
-        self.to_remove_al_atoms_with_min_and_max_x_coordinates: bool = False
-        self.al_lattice_type: str = "FCC"
+        self.num_of_inter_atoms_layers: int = 1
+        self.to_translate_inter: bool = True
+        self.to_try_to_reflect_inter_atoms: bool = True
+        self.to_equidistant_inter_points: bool = True
+        self.to_filter_inter_atoms: bool = True
+        self.to_remove_inter_atoms_with_min_and_max_x_coordinates: bool = False
+        self.inter_atoms_lattice_type: str = "FCC"
 
     ######### Plot details #########
 
@@ -58,8 +55,8 @@ class VMParamsSetter:
     def set_to_show_c_indexes(self, value: bool) -> None:
         self.to_show_c_indexes: bool = value
 
-    def set_to_show_al_indexes(self, value: bool) -> None:
-        self.to_show_al_indexes: bool = value
+    def set_to_show_inter_atoms_indexes(self, value: bool) -> None:
+        self.to_show_inter_atoms_indexes: bool = value
 
     def set_x_min(self, value: float | str) -> None:
         if value == "":
@@ -152,20 +149,20 @@ class VMParamsSetter:
     def set_number_of_planes(self, value: int) -> None:
         self.number_of_planes: int = value
 
-    def set_num_of_al_layers(self, value: int) -> None:
-        self.num_of_al_layers: int = value
+    def set_num_of_inter_atoms_layers(self, value: int) -> None:
+        self.num_of_inter_atoms_layers: int = value
 
-    def set_to_try_to_reflect_al_atoms(self, value: bool) -> None:
-        self.to_try_to_reflect_al_atoms: bool = value
+    def set_to_try_to_reflect_inter_atoms(self, value: bool) -> None:
+        self.to_try_to_reflect_inter_atoms: bool = value
 
-    def set_to_equidistant_al_points(self, value: bool) -> None:
-        self.to_equidistant_al_points: bool = value
+    def set_to_equidistant_inter_points(self, value: bool) -> None:
+        self.to_equidistant_inter_points: bool = value
 
-    def set_to_filter_al_atoms(self, value: bool) -> None:
-        self.to_filter_al_atoms: bool = value
+    def set_to_filter_inter_atoms(self, value: bool) -> None:
+        self.to_filter_inter_atoms: bool = value
 
-    def set_to_remove_al_atoms_with_min_and_max_x_coordinates(self, value: bool) -> None:
-        self.to_remove_al_atoms_with_min_and_max_x_coordinates: bool = value
+    def set_to_remove_inter_atoms_with_min_and_max_x_coordinates(self, value: bool) -> None:
+        self.to_remove_inter_atoms_with_min_and_max_x_coordinates: bool = value
 
-    def set_al_lattice_type(self, value: str) -> None:
-        self.al_lattice_type: str = value
+    def set_inter_atoms_lattice_type(self, value: str) -> None:
+        self.inter_atoms_lattice_type: str = value

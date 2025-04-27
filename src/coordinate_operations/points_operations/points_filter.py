@@ -48,7 +48,8 @@ class PointsFilter:
             return Points(filtered_points)
 
         if move_align_z:
-            # Move Al atoms along Oz down to align the lowest Al atom with the channel bottom
+            # Move intercalated atoms along Oz down to align
+            # the lowest intercalated atom with the channel bottom
             move_to: np.float32 = np.min(filtered_points[:, 2]) - z_min
             filtered_points[:, 2] = filtered_points[:, 2] - move_to
 

@@ -43,8 +43,8 @@ class InitDataWindow(WindowsTemplate):
             if self.is_one_channel
             else f"Show init full CH structure ({self.structure_dir}) ",
             # description=(
-            #     "Write an Excel file with Al atoms in channel details (Al atoms coordinates, "
-            #     "Al atoms indexes, Al atoms distances from the C atoms, etc.)"
+            #     "Write an Excel file withintercalated atoms in channel details (Intercalated atoms coordinates, "
+            #     "Intercalated atoms indexes,intercalated atoms distances from the C atoms, etc.)"
             # ),
         )
         self.create_ui()

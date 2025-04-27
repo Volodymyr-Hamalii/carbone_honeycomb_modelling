@@ -10,16 +10,16 @@ from src.base_structure_classes import Points
 from src.coordinate_operations import PointsRotator
 from src.projects.carbon_honeycomb_actions import CarbonHoneycombChannel
 
-from .atoms_filter import AtomsFilter
-from .atoms_setter import AtomsSetter
+from .inter_atoms_filter import InterAtomsFilter
+from .inter_atoms_setter import InterAtomsSetter
 
 
 logger = Logger("IntercalatedChannelBuilder")
 
 
-class IntercalatedChannelBuilderByVariance:
+class InterChannelBuilderByVariance:
     @classmethod
-    def build_intercalated_atoms_in_carbon(
+    def build_inter_atoms_in_carbon(
             cls,
             carbon_channel: CarbonHoneycombChannel,
             coordinates_inter_atoms: Points,
@@ -36,8 +36,8 @@ class IntercalatedChannelBuilderByVariance:
                 lattice_param=lattice_param)
 
             if equidistant_inter_atoms:
-                # Set Al atoms maximally equidistant from the channel atoms
-                coordinates_inter_atoms_filtered: Points = AtomsSetter.equidistant_points_sets_in_channel(
+                # Set intercalated atoms maximally equidistant from the channel atoms
+                coordinates_inter_atoms_filtered: Points = InterAtomsSetter.equidistant_points_sets_in_channel(
                     carbon_channel=carbon_channel,
                     inner_points=coordinates_inter_atoms_filtered)
 
@@ -55,8 +55,8 @@ class IntercalatedChannelBuilderByVariance:
             lattice_param: float,
     ) -> Points:
         """
-        Parallel move, rotate and filter Al atoms related carbon atoms
-        to find the option with the maximum Al atoms after filtering.
+        Parallel move, rotate and filter intercalated atoms related carbon atoms
+        to find the option with the maximumintercalated atoms after filtering.
         """
 
         max_atoms: int = 0
@@ -91,7 +91,7 @@ class IntercalatedChannelBuilderByVariance:
                             xyz_rotaded_coordinates: Points = PointsRotator.rotate_on_angle_related_center(
                                 xy_rotaded_coordinates.copy(), angle_z=angle_z)
 
-                            result: tuple = AtomsFilter.get_filtered_atoms_atoms(
+                            result: tuple = InterAtomsFilter.get_filtered_atoms_atoms(
                                 carbon_channel=carbon_channel,
                                 coordinates_atoms=xyz_rotaded_coordinates,
                                 coordinates_atoms_prev=coordinates_atoms_result,

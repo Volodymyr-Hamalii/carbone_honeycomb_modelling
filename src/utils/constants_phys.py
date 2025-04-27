@@ -12,6 +12,9 @@ __all__: list[str] = [
 
 class ConstantsAtomParams(ABC):
     """ Abstract class for atom params """
+    ATOMS_NAME: str
+    ATOM_SYMBOL: str
+
     LATTICE_PARAM: float
     DIST_BETWEEN_ATOMS: float
 
@@ -23,6 +26,9 @@ class ConstantsAtomParams(ABC):
 
 class ConstantsAlParams(ConstantsAtomParams):
     """ Aluminium params """
+    ATOMS_NAME: str = "Aluminium"
+    ATOM_SYMBOL: str = "Al"
+
     LATTICE_PARAM: float = 4.049  # A
     DIST_BETWEEN_ATOMS: float = LATTICE_PARAM / sqrt(2)
 
@@ -34,6 +40,9 @@ class ConstantsAlParams(ConstantsAtomParams):
 
 class ConstantsArParams(ConstantsAtomParams):
     """ Argon params """
+    ATOMS_NAME: str = "Argon"
+    ATOM_SYMBOL: str = "Ar"
+
     LATTICE_PARAM: float = 3.755  # A
     DIST_BETWEEN_ATOMS: float = LATTICE_PARAM / sqrt(2)
 

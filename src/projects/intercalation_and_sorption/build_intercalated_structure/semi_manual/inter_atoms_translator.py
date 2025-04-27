@@ -16,25 +16,26 @@ from src.projects.carbon_honeycomb_actions import (
 )
 # from src.structure_visualizer import StructureVisualizer
 
-from ..based_on_planes_configs import AtomsFilter
+from ..based_on_planes_configs import InterAtomsFilter
 
 
 logger = Logger("AlAtomsTranslator")
 
 
-class AlAtomsTranslator:
+class InterAtomsTranslator:
     @classmethod
     def translate_for_all_channels(
         cls,
         coordinates_carbon: Points,
         carbon_channels: list[CarbonHoneycombChannel],
-        al_channel_coordinates: Points,
+        inter_atoms_channel_coordinates: Points,
     ) -> Points:
 
-        al_final_coordinates: np.ndarray = np.empty((0, 3))
-        al_final_coordinates = np.vstack((al_final_coordinates, al_channel_coordinates.points))
+        inter_atoms_fininter_atoms: np.ndarray = np.empty((0, 3))
+        inter_atoms_fininter_atoms = np.vstack(
+            (inter_atoms_fininter_atoms, inter_atoms_channel_coordinates.points))
 
-        al_center: np.ndarray = al_channel_coordinates.center
+        inter_atoms_center: np.ndarray = inter_atoms_channel_coordinates.center
 
         for carbon_channel in carbon_channels:
             # Check that it's not the channel for which we have already translated atoms
@@ -42,25 +43,27 @@ class AlAtomsTranslator:
             # if np.linalg.norm(channel_center - al_center) < 1:
             #     continue
 
-            # Translate on the vector from the channel center to the al center
-            vector: np.ndarray = channel_center - al_center
-            al_final_coordinates = np.vstack((al_final_coordinates, al_final_coordinates + vector))
+            # Translate on the vector from the channel center to the inter_atoms center
+            vector: np.ndarray = channel_center - inter_atoms_center
+            inter_atoms_fininter_atoms = np.vstack(
+                (inter_atoms_fininter_atoms, inter_atoms_fininter_atoms + vector))
 
         edge_channel_centers: list[np.float32] = cls._get_centers_of_edge_carbon_channels(coordinates_carbon)
 
         for center in edge_channel_centers:
-            vector: np.ndarray = center - al_center
-            al_final_coordinates = np.vstack((al_final_coordinates, al_channel_coordinates.points + vector))
+            vector: np.ndarray = center - inter_atoms_center
+            inter_atoms_fininter_atoms = np.vstack(
+                (inter_atoms_fininter_atoms, inter_atoms_fininter_atoms + vector))
 
-        return Points(al_final_coordinates)
+        return Points(inter_atoms_fininter_atoms)
 
     @classmethod
     def translate_for_all_planes(
         cls,
         carbon_channel: CarbonHoneycombChannel,
-        al_plane_coordinates: Points,
+        inter_atoms_plane_coordinates: Points,
         number_of_planes: int,
-        try_to_reflect_al_atoms: bool,
+        try_to_reflect_inter_atoms: bool,
         atom_params: ConstantsAtomParams,
     ) -> Points:
 
@@ -68,27 +71,28 @@ class AlAtomsTranslator:
 
         # al_groups: list[np.ndarray] = cls._group_by_lines(al_plane_coordinates)
         plane_group_map: dict[int, np.ndarray] = cls._match_plane_with_group(
-            al_plane_coordinates, planes)
+            inter_atoms_plane_coordinates, planes)
 
-        all_al_points: Points = cls._copy_al_points_to_rest_planes(
-            plane_group_map, carbon_channel, try_to_reflect_al_atoms, atom_params)
+        all_inter_atoms_points: Points = cls._copy_inter_atoms_points_to_rest_planes(
+            plane_group_map, carbon_channel, try_to_reflect_inter_atoms, atom_params)
 
-        al_points_upd: Points = AtomsFilter.replace_nearby_atoms_with_one_atom(all_al_points, atom_params)
+        inter_atoms_points_upd: Points = InterAtomsFilter.replace_nearby_atoms_with_one_atom(
+            all_inter_atoms_points, atom_params)
 
-        return al_points_upd
+        return inter_atoms_points_upd
 
     @staticmethod
     def _match_plane_with_group(
-        al_plane_coordinates: Points,
+        inter_atoms_plane_coordinates: Points,
         planes: list[CarbonHoneycombPlane],
     ) -> dict[int, np.ndarray]:
-        """ Returns the dict with the plane index and corresponding Al points. """
+        """ Returns the dict with the plane index and corresponding intercalated atomspoints. """
 
         plane_group_map: dict[int, list[np.ndarray]] = {
             plane_i: [] for plane_i in range(len(planes))
         }
 
-        for atom in al_plane_coordinates.points:
+        for atom in inter_atoms_plane_coordinates.points:
             min_dist: float = np.inf
             plane_indexes: list[int] = []
 
@@ -121,22 +125,22 @@ class AlAtomsTranslator:
         }
 
     @classmethod
-    def _copy_al_points_to_rest_planes(
+    def _copy_inter_atoms_points_to_rest_planes(
             cls,
             plane_group_map: dict[int, np.ndarray],
             carbon_channel: CarbonHoneycombChannel,
-            try_to_reflect_al_atoms: bool,
+            try_to_reflect_inter_atoms: bool,
             atom_params: ConstantsAtomParams,
     ) -> Points:
         planes: list[CarbonHoneycombPlane] = carbon_channel.planes
         # channel_center: np.ndarray = carbon_channel.center
-        all_al_points: list[np.ndarray] = []
+        all_inter_atoms_points: list[np.ndarray] = []
         min_allowed_dist: float = atom_params.MIN_ALLOWED_DIST_BETWEEN_ATOMS
 
         for plane_i, plane in enumerate(planes):
             if plane_i in plane_group_map:
                 # Just add the related points
-                all_al_points.append(plane_group_map[plane_i])
+                all_inter_atoms_points.append(plane_group_map[plane_i])
 
                 # Update the minimum allowed distance according to the built plane
                 # (take 95% of the minimum distance for some margin)
@@ -148,7 +152,7 @@ class AlAtomsTranslator:
                 if min_dist * 0.98 < min_allowed_dist:
                     min_allowed_dist = min_dist
                     logger.warning(
-                        "Min allowed distance between Al and C atoms "
+                        "Min allowed distance betweenintercalated atomsand C atoms "
                         f"is less than {atom_params.DIST_BETWEEN_ATOMS:.2f}: {min_allowed_dist:.2f}"
                     )
 
@@ -159,76 +163,77 @@ class AlAtomsTranslator:
                 logger.warning(f"Group {group_i} not found in plane_group_map ({plane_group_map.keys()})")
                 continue
 
-            al_points = Points(plane_group_map[group_i])
-            # al_points_moved: Points = cls._move_al_to_other_plane(
-            #     al_points, channel_center,
-            #     al_points_plane=planes[group_i],
+            inter_atoms_points = Points(plane_group_map[group_i])
+            # inter_atoms_points_moved: Points = cls._move_inter_atoms_to_other_plane(
+            #     inter_atoms_points, channel_center,
+            #     inter_atoms_points_plane=planes[group_i],
             #     target_plane=plane,
             # )
 
-            # all_al_points.append(al_points_moved.points)
+            # all_inter_atoms.append(inter_atoms_moved.points)
             # continue
 
             angle: float = (group_i - plane_i) * np.pi / 3
             # logger.info(f"Angle: {angle / np.pi * 180} degrees")
 
-            al_points_rotated: Points = PointsRotator.rotate_around_z_parallel_line(
-                al_points, line_point=carbon_channel.center, angle=angle)
+            inter_atoms_points_rotated: Points = PointsRotator.rotate_around_z_parallel_line(
+                inter_atoms_points, line_point=carbon_channel.center, angle=angle)
 
             # StructureVisualizer.show_two_structures(
             #     carbon_channel.points,
-            #     np.concatenate(all_al_points + [al_points_rotated.points]),
+            #     np.concatenate(all_inter_atoms_points + [inter_atoms_points_rotated.points]),
             #     title=f"Plane {plane_i}",
             #     to_build_bonds=True
             # )
 
-            # all_al_points.append(al_points_rotated.points)
+            # all_inter_atoms_points.append(inter_atoms_points_rotated.points)
             # continue
 
-            # al_points_adjusted: Points = cls._adjust_al_atoms(al_points_rotated, plane)
+            # inter_atoms_adjusted: Points = cls._adjust_inter_atoms(inter_atoms_rotated, plane)
 
-            if try_to_reflect_al_atoms:
+            if try_to_reflect_inter_atoms:
                 # Check if we need to reflect points
-                al_points_reflected: Points = PointsMover.reflect_through_vertical_axis(al_points_rotated)
+                inter_atoms_points_reflected: Points = PointsMover.reflect_through_vertical_axis(
+                    inter_atoms_points_rotated)
 
                 reflected_min_dists: np.ndarray = DistanceMeasure.calculate_min_distances(
-                    al_points_reflected.points, plane.points)
+                    inter_atoms_points_reflected.points, plane.points)
                 rotated_min_dists: np.ndarray = DistanceMeasure.calculate_min_distances(
-                    al_points_rotated.points, plane.points)
+                    inter_atoms_points_rotated.points, plane.points)
 
                 if np.min(reflected_min_dists) > min_allowed_dist and (
                         np.sum(reflected_min_dists) > np.sum(rotated_min_dists)):
-                    all_al_points.append(al_points_reflected.points)
+                    all_inter_atoms_points.append(inter_atoms_points_reflected.points)
                 else:
-                    all_al_points.append(al_points_rotated.points)
+                    all_inter_atoms_points.append(inter_atoms_points_rotated.points)
 
             else:
-                all_al_points.append(al_points_rotated.points)
+                all_inter_atoms_points.append(inter_atoms_points_rotated.points)
 
-        al_points_ndarray: np.ndarray = np.concatenate(all_al_points)
-        return Points(al_points_ndarray)
+        inter_atoms_points_ndarray: np.ndarray = np.concatenate(all_inter_atoms_points)
+        return Points(inter_atoms_points_ndarray)
 
     @staticmethod
-    def _move_al_to_other_plane(
-        al_points: Points,
+    def _move_inter_atoms_to_other_plane(
+        inter_atoms_points: Points,
         channel_center: np.ndarray,
-        al_points_plane: CarbonHoneycombPlane,
+        inter_atoms_points_plane: CarbonHoneycombPlane,
         target_plane: CarbonHoneycombPlane,
     ) -> Points:
         """
         It does 3 steps:
-        1) move al_points from al_points center to the center of the al_points_plane,
-        2) move al_points from 1) step point to target_plane center,
-        3) move al_points from 2) step point in the direction to the channel_center on the distance,
-        that equals length of the vector from 1) step (to keep the same distance between Al and plane).
+        1) move inter_atoms from inter_atoms center to the center of the inter_atoms_plane,
+        2) move inter_atoms from 1) step point to target_plane center,
+        3) move inter_atoms from 2) step point in the direction to the channel_center on the distance,
+        that equals length of the vector from 1) step (to keep the same distance betweenintercalated atomsand plane).
         """
 
-        # Step 1: Move Al to `al_points_plane` center
-        vector_1: np.ndarray = al_points_plane.center - al_points.center
+        # Step 1: Move intercalated atoms to `inter_atoms_plane` center
+        vector_1: np.ndarray = inter_atoms_points_plane.center - inter_atoms_points.center
         dist_from_plane: np.floating = np.linalg.norm(vector_1)
 
-        # Step 2: Move from `al_points_plane.center` to `target_plane.center`
-        vector_2: np.ndarray = target_plane.center - al_points_plane.center
+        # Step 2: Move from `inter_atoms_points_plane.center` to `target_plane.center`
+        vector_2: np.ndarray = target_plane.center - inter_atoms_points_plane.center
 
         # Step 3: Move in the direction of `channel_center` to maintain distance
         direction_vector = channel_center - target_plane.center
@@ -236,32 +241,32 @@ class AlAtomsTranslator:
         # Compute length and normalize direction vector
         direction_length: np.floating = np.linalg.norm(direction_vector)
         if direction_length == 0:
-            return Points(points=al_points.points + vector_1 + vector_2)  # No need to move further
+            return Points(points=inter_atoms_points.points + vector_1 + vector_2)  # No need to move further
 
         unit_direction = direction_vector / direction_length
         scaled_vector = unit_direction * dist_from_plane  # Keep the same distance
 
         # Compute final transformed points
-        transformed_points: np.ndarray = al_points.points + vector_1 + vector_2 + scaled_vector
+        transformed_points: np.ndarray = inter_atoms_points.points + vector_1 + vector_2 + scaled_vector
 
         return Points(points=transformed_points)
 
     @classmethod
-    def _adjust_al_atoms(
+    def _adjust_inter_atoms(
         cls,
-        al_points: Points,
+        inter_atoms_points: Points,
         plane: CarbonHoneycombPlane,
     ) -> Points:
         """
         Rotate a bit to find the min distance variation 
-        between Al points and the plane. 
+        between inter_atoms points and the plane. 
         """
         init_angle: np.ndarray = np.array([0.0])
 
         result = minimize(
             cls._func_to_minimize,
             init_angle,
-            args=(al_points, plane),
+            args=(inter_atoms_points, plane),
             method="Powell",
             options={"disp": True},
         )
@@ -269,18 +274,18 @@ class AlAtomsTranslator:
         result_angle: float = result.x.item()
 
         rotated_points: Points = PointsRotator.rotate_on_angle_related_center(
-            al_points, angle_z=result_angle)
+            inter_atoms_points, angle_z=result_angle)
 
         return rotated_points
 
     @staticmethod
     def _func_to_minimize(
         angle_z: np.ndarray,
-        al_points: Points,
+        inter_atoms_points: Points,
         plane: CarbonHoneycombPlane,
     ) -> np.floating:
         rotated_points: Points = PointsRotator.rotate_on_angle_related_center(
-            al_points, angle_z=angle_z[0])
+            inter_atoms_points, angle_z=angle_z[0])
 
         min_dists: np.ndarray = DistanceMeasure.calculate_min_distances(
             rotated_points.points, plane.points)
@@ -288,7 +293,7 @@ class AlAtomsTranslator:
         var_result: np.floating = np.var(min_dists)
 
         if np.any(min_dists < 1.0):
-            # Avoid situations when Al atoms are too close to the plane
+            # Avoid situations whenintercalated atoms are too close to the plane
             return var_result * 10
 
         return var_result

@@ -13,13 +13,13 @@ from src.projects.carbon_honeycomb_actions import CarbonHoneycombChannel
 
 from ...intercalated_coordinates_utils import IntercalatedCoordinatesUtils
 from .variance_calculator import VarianceCalculator
-from .atoms_filter import AtomsFilter
+from .inter_atoms_filter import InterAtomsFilter
 
 
 logger = Logger("equidistant_points_sets_in_channel")
 
 
-class AtomsSetter:
+class InterAtomsSetter:
     @classmethod
     def equidistant_points_sets_in_channel(
             cls,
@@ -88,7 +88,7 @@ class AtomsSetter:
         moved_points: Points = cls.move_and_rotate_related_xy(
             vectors=initial_vectors, points=inner_points)
 
-        filtered_atoms: Points = AtomsFilter.filter_atoms_related_carbon(
+        filtered_atoms: Points = InterAtomsFilter.filter_atoms_related_carbon(
             inter_points=inner_points,
             carbon_channel=carbon_channel,
         )

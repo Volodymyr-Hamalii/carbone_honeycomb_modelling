@@ -1,7 +1,4 @@
-from abc import ABC, abstractmethod
-
-
-class LatticeType(ABC):
+class LatticeType:
     def __init__(self, structure_type: str) -> None:
         """ Base class for different lattice structures """
         self.is_cell: bool = structure_type.lower() == "cell"  # Cubic cell
@@ -16,14 +13,13 @@ class LatticeType(ABC):
     def _is_valid_structure(self, structure_type: str) -> bool:
         return structure_type.lower() in [t.lower() for t in self.get_available_types()]
 
-    @staticmethod
-    @abstractmethod
-    def get_info() -> str:
-        """ Abstract method to provide information about the lattice type """
-        ...
+    # @staticmethod
+    # @abstractmethod
+    # def get_info() -> str:
+    #     """ Abstract method to provide information about the lattice type """
+    #     ...
 
     @staticmethod
-    @abstractmethod
     def get_available_types() -> list[str]:
-        """ Abstract method to provide a list of available structure types """
-        ...
+        """ By default, the available types are 'cell', 'FCC', 'HCP' """
+        return ["cell", "FCC", "HCP"]

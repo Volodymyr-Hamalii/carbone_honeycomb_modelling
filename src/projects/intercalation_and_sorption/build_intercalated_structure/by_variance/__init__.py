@@ -1,3 +1,3 @@
-from .intercalated_channel_builder_by_variance import IntercalatedChannelBuilderByVariance
-from .atoms_filter import AtomsFilter
-from .atoms_setter import AtomsSetter
+from .inter_channel_builder_by_variance import InterChannelBuilderByVariance
+from .inter_atoms_filter import InterAtomsFilter
+from .inter_atoms_setter import InterAtomsSetter
