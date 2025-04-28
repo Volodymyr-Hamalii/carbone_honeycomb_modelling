@@ -740,11 +740,17 @@ class GetInterChcDetailsTblWindow(_IntercalationAndSorptionUtils, WindowsTemplat
             # Create a new window
             new_window = ctk.CTkToplevel(self.window)
             new_window.title("Intercalated CH channel details")
-            new_window.geometry("800x500")
+
+            width: int = min(len(df.columns) * 50 + 100, 1000)
+            height: int = min(len(df) * 20 + 100, 1000)
+            new_window.geometry(f"{width}x{height}")
 
             # Create and display the table in the new window
-            self.table_window: Table = Table(df, master=new_window)
-            self.table_window.pack(fill="both", expand=True)
+            self.table_window: Table = self.pack_table(
+                new_window,
+                df,
+                title=self.view_model.file_name,
+            )
 
         except Exception as e:
             messagebox.showerror("Error", str(e))
