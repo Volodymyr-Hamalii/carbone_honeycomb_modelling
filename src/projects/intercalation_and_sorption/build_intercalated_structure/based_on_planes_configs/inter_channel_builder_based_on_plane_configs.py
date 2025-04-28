@@ -25,7 +25,7 @@ class InterChannelBuilderBasedOnPlaneConfigs:
     ) -> Points:
         """ Returns atoms_inter """
 
-        atoms_inter: Points = InterAtomsBuilder._build_inter_atoms_near_planes(
+        atoms_inter: Points = InterAtomsBuilder.build_inter_atoms_near_planes(
             carbon_channel, atom_params, equidistant_inter_points)
         atoms_inter = InterAtomsFilter.replace_nearby_atoms_with_one_atom(atoms_inter, atom_params)
         atoms_inter = InterAtomsFilter.remove_too_close_atoms(atoms_inter, atom_params)

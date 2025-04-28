@@ -14,7 +14,7 @@ logger = Logger("AtomsBuilder")
 
 class InterAtomsBuilder:
     @classmethod
-    def _build_inter_atoms_near_planes(
+    def build_inter_atoms_near_planes(
             cls,
             carbon_channel: CarbonHoneycombChannel,
             atom_params: ConstantsAtomParams,

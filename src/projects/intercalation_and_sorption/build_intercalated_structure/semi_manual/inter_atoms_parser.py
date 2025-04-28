@@ -153,7 +153,7 @@ class InterAtomsParser:
             atom_params: ConstantsAtomParams,
     ) -> Points:
         """ Build intercalated atoms for one plane """
-        coordinates_inter_atoms: Points = InterAtomsBuilder._build_inter_atoms_near_planes(
+        coordinates_inter_atoms: Points = InterAtomsBuilder.build_inter_atoms_near_planes(
             carbon_channel, planes_limit=num_of_planes, atom_params=atom_params)
         coordinates_inter_atoms = InterAtomsFilter.replace_nearby_atoms_with_one_atom(
             coordinates_inter_atoms, atom_params)
