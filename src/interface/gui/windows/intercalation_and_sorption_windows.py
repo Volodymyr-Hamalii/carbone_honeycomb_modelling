@@ -209,6 +209,7 @@ class UpdateInterCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsT
                 subproject_dir=self.subproject_dir,
                 structure_dir=self.structure_dir,
             )
+            self._refresh_file_name_lists(dropdown_list=self.file_names_dropdown)
             messagebox.showinfo("Success", f"Intercalated atoms plane coordinates file saved to\n{path_to_file}")
         except Exception as e:
             messagebox.showerror("Error", str(e))
