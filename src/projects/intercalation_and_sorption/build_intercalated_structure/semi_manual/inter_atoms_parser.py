@@ -80,7 +80,7 @@ class InterAtomsParser:
         else:
             # Build atoms
             logger.info(f"Building inter_atoms for {structure_dir} structure...")
-            inter_atoms_plane_coordinates: Points = cls._build_inter_atoms_plane_coordinates(
+            inter_atoms_plane_coordinates: Points = cls.build_inter_atoms_plane_coordinates(
                 carbon_channel, num_of_planes=number_of_planes, atom_params=atom_params)
 
         try:
@@ -123,7 +123,7 @@ class InterAtomsParser:
 
         # Build atoms
         # carbon_channel: CarbonHoneycombChannel = cls.build_carbon_channel(structure_dir)
-        coordinates_inter_atoms: Points = cls._build_inter_atoms_plane_coordinates(
+        coordinates_inter_atoms: Points = cls.build_inter_atoms_plane_coordinates(
             carbon_channel, num_of_planes=number_of_planes, atom_params=atom_params)
 
         return coordinates_inter_atoms
@@ -147,7 +147,7 @@ class InterAtomsParser:
         return carbon_channels[0]
 
     @staticmethod
-    def _build_inter_atoms_plane_coordinates(
+    def build_inter_atoms_plane_coordinates(
             carbon_channel: CarbonHoneycombChannel,
             num_of_planes: int,
             atom_params: ConstantsAtomParams,

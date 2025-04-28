@@ -75,7 +75,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
         carbon_channel: CarbonHoneycombChannel = InterAtomsParser.build_carbon_channel(
             project_dir, subproject_dir, structure_dir, file_name=Constants.file_names.INIT_DAT_FILE)
 
-        inter_atoms_plane_coordinates: Points = InterAtomsParser._build_inter_atoms_plane_coordinates(
+        inter_atoms_plane_coordinates: Points = InterAtomsParser.build_inter_atoms_plane_coordinates(
             carbon_channel, num_of_planes=self.number_of_planes, atom_params=atom_params)
 
         path_to_file = PathBuilder.build_path_to_result_data_file(
