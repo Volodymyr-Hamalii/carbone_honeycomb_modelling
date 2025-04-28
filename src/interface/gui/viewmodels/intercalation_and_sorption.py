@@ -351,7 +351,8 @@ class VMIntercalationAndSorption(VMParamsSetter):
 
         intercalation_constants: dict[str, float] = {
             "Lattice parameter (Å)": round(atom_params.LATTICE_PARAM, 4),
-            "Equilibrium distance between atoms (Å)": round(atom_params.DIST_BETWEEN_ATOMS, 4),
+            "Distance between atoms (Å)": round(atom_params.DIST_BETWEEN_ATOMS, 4),
+            "Distance between layers (Å)": round(atom_params.DIST_BETWEEN_LAYERS, 4),
             "Min recomended distance between atoms (Å)": round(atom_params.MIN_RECOMENDED_DIST_BETWEEN_ATOMS, 4),
             "Min allowed distance between atoms (Å)": round(atom_params.MIN_ALLOWED_DIST_BETWEEN_ATOMS, 4),
             f"Average {atom_params.ATOM_SYMBOL}-C distance (Å)": round(float(mean_inter_c_dist), 4),

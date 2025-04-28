@@ -737,9 +737,10 @@ class GetInterChcConstantsWindow(_IntercalationAndSorptionUtils, WindowsTemplate
             subproject_dir: str,
     ) -> None:
         super().__init__(view_model, structure_dir, project_dir, subproject_dir)
+
         try:
             self.create_window(
-                title=f"Get intercalated CH channel constants ({self.structure_dir})",
+                title=f"Get intercalated CH channel constants for {subproject_dir.title()} ({structure_dir})",
                 geometry=(500, 600),
             )
             self.create_ui()

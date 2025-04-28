@@ -17,6 +17,7 @@ class ConstantsAtomParams(ABC):
 
     LATTICE_PARAM: float
     DIST_BETWEEN_ATOMS: float
+    DIST_BETWEEN_LAYERS: float
 
     MIN_ALLOWED_DIST_BETWEEN_ATOMS: float
     MIN_RECOMENDED_DIST_BETWEEN_ATOMS: float
@@ -29,6 +30,7 @@ class ConstantsAlParams(ConstantsAtomParams):
 
     LATTICE_PARAM: float = 4.049  # A
     DIST_BETWEEN_ATOMS: float = LATTICE_PARAM / sqrt(2)
+    DIST_BETWEEN_LAYERS: float = LATTICE_PARAM / sqrt(3)
 
     MIN_ALLOWED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.7
     MIN_RECOMENDED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.92
@@ -41,6 +43,7 @@ class ConstantsArParams(ConstantsAtomParams):
 
     LATTICE_PARAM: float = 5.310  # A
     DIST_BETWEEN_ATOMS: float = LATTICE_PARAM / sqrt(2)
+    DIST_BETWEEN_LAYERS: float = LATTICE_PARAM / sqrt(3)
 
     MIN_ALLOWED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.7
     MIN_RECOMENDED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.92
