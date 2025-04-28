@@ -360,18 +360,20 @@ class VMShowInitData(VMParamsSetter):
             for hexagon in plane.hexagons
         ]
         hexagon_centers: np.ndarray = np.array([hexagon.center for hexagon in hexagons])
+        hexagon_centers_z_coords: np.ndarray = np.sort(np.round(np.unique(hexagon_centers[:, 2]), 3))
+        logger.info(f"Hexagon centers Z coordinates ({structure_dir}): {hexagon_centers_z_coords}")
 
         # Get all possible distances between hexagon center Z coordinates
         dists_between_hexagon_center_layers: np.ndarray = np.abs(
-            hexagon_centers[:, 2][:, None] - hexagon_centers[:, 2][None, :]
+            hexagon_centers_z_coords[:, None] - hexagon_centers_z_coords[None, :]
         )
         min_dists_between_hexagon_layers: np.floating = np.min(
-            dists_between_hexagon_center_layers[dists_between_hexagon_center_layers > 0.1]
+            dists_between_hexagon_center_layers[dists_between_hexagon_center_layers > 0.01]
         )
 
         carbon_channel_constants: dict[str, float] = {
             "Average distance between atoms (Å)": round(float(min_dist_between_atoms), 4),
-            "Average distance between hexagon layers (Å)": round(float(min_dists_between_hexagon_layers), 4),
+            "Min distance between hexagon layers (Å)": round(float(min_dists_between_hexagon_layers), 4),
         }
 
         # Convert the dictionary to a DataFrame
