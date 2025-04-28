@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.pyplot import Axes  # type: ignore
+from matplotlib.axes import Axes
+import pandas as pd
 
 from src.utils import Logger, FileReader
 from src.coordinate_operations import DistanceMeasure, LinesOperations

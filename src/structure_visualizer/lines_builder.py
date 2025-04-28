@@ -1,6 +1,6 @@
 import numpy as np
 from numpy import ndarray
-from matplotlib.pyplot import Axes  # type: ignore
+from matplotlib.axes import Axes
 from mpl_toolkits.mplot3d.art3d import Line3DCollection
 from scipy.spatial.distance import pdist, squareform
 
