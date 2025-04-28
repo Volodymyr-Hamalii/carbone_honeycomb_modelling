@@ -21,9 +21,10 @@ class VMParamsSetter:
         self.bonds_skip_first_distances: int = 0
 
         # Channel details
-        self.to_show_dists_to_plane: bool = True
-        self.to_show_dists_to_edges: bool = True
+        self.to_show_dists_to_plane: bool = False
+        self.to_show_dists_to_edges: bool = False
         self.to_show_channel_angles: bool = True
+        self.to_show_plane_lengths: bool = True
 
         # Files and paths
         self.data_dir: Path = Constants.path.PROJECT_DATA_PATH
@@ -95,6 +96,9 @@ class VMParamsSetter:
         self.bonds_skip_first_distances: int = value
 
     ######### Channel details #########
+
+    def set_to_show_plane_lengths(self, value: bool) -> None:
+        self.to_show_plane_lengths: bool = value
 
     def set_to_show_dists_to_plane(self, value: bool) -> None:
         self.to_show_dists_to_plane: bool = value

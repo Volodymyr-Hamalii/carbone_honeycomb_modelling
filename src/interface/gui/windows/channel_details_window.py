@@ -24,6 +24,13 @@ class ChannelDetailsWindow(WindowsTemplate):
         self.create_ui()
 
     def create_ui(self) -> None:
+        # Checkbox for to_show_plane_lengths
+        self.to_show_plane_lengths_checkbox: CheckBox = self.pack_check_box(
+            self.window, text="Show plane lengths",
+            command=self.update_to_show_plane_lengths,
+            default=self.view_model.to_show_plane_lengths,
+        )
+
         # Checkbox for to_show_channel_angles
         self.to_show_channel_angles_checkbox: CheckBox = self.pack_check_box(
             self.window, text="Show channel angles",
@@ -79,6 +86,10 @@ class ChannelDetailsWindow(WindowsTemplate):
             subproject_dir=self.subproject_dir,
             structure_dir=self.structure_dir,
         )
+
+    def update_to_show_plane_lengths(self) -> None:
+        value = bool(self.to_show_plane_lengths_checkbox.get())
+        self.view_model.set_to_show_plane_lengths(value)
 
     def update_to_show_coordinates(self) -> None:
         value = bool(self.to_show_coordinates_checkbox.get())

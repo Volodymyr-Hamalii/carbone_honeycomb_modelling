@@ -286,6 +286,33 @@ class VMShowInitData(VMParamsSetter):
                     fontsize=6,
                 )
 
+        if self.to_show_plane_lengths:
+            for plane in carbon_channel.planes:
+                # Get the points with max and min x coordinate
+                point_1: np.ndarray = plane.points[np.argmax(plane.points[:, 0])]
+                point_2: np.ndarray = plane.points[np.argmin(plane.points[:, 0])]
+
+                # If the points have the same x coordinate, use the y coordinate
+                if point_1[0] == point_2[0]:
+                    point_1 = plane.points[np.argmax(plane.points[:, 1])]
+                    point_2 = plane.points[np.argmin(plane.points[:, 1])]
+
+                # Convert the points to 2D
+                point_1 = point_1[:2]
+                point_2 = point_2[:2]
+
+                # Get the distance between the points
+                distance: float = DistanceMeasure.calculate_distance_between_2_points(point_1, point_2)
+
+                # Show the distance
+                ax.text(
+                    plane.center[0], plane.center[1],
+                    f"Length: {distance:.2f}",
+                    fontsize=fontsize,
+                    ha="center",
+                    va="bottom" if plane.center[1] > center_2d[1] else "top",
+                )
+
         # Set equal scale for the plot
         x_min, x_max = carbon_channel.points[:, 0].min(), carbon_channel.points[:, 0].max()
         y_min, y_max = carbon_channel.points[:, 1].min(), carbon_channel.points[:, 1].max()
