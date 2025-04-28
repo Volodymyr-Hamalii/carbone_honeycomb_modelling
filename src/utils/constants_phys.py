@@ -19,8 +19,8 @@ class ConstantsAtomParams(ABC):
     DIST_BETWEEN_ATOMS: float
     DIST_BETWEEN_LAYERS: float
 
-    MIN_ALLOWED_DIST_BETWEEN_ATOMS: float
     MIN_RECOMENDED_DIST_BETWEEN_ATOMS: float
+    MIN_ALLOWED_DIST_BETWEEN_ATOMS: float
 
 
 class ConstantsAlParams(ConstantsAtomParams):
@@ -32,8 +32,8 @@ class ConstantsAlParams(ConstantsAtomParams):
     DIST_BETWEEN_ATOMS: float = LATTICE_PARAM / sqrt(2)
     DIST_BETWEEN_LAYERS: float = LATTICE_PARAM / sqrt(3)
 
-    MIN_ALLOWED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.7
     MIN_RECOMENDED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.92
+    MIN_ALLOWED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.7
 
 
 class ConstantsArParams(ConstantsAtomParams):
@@ -45,8 +45,8 @@ class ConstantsArParams(ConstantsAtomParams):
     DIST_BETWEEN_ATOMS: float = LATTICE_PARAM / sqrt(2)
     DIST_BETWEEN_LAYERS: float = LATTICE_PARAM / sqrt(3)
 
-    MIN_ALLOWED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.7
     MIN_RECOMENDED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.92
+    MIN_ALLOWED_DIST_BETWEEN_ATOMS: float = DIST_BETWEEN_ATOMS * 0.7
 
 
 ATOM_PARAMS_MAP: dict = {
