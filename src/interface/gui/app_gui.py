@@ -164,12 +164,6 @@ class AppGui(ctk.CTk, WindowsTemplate):
         )
         self.show_init_structure_btn.pack(pady=10, padx=10)
 
-        # Button to show one channel structure
-        self.show_one_channel_structure_btn = Button(
-            init_data_info_frame, text="Show one channel structure", command=self.open_show_one_channel_structure_window
-        )
-        self.show_one_channel_structure_btn.pack(pady=10, padx=10)
-
         # Button to show channel parameters
         self.show_channel_parameters_btn = Button(
             init_data_info_frame, text="Show channel parameters", command=self.open_get_channel_details_window
@@ -190,7 +184,6 @@ class AppGui(ctk.CTk, WindowsTemplate):
             project_dir=self.project_dir,
             subproject_dir=self.subproject_dir,
             structure_dir=self.structure_dir,
-            is_one_channel=True,
         )
 
     def open_get_channel_details_window(self) -> None:

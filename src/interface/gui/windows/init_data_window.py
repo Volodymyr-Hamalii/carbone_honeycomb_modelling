@@ -19,13 +19,11 @@ class InitDataWindow(WindowsTemplate):
             project_dir: str,
             subproject_dir: str,
             structure_dir: str,
-            is_one_channel: bool = False,
     ) -> None:
         super().__init__()
         self.project_dir: str = project_dir
         self.subproject_dir: str = subproject_dir
         self.structure_dir: str = structure_dir
-        self.is_one_channel: bool = is_one_channel
 
         self.view_model: VMShowInitData = view_model
         self.view_model.set_data_dir(
@@ -39,9 +37,7 @@ class InitDataWindow(WindowsTemplate):
         self._refresh_file_name_lists()
 
         self.create_window(
-            title=f"Show one channel structure ({self.structure_dir})"
-            if self.is_one_channel
-            else f"Show init full CH structure ({self.structure_dir}) ",
+            title=f"Show initial CH structure ({self.structure_dir}) ",
             # description=(
             #     "Write an Excel file withintercalated atoms in channel details (Intercalated atoms coordinates, "
             #     "Intercalated atoms indexes,intercalated atoms distances from the C atoms, etc.)"
@@ -127,26 +123,32 @@ class InitDataWindow(WindowsTemplate):
             default_max=self.view_model.z_max,
         )
 
-        # Button to proceed to the next step
-        self.next_btn: Button = self.pack_button(
-            self.window, text="Show structure",
-            command=self.show_structure,
+        # Button to show initial structure
+        self.init_structure_btn: Button = self.pack_button(
+            self.window, text="Show initial structure",
+            command=self.show_init_structure,
+        )
+
+        # Button to show initial structure
+        self.one_channel_structure_btn: Button = self.pack_button(
+            self.window, text="Show one channel",
+            command=self.show_one_channel_structure,
             pady=(10, 25),
         )
 
-    def show_structure(self) -> None:
-        if self.is_one_channel:
-            self.view_model.show_one_channel_structure(
-                project_dir=self.project_dir,
-                subproject_dir=self.subproject_dir,
-                structure_dir=self.structure_dir,
-            )
-        else:
-            self.view_model.show_init_structure(
-                project_dir=self.project_dir,
-                subproject_dir=self.subproject_dir,
-                structure_dir=self.structure_dir,
-            )
+    def show_init_structure(self) -> None:
+        self.view_model.show_init_structure(
+            project_dir=self.project_dir,
+            subproject_dir=self.subproject_dir,
+            structure_dir=self.structure_dir,
+        )
+
+    def show_one_channel_structure(self) -> None:
+        self.view_model.show_one_channel_structure(
+            project_dir=self.project_dir,
+            subproject_dir=self.subproject_dir,
+            structure_dir=self.structure_dir,
+        )
 
     def update_to_build_bonds(self) -> None:
         value = bool(self.to_build_bonds_checkbox.get())
