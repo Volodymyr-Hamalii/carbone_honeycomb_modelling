@@ -310,11 +310,11 @@ class TranslateInterToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsT
         right_frame.pack(side="right", fill="both", expand=True, padx=10, pady=10)
 
         # Left column inputs
-        self.try_to_reflect_inter_atoms_checkbox: CheckBox = self.pack_check_box(
+        self.to_try_to_reflect_inter_atoms_checkbox: CheckBox = self.pack_check_box(
             left_frame,
             text="Try to reflect intercalated atoms to fit the plane",
-            command=self.update_to_try_to_reflect_inter_atoms,
-            default=self.view_model.to_try_to_reflect_inter_atoms,
+            command=self.update_to_to_try_to_reflect_inter_atoms,
+            default=self.view_model.to_to_try_to_reflect_inter_atoms,
         )
 
         self.number_of_planes_input_field: InputField = self.pack_input_field(
@@ -429,9 +429,9 @@ class TranslateInterToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsT
         value = int(self.bonds_skip_first_distances_input_field.get())
         self.view_model.set_bonds_skip_first_distances(value)
 
-    def update_to_try_to_reflect_inter_atoms(self) -> None:
-        value = bool(self.try_to_reflect_inter_atoms_checkbox.get())
-        self.view_model.set_to_try_to_reflect_inter_atoms(value)
+    def update_to_to_try_to_reflect_inter_atoms(self) -> None:
+        value = bool(self.to_try_to_reflect_inter_atoms_checkbox.get())
+        self.view_model.set_to_to_try_to_reflect_inter_atoms(value)
 
     def update_num_of_inter_atoms_layers(self) -> None:
         value = int(self.num_of_inter_atoms_layers_input_field.get())
@@ -522,12 +522,12 @@ class TranslateInterToAllChannelsWindow(_IntercalationAndSorptionUtils, WindowsT
             default_value=self.view_model.num_of_inter_atoms_layers,
         )
 
-        self.try_to_reflect_inter_atoms_checkbox: CheckBox = self.pack_check_box(
+        self.to_try_to_reflect_inter_atoms_checkbox: CheckBox = self.pack_check_box(
             left_frame,
             text="Try to reflect intercalated atoms to fit the plane\n"
             "(if no init file and the intercalated atoms will be calculated)",
-            command=self.update_to_try_to_reflect_inter_atoms,
-            default=self.view_model.to_try_to_reflect_inter_atoms,
+            command=self.update_to_to_try_to_reflect_inter_atoms,
+            default=self.view_model.to_to_try_to_reflect_inter_atoms,
         )
 
         self.to_remove_inter_atoms_with_min_and_max_x_coordinates_checkbox: CheckBox = self.pack_check_box(
@@ -619,9 +619,9 @@ class TranslateInterToAllChannelsWindow(_IntercalationAndSorptionUtils, WindowsT
         value = int(self.bonds_skip_first_distances_input_field.get())
         self.view_model.set_bonds_skip_first_distances(value)
 
-    def update_to_try_to_reflect_inter_atoms(self) -> None:
-        value = bool(self.try_to_reflect_inter_atoms_checkbox.get())
-        self.view_model.set_to_try_to_reflect_inter_atoms(value)
+    def update_to_to_try_to_reflect_inter_atoms(self) -> None:
+        value = bool(self.to_try_to_reflect_inter_atoms_checkbox.get())
+        self.view_model.set_to_to_try_to_reflect_inter_atoms(value)
 
     def update_to_remove_inter_atoms_with_min_and_max_x_coordinates(self) -> None:
         value = bool(self.to_remove_inter_atoms_with_min_and_max_x_coordinates_checkbox.get())

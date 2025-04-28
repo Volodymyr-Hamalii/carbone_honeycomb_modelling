@@ -63,7 +63,7 @@ class InterAtomsTranslator:
         carbon_channel: CarbonHoneycombChannel,
         inter_atoms_plane_coordinates: Points,
         number_of_planes: int,
-        try_to_reflect_inter_atoms: bool,
+        to_try_to_reflect_inter_atoms: bool,
         atom_params: ConstantsAtomParams,
     ) -> Points:
 
@@ -74,7 +74,7 @@ class InterAtomsTranslator:
             inter_atoms_plane_coordinates, planes)
 
         all_inter_atoms_points: Points = cls._copy_inter_atoms_points_to_rest_planes(
-            plane_group_map, carbon_channel, try_to_reflect_inter_atoms, atom_params)
+            plane_group_map, carbon_channel, to_try_to_reflect_inter_atoms, atom_params)
 
         inter_atoms_points_upd: Points = InterAtomsFilter.replace_nearby_atoms_with_one_atom(
             all_inter_atoms_points, atom_params)
@@ -129,7 +129,7 @@ class InterAtomsTranslator:
             cls,
             plane_group_map: dict[int, np.ndarray],
             carbon_channel: CarbonHoneycombChannel,
-            try_to_reflect_inter_atoms: bool,
+            to_try_to_reflect_inter_atoms: bool,
             atom_params: ConstantsAtomParams,
     ) -> Points:
         planes: list[CarbonHoneycombPlane] = carbon_channel.planes
@@ -191,7 +191,7 @@ class InterAtomsTranslator:
 
             # inter_atoms_adjusted: Points = cls._adjust_inter_atoms(inter_atoms_rotated, plane)
 
-            if try_to_reflect_inter_atoms:
+            if to_try_to_reflect_inter_atoms:
                 # Check if we need to reflect points
                 inter_atoms_points_reflected: Points = PointsMover.reflect_through_vertical_axis(
                     inter_atoms_points_rotated)

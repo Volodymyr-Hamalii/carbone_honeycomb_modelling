@@ -31,7 +31,7 @@ class InterAtomsParser:
             structure_dir: str,
             carbon_channel: CarbonHoneycombChannel,
             number_of_planes: int,
-            try_to_reflect_inter_atoms: bool,
+            to_try_to_reflect_inter_atoms: bool,
             atom_params: ConstantsAtomParams,
     ) -> Points:
         """ Read intercalated atoms coordinates from the Excel file or build them if there is no Excel file. """

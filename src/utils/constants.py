@@ -15,7 +15,7 @@ def _clear_env_cache() -> None:
         "number_of_planes",
         "number_of_layers",
         "number_of_min_distances",
-        "try_to_reflect_inter_atoms",
+        "to_try_to_reflect_inter_atoms",
         "show_inter_atoms_layers",
         "interactive_mode",
     ]

@@ -131,7 +131,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
             project_dir, subproject_dir, structure_dir, file_name=Constants.file_names.INIT_DAT_FILE)
 
         # inter_atoms: Points = InterAtomsParser.get_inter_atoms_channel_coordinates(
-        #     structure_dir, carbon_channel, self.number_of_planes, self.to_try_to_reflect_inter_atoms)
+        #     structure_dir, carbon_channel, self.number_of_planes, self.to_to_try_to_reflect_inter_atoms)
 
         path_to_file: Path = PathBuilder.build_path_to_result_data_file(
             project_dir, subproject_dir, structure_dir, file_name=self.file_name)
@@ -147,7 +147,12 @@ class VMIntercalationAndSorption(VMParamsSetter):
         inter_atoms_coordinates: Points = InterAtomsParser.parse_inter_atoms_coordinates_df(
             inter_atoms_full_channel_coordinates_df)
         inter_atoms_coordinates: Points = InterAtomsTranslator.translate_for_all_planes(
-            carbon_channel, inter_atoms_coordinates, self.number_of_planes, self.to_try_to_reflect_inter_atoms, atom_params)
+            carbon_channel,
+            inter_atoms_coordinates,
+            self.number_of_planes,
+            self.to_to_try_to_reflect_inter_atoms,
+            atom_params,
+        )
 
         if self.number_of_planes > 1:
             # Build only specified planes
@@ -176,7 +181,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
             project_dir, subproject_dir, structure_dir, file_name=Constants.file_names.INIT_DAT_FILE)
 
         # inter_atoms: Points = InterAtomsParser.get_inter_atoms_channel_coordinates(
-        #     structure_dir, carbon_channel, self.number_of_planes, self.to_try_to_reflect_inter_atoms)
+        #     structure_dir, carbon_channel, self.number_of_planes, self.to_to_try_to_reflect_inter_atoms)
 
         path_to_file: Path = PathBuilder.build_path_to_result_data_file(
             project_dir, subproject_dir, structure_dir, file_name=self.file_name)
@@ -192,7 +197,12 @@ class VMIntercalationAndSorption(VMParamsSetter):
         inter_atoms: Points = InterAtomsParser.parse_inter_atoms_coordinates_df(
             inter_atoms_full_channel_coordinates_df)
         inter_atoms: Points = InterAtomsTranslator.translate_for_all_planes(
-            carbon_channel, inter_atoms, self.number_of_planes, self.to_try_to_reflect_inter_atoms, atom_params)
+            carbon_channel,
+            inter_atoms,
+            self.number_of_planes,
+            self.to_to_try_to_reflect_inter_atoms,
+            atom_params,
+        )
 
         FileWriter.write_excel_file(
             df=inter_atoms.to_df(columns=["i", "x_inter", "y_inter", "z_inter"]),

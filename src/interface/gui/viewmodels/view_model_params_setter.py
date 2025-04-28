@@ -156,8 +156,8 @@ class VMParamsSetter:
     def set_num_of_inter_atoms_layers(self, value: int) -> None:
         self.num_of_inter_atoms_layers: int = value
 
-    def set_to_try_to_reflect_inter_atoms(self, value: bool) -> None:
-        self.to_try_to_reflect_inter_atoms: bool = value
+    def set_to_to_try_to_reflect_inter_atoms(self, value: bool) -> None:
+        self.to_to_try_to_reflect_inter_atoms: bool = value
 
     def set_to_equidistant_inter_points(self, value: bool) -> None:
         self.to_equidistant_inter_points: bool = value
