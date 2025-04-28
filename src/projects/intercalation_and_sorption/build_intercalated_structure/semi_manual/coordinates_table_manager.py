@@ -25,6 +25,8 @@ class CoordinatesTableManager:
             carbon_channel: CarbonHoneycombChannel,
             number_of_planes: int,
             atom_params: ConstantsAtomParams,
+            to_replace_nearby_atoms: bool,
+            to_remove_too_close_atoms: bool,
     ) -> Path:
         inter_atoms_plane: Points = InterAtomsParser.get_inter_atoms_plane_coordinates(
             project_dir=project_dir,
@@ -34,6 +36,8 @@ class CoordinatesTableManager:
             number_of_planes=number_of_planes,
             atom_params=atom_params,
             file_name=file_name,
+            to_replace_nearby_atoms=to_replace_nearby_atoms,
+            to_remove_too_close_atoms=to_remove_too_close_atoms,
         )
         df: pd.DataFrame = cls._build_updated_df(inter_atoms_plane)
 

@@ -119,6 +119,8 @@ class VMIntercalationAndSorption(VMParamsSetter):
             number_of_planes=self.number_of_planes,
             atom_params=atom_params,
             file_name=self.file_name,
+            to_replace_nearby_atoms=self.to_replace_nearby_atoms,
+            to_remove_too_close_atoms=self.to_remove_too_close_atoms,
         )
 
         return path_to_file
