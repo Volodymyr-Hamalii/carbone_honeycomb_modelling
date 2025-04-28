@@ -741,24 +741,23 @@ class GetInterChcConstantsWindow(_IntercalationAndSorptionUtils, WindowsTemplate
         try:
             self.create_window(
                 title=f"Get intercalated CH channel constants for {subproject_dir.title()} ({structure_dir})",
-                geometry=(500, 600),
+                geometry=(450, 200),
             )
             self.create_ui()
         except Exception as e:
             messagebox.showerror("Error", str(e))
 
     def create_ui(self) -> None:
-        tables: dict[str, pd.DataFrame] = self.view_model.get_inter_chc_constants(
+        df: pd.DataFrame = self.view_model.get_inter_chc_constants(
             project_dir=self.project_dir,
             subproject_dir=self.subproject_dir,
             structure_dir=self.structure_dir,
         )
 
-        # Pack all tables in the current window
-        for table_name, df in tables.items():
-            self.table_window: Table = self.pack_table(
-                self.window,
-                df,
-                title=table_name,
-                to_show_index=False,
-            )
+        # Pack the table to the current window
+        self.table_window: Table = self.pack_table(
+            self.window,
+            df,
+            # title=f"Intercalation parameters for {self.subproject_dir.title()}",
+            to_show_index=False,
+        )

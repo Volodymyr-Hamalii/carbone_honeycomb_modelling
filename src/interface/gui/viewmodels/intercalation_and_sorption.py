@@ -298,54 +298,26 @@ class VMIntercalationAndSorption(VMParamsSetter):
             project_dir: str,
             subproject_dir: str,
             structure_dir: str,
-    ) -> dict[str, pd.DataFrame]:
+    ) -> pd.DataFrame:
         """ Returns the dict with name of the table and the table itself. """
-
-        ### CH channel constants ###
-
-        carbon_channel: CarbonHoneycombChannel = InterAtomsParser.build_carbon_channel(
-            project_dir, subproject_dir, structure_dir, file_name=Constants.file_names.INIT_DAT_FILE)
-
-        min_dist_between_atoms: np.floating = np.mean(
-            DistanceMeasure.calculate_min_distances_between_points(carbon_channel.points)
-        )
-
-        hexagons: list = [hexagon for plane in carbon_channel.planes for hexagon in plane.hexagons]
-        # hexagons: list = [hexagon for hexagon in carbon_channel.planes[0].hexagons]
-        hexagon_centers: np.ndarray = np.array([hexagon.center for hexagon in hexagons])
-
-        # Get all possible distances between hexagon center Z coordinates
-        dists_between_hexagon_center_layers: np.ndarray = np.abs(
-            hexagon_centers[:, 2][:, None] - hexagon_centers[:, 2][None, :]
-        )
-        min_dists_between_hexagon_layers: np.floating = np.min(
-            dists_between_hexagon_center_layers[dists_between_hexagon_center_layers > 0.1]
-        )
-
-        carbon_channel_constants: dict[str, float] = {
-            "Average distance between atoms (Å)": round(float(min_dist_between_atoms), 4),
-            "Average distance between hexagon layers (Å)": round(float(min_dists_between_hexagon_layers), 4),
-        }
-
-        # Convert the dictionary to a DataFrame
-        carbon_channel_constants_df: pd.DataFrame = pd.DataFrame.from_dict(
-            carbon_channel_constants, orient='index', columns=['Value']
-        ).reset_index().rename(columns={'index': 'Name'})
-
-        ### Intercalation constants ###
 
         atom_params: ConstantsAtomParams = ATOM_PARAMS_MAP[subproject_dir.lower()]
 
+        carbon_points: np.ndarray = FileReader.read_init_data_file(
+            project_dir=project_dir,
+            subproject_dir=subproject_dir,
+            structure_dir=structure_dir,
+            file_name=Constants.file_names.INIT_DAT_FILE,
+        )
+
         min_distances_between_c_points: np.ndarray = DistanceMeasure.calculate_min_distances_between_points(
-            carbon_channel.points
+            carbon_points
         )
 
         mean_inter_c_dist = float(
             np.mean(
-                (
-                    float(np.mean(min_distances_between_c_points)),
-                    atom_params.DIST_BETWEEN_ATOMS,
-                )
+                (float(np.mean(min_distances_between_c_points)),
+                 atom_params.DIST_BETWEEN_ATOMS)
             )
         )
 
@@ -363,10 +335,7 @@ class VMIntercalationAndSorption(VMParamsSetter):
             intercalation_constants, orient='index', columns=['Value']
         ).reset_index().rename(columns={'index': 'Name'})
 
-        return {
-            "Carbon honeycomb channel constants": carbon_channel_constants_df,
-            f"Intercalation constants for {atom_params.ATOMS_NAME}": intercalation_constants_df,
-        }
+        return intercalation_constants_df
 
     def translate_inter_to_all_channels_plot(
             self,

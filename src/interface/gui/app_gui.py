@@ -166,7 +166,7 @@ class AppGui(ctk.CTk, WindowsTemplate):
 
         # Button to show channel parameters
         self.show_channel_parameters_btn = Button(
-            init_data_info_frame, text="Show channel parameters", command=self.open_get_channel_details_window
+            init_data_info_frame, text="Get channel parameters", command=self.open_get_channel_details_window
         )
         self.show_channel_parameters_btn.pack(pady=10, padx=10)
 

@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 import pandas as pd
 
-from src.utils import Logger, FileReader
+from src.utils import Constants, Logger, FileReader
 from src.coordinate_operations import DistanceMeasure, LinesOperations
 from src.base_structure_classes import Points, CoordinateLimits
 from src.structure_visualizer import StructureVisualizer, VisualizationParams
@@ -12,6 +12,7 @@ from src.projects import (
     CarbonHoneycombChannel,
     InterAtomsParser,
     CarbonHoneycombPlane,
+    CarbonHoneycombHexagon,
 )
 from .view_model_params_setter import VMParamsSetter
 
@@ -118,7 +119,7 @@ class VMShowInitData(VMParamsSetter):
             coordinate_limits=coordinate_limits,
         )
 
-    def get_channel_details(
+    def show_2d_channel_scheme(
             self,
             project_dir: str,
             subproject_dir: str,
@@ -203,7 +204,7 @@ class VMShowInitData(VMParamsSetter):
                 # Show the distance from the center to the plane
                 ax.text(
                     plane_center[0], plane_center[1],
-                    f"Dist to plane: {distance_from_center_to_plane:.2f}",
+                    f"To plane: {distance_from_center_to_plane:.2f}",
                     # color="black",
                     fontsize=fontsize,
                     ha="center",
@@ -266,7 +267,7 @@ class VMShowInitData(VMParamsSetter):
                         # Show the distance from the center to the point
                         ax.text(
                             point[0], point[1],
-                            f"Dist to edge: {distance_from_center_to_point:.2f}",
+                            f"To edge: {distance_from_center_to_point:.2f}",
                             # color="black",
                             fontsize=fontsize,
                             # ha="left" if point[0] > center_2d[0] else "right",
@@ -301,3 +302,54 @@ class VMShowInitData(VMParamsSetter):
         ax.set_ylim(y_mid - delta, y_mid + delta)
 
         plt.show()
+
+    def get_channel_params(
+            self,
+            project_dir: str,
+            subproject_dir: str,
+            structure_dir: str,
+    ) -> pd.DataFrame:
+        """
+        Get parameters of the channel from result_data/{structure_dir}/structure_settings.json:
+        - distance between atoms,
+        - distance between hexagon layers.
+        """
+
+        file_name: str = self.file_name or Constants.file_names.INIT_DAT_FILE
+
+        carbon_channel: CarbonHoneycombChannel = InterAtomsParser.build_carbon_channel(
+            project_dir=project_dir,
+            subproject_dir=subproject_dir,
+            structure_dir=structure_dir,
+            file_name=file_name,
+        )
+
+        min_dist_between_atoms: np.floating = np.mean(
+            DistanceMeasure.calculate_min_distances_between_points(carbon_channel.points)
+        )
+
+        hexagons: list[CarbonHoneycombHexagon] = [
+            hexagon for plane in carbon_channel.planes
+            for hexagon in plane.hexagons
+        ]
+        hexagon_centers: np.ndarray = np.array([hexagon.center for hexagon in hexagons])
+
+        # Get all possible distances between hexagon center Z coordinates
+        dists_between_hexagon_center_layers: np.ndarray = np.abs(
+            hexagon_centers[:, 2][:, None] - hexagon_centers[:, 2][None, :]
+        )
+        min_dists_between_hexagon_layers: np.floating = np.min(
+            dists_between_hexagon_center_layers[dists_between_hexagon_center_layers > 0.1]
+        )
+
+        carbon_channel_constants: dict[str, float] = {
+            "Average distance between atoms (Å)": round(float(min_dist_between_atoms), 4),
+            "Average distance between hexagon layers (Å)": round(float(min_dists_between_hexagon_layers), 4),
+        }
+
+        # Convert the dictionary to a DataFrame
+        carbon_channel_constants_df: pd.DataFrame = pd.DataFrame.from_dict(
+            carbon_channel_constants, orient='index', columns=['Value']
+        ).reset_index().rename(columns={'index': 'Name'})
+
+        return carbon_channel_constants_df
