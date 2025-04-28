@@ -39,7 +39,9 @@ class VMParamsSetter:
         self.number_of_planes: int = 1
         self.num_of_inter_atoms_layers: int = 1
         self.to_translate_inter: bool = True
-        self.to_try_to_reflect_inter_atoms: bool = True
+        self.to_replace_nearby_atoms: bool = True
+        self.to_remove_too_close_atoms: bool = False
+        self.to_to_try_to_reflect_inter_atoms: bool = True
         self.to_equidistant_inter_points: bool = True
         self.to_filter_inter_atoms: bool = True
         self.to_remove_inter_atoms_with_min_and_max_x_coordinates: bool = False
@@ -155,6 +157,15 @@ class VMParamsSetter:
 
     def set_num_of_inter_atoms_layers(self, value: int) -> None:
         self.num_of_inter_atoms_layers: int = value
+
+    def set_to_translate_inter(self, value: bool) -> None:
+        self.to_translate_inter: bool = value
+
+    def set_to_replace_nearby_atoms(self, value: bool) -> None:
+        self.to_replace_nearby_atoms: bool = value
+
+    def set_to_remove_too_close_atoms(self, value: bool) -> None:
+        self.to_remove_too_close_atoms: bool = value
 
     def set_to_to_try_to_reflect_inter_atoms(self, value: bool) -> None:
         self.to_to_try_to_reflect_inter_atoms: bool = value

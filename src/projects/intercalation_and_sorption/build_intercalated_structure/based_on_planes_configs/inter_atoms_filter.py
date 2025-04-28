@@ -25,7 +25,7 @@ class InterAtomsFilter:
 
         dist_matrix: np.ndarray = DistanceMeasure.calculate_dist_matrix(inter_atoms.points)
 
-        min_allowed_dist: float = atom_params.DIST_BETWEEN_ATOMS / 3
+        min_allowed_dist: float = atom_params.DIST_TO_REPLACE_NEARBY_ATOMS
 
         # Keep track of groups of atoms to merge
         merged_indices = set()

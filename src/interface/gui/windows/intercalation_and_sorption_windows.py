@@ -106,6 +106,7 @@ class UpdateInterCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsT
         right_frame.pack(side="right", fill="both", expand=True, padx=10, pady=10)
 
         # Left column inputs
+
         self.file_names_dropdown: DropdownList = self.pack_dropdown_list(
             left_frame,
             options=self.file_names,
@@ -133,14 +134,29 @@ class UpdateInterCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsT
             default_value=self.view_model.bonds_skip_first_distances,
         )
 
-        self.num_of_inter_atoms_layers_input_field: InputField = self.pack_input_field(
+        self.to_replace_nearby_atoms_checkbox: CheckBox = self.pack_check_box(
             left_frame,
+            text="Replace nearby atoms",
+            command=self.update_to_replace_nearby_atoms,
+            default=self.view_model.to_replace_nearby_atoms,
+        )
+
+        self.to_remove_too_close_atoms_checkbox: CheckBox = self.pack_check_box(
+            left_frame,
+            text="Remove too close atoms",
+            command=self.update_to_remove_too_close_atoms,
+            default=self.view_model.to_remove_too_close_atoms,
+        )
+
+        # Right column inputs
+
+        self.num_of_inter_atoms_layers_input_field: InputField = self.pack_input_field(
+            right_frame,
             text="Number of intercalated layers on the plot",
             command=self.update_num_of_inter_atoms_layers,
             default_value=self.view_model.num_of_inter_atoms_layers,
         )
 
-        # Right column inputs
         self.coord_x_limits_input_field: InputFieldCoordLimits = self.pack_input_field_coord_limits(
             right_frame,
             text="X plot limits",
@@ -181,7 +197,7 @@ class UpdateInterCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsT
 
         self.btn: Button = self.pack_button(
             self.window,
-            text="Update the Excel file for plane",
+            text="Update the Excel file",
             command=self.update_inter_plane_coordinates_file,
         )
 
@@ -241,6 +257,14 @@ class UpdateInterCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsT
     def update_bonds_skip_first_distances(self) -> None:
         value = int(self.bonds_skip_first_distances_input_field.get())
         self.view_model.set_bonds_skip_first_distances(value)
+
+    def update_to_replace_nearby_atoms(self) -> None:
+        value = bool(self.to_replace_nearby_atoms_checkbox.get())
+        self.view_model.set_to_replace_nearby_atoms(value)
+
+    def update_to_remove_too_close_atoms(self) -> None:
+        value = bool(self.to_remove_too_close_atoms_checkbox.get())
+        self.view_model.set_to_remove_too_close_atoms(value)
 
     def update_num_of_inter_atoms_layers(self) -> None:
         value = int(self.num_of_inter_atoms_layers_input_field.get())

@@ -32,6 +32,8 @@ class InterAtomsParser:
             carbon_channel: CarbonHoneycombChannel,
             number_of_planes: int,
             to_try_to_reflect_inter_atoms: bool,
+            to_replace_nearby_atoms: bool,
+            to_remove_too_close_atoms: bool,
             atom_params: ConstantsAtomParams,
     ) -> Points:
         """ Read intercalated atoms coordinates from the Excel file or build them if there is no Excel file. """
@@ -81,11 +83,16 @@ class InterAtomsParser:
             # Build atoms
             logger.info(f"Building inter_atoms for {structure_dir} structure...")
             inter_atoms_plane_coordinates: Points = cls.build_inter_atoms_plane_coordinates(
-                carbon_channel, num_of_planes=number_of_planes, atom_params=atom_params)
+                carbon_channel,
+                num_of_planes=number_of_planes,
+                atom_params=atom_params,
+                to_replace_nearby_atoms=to_replace_nearby_atoms,
+                to_remove_too_close_atoms=to_remove_too_close_atoms,
+            )
 
         try:
             inter_atoms_coordinates: Points = InterAtomsTranslator.translate_for_all_planes(
-                carbon_channel, inter_atoms_plane_coordinates, number_of_planes, try_to_reflect_inter_atoms, atom_params)
+                carbon_channel, inter_atoms_plane_coordinates, number_of_planes, to_try_to_reflect_inter_atoms, atom_params)
         except Exception as e:
             logger.error(f"Error translating inter_atoms: {e}", exc_info=False)
             logger.warning(f"Structure for {structure_dir} is not translated. Using the original structure.")
@@ -102,6 +109,8 @@ class InterAtomsParser:
             carbon_channel: CarbonHoneycombChannel,
             number_of_planes: int,
             atom_params: ConstantsAtomParams,
+            to_replace_nearby_atoms: bool,
+            to_remove_too_close_atoms: bool,
             file_name: str | None = None,
     ) -> Points:
         """ Read intercalated atoms coordinates from the file or build them if there is no Excel file. """
@@ -124,7 +133,12 @@ class InterAtomsParser:
         # Build atoms
         # carbon_channel: CarbonHoneycombChannel = cls.build_carbon_channel(structure_dir)
         coordinates_inter_atoms: Points = cls.build_inter_atoms_plane_coordinates(
-            carbon_channel, num_of_planes=number_of_planes, atom_params=atom_params)
+            carbon_channel,
+            num_of_planes=number_of_planes,
+            atom_params=atom_params,
+            to_replace_nearby_atoms=to_replace_nearby_atoms,
+            to_remove_too_close_atoms=to_remove_too_close_atoms,
+        )
 
         return coordinates_inter_atoms
 
@@ -151,16 +165,22 @@ class InterAtomsParser:
             carbon_channel: CarbonHoneycombChannel,
             num_of_planes: int,
             atom_params: ConstantsAtomParams,
+            to_replace_nearby_atoms: bool,
+            to_remove_too_close_atoms: bool,
     ) -> Points:
         """ Build intercalated atoms for one plane """
         coordinates_inter_atoms: Points = InterAtomsBuilder.build_inter_atoms_near_planes(
             carbon_channel, planes_limit=num_of_planes, atom_params=atom_params)
-        coordinates_inter_atoms = InterAtomsFilter.replace_nearby_atoms_with_one_atom(
-            coordinates_inter_atoms, atom_params)
-        coordinates_inter_atoms = InterAtomsFilter.remove_too_close_atoms(coordinates_inter_atoms, atom_params)
+
+        if to_replace_nearby_atoms:
+            coordinates_inter_atoms = InterAtomsFilter.replace_nearby_atoms_with_one_atom(
+                coordinates_inter_atoms, atom_params)
+
+        if to_remove_too_close_atoms:
+            coordinates_inter_atoms = InterAtomsFilter.remove_too_close_atoms(coordinates_inter_atoms, atom_params)
 
         # Round coordinates to 3 decimal places
-        coordinates_inter_atoms = Points(points=np.round(coordinates_inter_atoms.points, 2))
+        coordinates_inter_atoms = Points(points=np.round(coordinates_inter_atoms.points, 3))
 
         return Points(points=coordinates_inter_atoms.sorted_points)
 

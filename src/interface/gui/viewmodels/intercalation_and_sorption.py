@@ -52,6 +52,8 @@ class VMIntercalationAndSorption(VMParamsSetter):
             number_of_planes=self.number_of_planes,
             atom_params=atom_params,
             file_name=self.file_name,
+            to_replace_nearby_atoms=self.to_replace_nearby_atoms,
+            to_remove_too_close_atoms=self.to_remove_too_close_atoms,
         )
 
         plane_points: np.ndarray = np.vstack(
@@ -76,7 +78,12 @@ class VMIntercalationAndSorption(VMParamsSetter):
             project_dir, subproject_dir, structure_dir, file_name=Constants.file_names.INIT_DAT_FILE)
 
         inter_atoms_plane_coordinates: Points = InterAtomsParser.build_inter_atoms_plane_coordinates(
-            carbon_channel, num_of_planes=self.number_of_planes, atom_params=atom_params)
+            carbon_channel,
+            num_of_planes=self.number_of_planes,
+            atom_params=atom_params,
+            to_replace_nearby_atoms=self.to_replace_nearby_atoms,
+            to_remove_too_close_atoms=self.to_remove_too_close_atoms,
+        )
 
         path_to_file = PathBuilder.build_path_to_result_data_file(
             project_dir, subproject_dir, structure_dir, file_name=Constants.file_names.PLANE_COORDINATES_XLSX_FILE,
@@ -336,7 +343,8 @@ class VMIntercalationAndSorption(VMParamsSetter):
             "Distance between atoms (Å)": round(atom_params.DIST_BETWEEN_ATOMS, 4),
             "Distance between layers (Å)": round(atom_params.DIST_BETWEEN_LAYERS, 4),
             "Min allowed distance between atoms (Å)": round(atom_params.MIN_RECOMENDED_DIST_BETWEEN_ATOMS, 4),
-            # "Min allowed distance between atoms (Å)": round(atom_params.MIN_ALLOWED_DIST_BETWEEN_ATOMS, 4),
+            "Distance to replace nearby atoms (Å)": round(atom_params.DIST_TO_REPLACE_NEARBY_ATOMS, 4),
+            "Distance to remove too close atoms (Å)": round(atom_params.MIN_ALLOWED_DIST_BETWEEN_ATOMS, 4),
             f"Average {atom_params.ATOM_SYMBOL}-C distance (Å)": round(float(mean_inter_c_dist), 4),
         }
 
