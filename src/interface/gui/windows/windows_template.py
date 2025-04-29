@@ -128,7 +128,11 @@ class WindowsTemplate:
             is_disabled=is_disabled,
             title_pady=title_pady,
         )
-        dropdown_list.pack(pady=pady, padx=padx)
+
+        dropdown_list.pack(
+            pady=pady,
+            padx=padx,
+        )
         return dropdown_list
 
     def pack_button(
