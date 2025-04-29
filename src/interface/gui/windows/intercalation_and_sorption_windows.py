@@ -135,6 +135,13 @@ class UpdateInterCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsT
             default_value=self.view_model.bonds_skip_first_distances,
         )
 
+        # Label for the parameters to generate the Excel file
+        self.label_for_checkboxes: ctk.CTkLabel = self.pack_label(
+            left_frame,
+            text="Parameters to generate the base Excel file\nwith intercalated atoms coordinates",
+            pady=(10, 0),
+        )
+
         self.to_replace_nearby_atoms_checkbox: CheckBox = self.pack_check_box(
             left_frame,
             text="Replace nearby atoms",
@@ -740,7 +747,7 @@ class GetInterChcDetailsTblWindow(_IntercalationAndSorptionUtils, WindowsTemplat
 
             # Create a new window
             new_window = ctk.CTkToplevel(self.window)
-            new_window.title("Intercalated CH channel details")
+            new_window.title(f"Intercalated CH channel details ({self.structure_dir})")
 
             width: int = min(len(df.columns) * 50 + 100, 1000)
             height: int = min(len(df) * 20 + 100, 1000)
