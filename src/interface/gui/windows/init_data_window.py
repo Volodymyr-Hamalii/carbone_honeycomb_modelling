@@ -163,11 +163,11 @@ class InitDataWindow(WindowsTemplate):
         self.view_model.set_to_show_c_indexes(value)
 
     def update_bonds_num_of_min_distances(self) -> None:
-        value = int(self.bonds_num_of_min_distances_input_field.get())
+        value = int(self.bonds_num_of_min_distances_input_field.entry.get())
         self.view_model.set_bonds_num_of_min_distances(value)
 
     def update_bonds_skip_first_distances(self) -> None:
-        value = int(self.bonds_skip_first_distances_input_field.get())
+        value = int(self.bonds_skip_first_distances_input_field.entry.get())
         self.view_model.set_bonds_skip_first_distances(value)
 
     def update_x_coord_limits(self) -> None:

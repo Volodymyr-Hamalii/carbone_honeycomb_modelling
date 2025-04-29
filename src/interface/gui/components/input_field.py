@@ -2,7 +2,7 @@ import customtkinter as ctk
 from typing import Callable
 
 
-class InputField(ctk.CTkEntry):
+class InputField(ctk.CTkFrame):
     def __init__(
             self,
             master,
@@ -12,28 +12,26 @@ class InputField(ctk.CTkEntry):
             default_value: str | int | float | None = None,
             **kwargs,
     ) -> None:
-        # Create a frame to hold the entry and button
-        self.frame = ctk.CTkFrame(master)
-        self.frame.pack(fill="x", padx=5, pady=5)
-
         # Initialize the CTkEntry within the frame
-        super().__init__(self.frame, **kwargs)
-        self.configure(state=state)
+        super().__init__(master, **kwargs)
+        self.command: Callable = command
 
-        self.command = command
-
-        if default_value is not None:
-            self.insert(0, default_value)
-
-        self.bind("<Return>", lambda event: self.command())
+        # Create a frame to hold the entries and button
+        self.pack(fill="x", padx=10, pady=10)
 
         # Create and pack the label above the frame
-        self.label = ctk.CTkLabel(master, text=text)
-        self.label.pack(in_=self.frame, side="top", fill="x")
+        self.label = ctk.CTkLabel(self, text=text)
+        self.label.pack(side="top", fill="x")
 
-        # Pack the entry in the frame
-        self.pack(side="left", fill="x", expand=True)
+        # Initialize the CTkEntry for min value within the frame
+        self.entry = ctk.CTkEntry(self, **kwargs)
+        self.entry.configure(state=state)
 
-        # Create and pack the "Apply" button in the frame
-        self.apply_button = ctk.CTkButton(self.frame, text="Apply", command=self.command)
-        self.apply_button.pack(side="right")
+        if default_value is not None:
+            self.entry.insert(0, default_value)
+
+        self.entry.pack(side="left", fill="x", expand=True, padx=5)
+
+        # Create and pack a single "Apply" button to the right of the entries
+        self.apply_button = ctk.CTkButton(self, text="Apply", command=self.command)
+        self.apply_button.pack(side="right", padx=10, pady=5)

@@ -15,15 +15,13 @@ class InputFieldCoordLimits(ctk.CTkFrame):
     ) -> None:
         # Initialize the parent class
         super().__init__(master, **kwargs)
-
-        # Store the command for later use
-        self.command = command
+        self.command: Callable = command
 
         # Create a frame to hold the entries and button
         self.pack(fill="x", padx=10, pady=10)
 
         # Create and pack the label above the frame
-        self.label = ctk.CTkLabel(self, text=f"{text}:")
+        self.label = ctk.CTkLabel(self, text=text)
         self.label.pack(side="top", fill="x")
 
         # Initialize the CTkEntry for min value within the frame

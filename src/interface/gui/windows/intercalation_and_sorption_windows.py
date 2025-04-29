@@ -111,6 +111,7 @@ class UpdateInterCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsT
             left_frame,
             options=self.file_names,
             command=self.view_model.set_file_name,
+            title="Select the file to plot/update",
         )
 
         self.number_of_planes_input_field: InputField = self.pack_input_field(
@@ -247,15 +248,15 @@ class UpdateInterCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsT
         self.view_model.set_to_show_inter_atoms_indexes(value)
 
     def update_number_of_planes(self) -> None:
-        value = int(self.number_of_planes_input_field.get())
+        value = int(self.number_of_planes_input_field.entry.get())
         self.view_model.set_number_of_planes(value)
 
     def update_num_of_min_distances(self) -> None:
-        value = int(self.num_of_min_distances_input_field.get())
+        value = int(self.num_of_min_distances_input_field.entry.get())
         self.view_model.set_bonds_num_of_min_distances(value)
 
     def update_bonds_skip_first_distances(self) -> None:
-        value = int(self.bonds_skip_first_distances_input_field.get())
+        value = int(self.bonds_skip_first_distances_input_field.entry.get())
         self.view_model.set_bonds_skip_first_distances(value)
 
     def update_to_replace_nearby_atoms(self) -> None:
@@ -267,7 +268,7 @@ class UpdateInterCoordinatesTableWindow(_IntercalationAndSorptionUtils, WindowsT
         self.view_model.set_to_remove_too_close_atoms(value)
 
     def update_num_of_inter_atoms_layers(self) -> None:
-        value = int(self.num_of_inter_atoms_layers_input_field.get())
+        value = int(self.num_of_inter_atoms_layers_input_field.entry.get())
 
         if value > 3:
             messagebox.showerror("Error", "The number of intercalated layers cannot be greater than 3.")
@@ -442,15 +443,15 @@ class TranslateInterToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsT
         self.view_model.set_to_show_inter_atoms_indexes(value)
 
     def update_number_of_planes(self) -> None:
-        value = int(self.number_of_planes_input_field.get())
+        value = int(self.number_of_planes_input_field.entry.get())
         self.view_model.set_number_of_planes(value)
 
     def update_num_of_min_distances(self) -> None:
-        value = int(self.num_of_min_distances_input_field.get())
+        value = int(self.num_of_min_distances_input_field.entry.get())
         self.view_model.set_bonds_num_of_min_distances(value)
 
     def update_bonds_skip_first_distances(self) -> None:
-        value = int(self.bonds_skip_first_distances_input_field.get())
+        value = int(self.bonds_skip_first_distances_input_field.entry.get())
         self.view_model.set_bonds_skip_first_distances(value)
 
     def update_to_to_try_to_reflect_inter_atoms(self) -> None:
@@ -458,7 +459,7 @@ class TranslateInterToOtherPlanesWindow(_IntercalationAndSorptionUtils, WindowsT
         self.view_model.set_to_to_try_to_reflect_inter_atoms(value)
 
     def update_num_of_inter_atoms_layers(self) -> None:
-        value = int(self.num_of_inter_atoms_layers_input_field.get())
+        value = int(self.num_of_inter_atoms_layers_input_field.entry.get())
 
         if value > 3:
             self.num_of_inter_atoms_layers_input_field.label.configure(
@@ -636,11 +637,11 @@ class TranslateInterToAllChannelsWindow(_IntercalationAndSorptionUtils, WindowsT
         self.view_model.set_to_show_inter_atoms_indexes(value)
 
     def update_num_of_min_distances(self) -> None:
-        value = int(self.num_of_min_distances_input_field.get())
+        value = int(self.num_of_min_distances_input_field.entry.get())
         self.view_model.set_bonds_num_of_min_distances(value)
 
     def update_bonds_skip_first_distances(self) -> None:
-        value = int(self.bonds_skip_first_distances_input_field.get())
+        value = int(self.bonds_skip_first_distances_input_field.entry.get())
         self.view_model.set_bonds_skip_first_distances(value)
 
     def update_to_to_try_to_reflect_inter_atoms(self) -> None:
@@ -652,7 +653,7 @@ class TranslateInterToAllChannelsWindow(_IntercalationAndSorptionUtils, WindowsT
         self.view_model.set_to_remove_inter_atoms_with_min_and_max_x_coordinates(value)
 
     def update_num_of_inter_atoms_layers(self) -> None:
-        value = int(self.num_of_inter_atoms_layers_input_field.get())
+        value = int(self.num_of_inter_atoms_layers_input_field.entry.get())
         self.view_model.set_num_of_inter_atoms_layers(value)
 
     def update_x_coord_limits(self) -> None:
@@ -788,6 +789,6 @@ class GetInterChcConstantsWindow(_IntercalationAndSorptionUtils, WindowsTemplate
         self.table_window: Table = self.pack_table(
             self.window,
             df,
-            # title=f"Intercalation parameters for {self.subproject_dir.title()}",
+            # title=self.view_model.file_name,
             to_show_index=False,
         )
