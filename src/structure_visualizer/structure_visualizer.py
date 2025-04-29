@@ -2,7 +2,9 @@ import numpy as np
 from numpy import ndarray
 
 import matplotlib.pyplot as plt
-from matplotlib.pyplot import Figure, Axes  # type: ignore
+from matplotlib.figure import Figure
+from matplotlib.axes import Axes
+from matplotlib.backend_bases import FigureManagerBase
 from matplotlib.collections import PathCollection
 
 # from src.coordinate_operations import DistanceMeasure
@@ -58,6 +60,11 @@ class StructureVisualizer:
 
         if title is not None:
             ax.set_title(title)
+
+            # Set the plot window name
+            current_fig_manager: FigureManagerBase | None = plt.get_current_fig_manager()
+            if current_fig_manager:
+                current_fig_manager.set_window_title(title)
 
         plt.show()
 
@@ -125,6 +132,11 @@ class StructureVisualizer:
 
         if title is not None:
             ax.set_title(title)
+
+            # Set the plot window name
+            current_fig_manager: FigureManagerBase | None = plt.get_current_fig_manager()
+            if current_fig_manager:
+                current_fig_manager.set_window_title(title)
 
         plt.show()
 
@@ -203,6 +215,11 @@ class StructureVisualizer:
         if title is not None:
             ax.set_title(title)
 
+            # Set the plot window name
+            current_fig_manager: FigureManagerBase | None = plt.get_current_fig_manager()
+            if current_fig_manager:
+                current_fig_manager.set_window_title(title)
+
         plt.show()
 
     @staticmethod
@@ -254,6 +271,11 @@ class StructureVisualizer:
 
         if title is not None:
             ax.set_title(title)
+
+            # Set the plot window name
+            current_fig_manager: FigureManagerBase | None = plt.get_current_fig_manager()
+            if current_fig_manager:
+                current_fig_manager.set_window_title(title)
 
         # ax.legend()
         plt.grid(True)
