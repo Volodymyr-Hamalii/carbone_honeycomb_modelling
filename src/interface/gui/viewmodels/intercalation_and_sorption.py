@@ -87,14 +87,23 @@ class VMIntercalationAndSorption(VMParamsSetter):
 
         # Filter out atoms with min and max coordinates
         coordinates: np.ndarray = inter_atoms_plane_coordinates.points
-        inter_atoms_plane_coordinates: Points = Points(points=coordinates[
+        coordinates_filtered: np.ndarray = coordinates[
             (coordinates[:, 0] >= self.x_min) &
             (coordinates[:, 0] <= self.x_max) &
             (coordinates[:, 1] >= self.y_min) &
             (coordinates[:, 1] <= self.y_max) &
             (coordinates[:, 2] >= self.z_min) &
             (coordinates[:, 2] <= self.z_max)
-        ])
+        ]
+
+        # Sort by z coordinate
+        coordinates_filtered = coordinates_filtered[
+            np.lexsort((coordinates_filtered[:, 2],
+                        coordinates_filtered[:, 1],
+                        coordinates_filtered[:, 0],
+                        ))]
+
+        inter_atoms_plane_coordinates: Points = Points(points=coordinates_filtered)
 
         path_to_file = PathBuilder.build_path_to_result_data_file(
             project_dir, subproject_dir, structure_dir, file_name=Constants.file_names.PLANE_COORDINATES_XLSX_FILE,
