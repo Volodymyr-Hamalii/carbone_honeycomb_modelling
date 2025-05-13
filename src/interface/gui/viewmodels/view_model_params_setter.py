@@ -8,7 +8,7 @@ class VMParamsSetter:
         self.to_build_bonds: bool = True
         self.to_show_coordinates: bool = False
         self.to_show_c_indexes: bool = False
-        self.to_show_inter_atoms_indexes: bool = False
+        self.to_show_inter_atoms_indexes: bool = True
 
         self.x_min: float = -float("inf")
         self.x_max: float = float("inf")
@@ -36,8 +36,8 @@ class VMParamsSetter:
         self.pdb_file_name: str = ""
 
         # Intercalation and sorption
-        self.number_of_planes: int = 1
-        self.num_of_inter_atoms_layers: int = 1
+        self.number_of_planes: int = 6
+        self.num_of_inter_atoms_layers: int = 2
         self.to_translate_inter: bool = True
         self.to_replace_nearby_atoms: bool = True
         self.to_remove_too_close_atoms: bool = False
