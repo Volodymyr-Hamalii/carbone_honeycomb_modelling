@@ -31,13 +31,12 @@ class InterAtomsTranslator:
         inter_atoms_channel_coordinates: Points,
     ) -> Points:
 
-        inter_atoms_fininter_atoms: np.ndarray = np.empty((0, 3))
-        inter_atoms_fininter_atoms = np.vstack(
-            (inter_atoms_fininter_atoms, inter_atoms_channel_coordinates.points))
+        inter_atoms: np.ndarray = inter_atoms_channel_coordinates.points
+        inter_atoms_fininter_atoms: np.ndarray = inter_atoms.copy()
 
         inter_atoms_center: np.ndarray = inter_atoms_channel_coordinates.center
 
-        for carbon_channel in carbon_channels:
+        for carbon_channel in carbon_channels[1:]:
             # Check that it's not the channel for which we have already translated atoms
             channel_center: np.ndarray = carbon_channel.center
             # if np.linalg.norm(channel_center - al_center) < 1:
@@ -46,14 +45,14 @@ class InterAtomsTranslator:
             # Translate on the vector from the channel center to the inter_atoms center
             vector: np.ndarray = channel_center - inter_atoms_center
             inter_atoms_fininter_atoms = np.vstack(
-                (inter_atoms_fininter_atoms, inter_atoms_fininter_atoms + vector))
+                (inter_atoms_fininter_atoms, inter_atoms.copy() + vector))
 
         edge_channel_centers: list[np.float32] = cls._get_centers_of_edge_carbon_channels(coordinates_carbon)
 
         for center in edge_channel_centers:
             vector: np.ndarray = center - inter_atoms_center
             inter_atoms_fininter_atoms = np.vstack(
-                (inter_atoms_fininter_atoms, inter_atoms_fininter_atoms + vector))
+                (inter_atoms_fininter_atoms, inter_atoms.copy() + vector))
 
         return Points(inter_atoms_fininter_atoms)
 
