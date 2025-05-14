@@ -34,22 +34,30 @@ class InterAtomsTranslator:
         inter_atoms: np.ndarray = inter_atoms_channel_coordinates.points
         inter_atoms_fininter_atoms: np.ndarray = inter_atoms.copy()
 
-        inter_atoms_center: np.ndarray = inter_atoms_channel_coordinates.center
+        # inter_atoms_center: np.ndarray = inter_atoms_channel_coordinates.center
+        inter_atoms_center: np.ndarray = carbon_channels[0].center
 
         for carbon_channel in carbon_channels[1:]:
             # Check that it's not the channel for which we have already translated atoms
             channel_center: np.ndarray = carbon_channel.center
             # if np.linalg.norm(channel_center - al_center) < 1:
             #     continue
+            # Copy the Z coordinate from the inter_atoms_center
+            channel_center[2] = inter_atoms_center[2]
 
             # Translate on the vector from the channel center to the inter_atoms center
             vector: np.ndarray = channel_center - inter_atoms_center
             inter_atoms_fininter_atoms = np.vstack(
                 (inter_atoms_fininter_atoms, inter_atoms.copy() + vector))
 
-        edge_channel_centers: list[np.float32] = cls._get_centers_of_edge_carbon_channels(coordinates_carbon)
+        edge_channel_centers: list[np.ndarray] = cls._get_centers_of_edge_carbon_channels(coordinates_carbon)
+
+        logger.info(f"CHECK THE Z COORDINATES OF THE EDGE CHANNELS: {inter_atoms_center}, {edge_channel_centers}")
 
         for center in edge_channel_centers:
+            # Copy the Z coordinate from the inter_atoms_center
+            center[2] = inter_atoms_center[2]
+
             vector: np.ndarray = center - inter_atoms_center
             inter_atoms_fininter_atoms = np.vstack(
                 (inter_atoms_fininter_atoms, inter_atoms.copy() + vector))
@@ -300,7 +308,7 @@ class InterAtomsTranslator:
     @staticmethod
     def _get_centers_of_edge_carbon_channels(
         coordinates_carbon: Points,
-    ) -> list[np.float32]:
+    ) -> list[np.ndarray]:
         """ 
         Takes the lines with the pointns with the same Y coordinate, 
         takes left and right (with the min and max X coordinate) parallel segments from the lines
